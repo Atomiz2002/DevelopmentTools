@@ -3,7 +3,7 @@
   "displayName": "Development Tools",
   "version": "0.0.1",
   "description": "Quite literally the name",
-  "license": "MIT",
+  "license": "GNU v3.0",
   "author": {
     "name": "Atomiz"
   },
@@ -12,6 +12,6 @@
     "url": "https://github.com/Atomiz2002/DevelopmentTools.git"
   },
   "dependencies": {
-    "com.mycompany.dependentpackage": "git+https://github.com/Atomiz2002/DevelopmentEssentials.git"
+    "com.mycompany.dependentpackage": "git+https://github.com/Atomiz2002/DevelopmentEssentials.git#main"
   }
 }
