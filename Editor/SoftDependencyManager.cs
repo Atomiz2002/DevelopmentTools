@@ -10,11 +10,10 @@ namespace DevelopmentTools.Editor {
 
     public class SoftDependencyManager : AssetPostprocessor {
 
-        private const string packageAsmdef = "Development Tools.asmdef";
+        private const string packageAsmdef = "DevelopmentTools.asmdef";
         private const string definesPrefix = "DEVELOPMENT_TOOLS";
 
         private static readonly List<SoftDependency> softAsmdefDependencies = new() {
-            new("DEVELOPMENT_ESSENTIALS", "Development Essentials"),
             new("COMPONENT_NAMES", "ComponentNames"),
             new("UNITY_2D_SPRITE", "Unity.2D.Sprite.Editor"),
             new("UNITY_ADDRESSABLES", "Unity.Addressables", "Unity.Addressables.Editor"),
@@ -46,28 +45,6 @@ namespace DevelopmentTools.Editor {
             }
         }
 
-        /// Modifies Project Settings > Player > Scripting Define Symbols
-        // private static void UpdateScriptingDefines(string define, bool foundDependencies) {
-        //     string defines        = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget)));
-        //     bool   definesChanged = false;
-        //
-        //     if (foundDependencies && !defines.Contains(define)) {
-        //         defines        += (defines.Length > 0 ? ";" : "") + define;
-        //         definesChanged =  true;
-        //     }
-        //     else if (!foundDependencies && defines.Contains(define)) {
-        //         defines = defines.Replace($"{define};", "")
-        //             .Replace($";{define}", "")
-        //             .Replace(define, "");
-        //
-        //         definesChanged = true;
-        //     }
-        //
-        //     if (definesChanged) {
-        //         PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget)), defines);
-        //         AssetDatabase.Refresh();
-        //     }
-        // }
         private static void ReferenceSoftDependencies(AsmdefData asmdefData, ref bool modified, SoftDependency softDependency) {
             const string GUID_Prefix = "GUID:";
 
