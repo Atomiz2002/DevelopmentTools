@@ -10,8 +10,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Atomiz2002/DevelopmentTools.git"
-  },
-  "dependencies": {
-    "com.github.atomiz2002.developmentessentials": "git://github.com/Atomiz2002/DevelopmentEssentials"
   }
 }
