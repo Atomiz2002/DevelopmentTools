@@ -1,0 +1,14 @@
+{
+  "name": "me.atomiz.developmenttools",
+  "displayName": "Development Tools",
+  "version": "0.0.1",
+  "description": "Quite literally the name",
+  "license": "MIT",
+  "author": {
+    "name": "Atomiz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com:Atomiz2002/me.atomiz.developmenttoolsTODO.git"
+  }
+}

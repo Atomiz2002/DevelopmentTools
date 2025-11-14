@@ -1,0 +1,63 @@
+﻿{
+    "name": "Development Tools",
+    "allowUnsafeCode": false,
+    "autoReferenced": true,
+    "noEngineReferences": false,
+    "overrideReferences": true,
+    "rootNamespace": "DevelopmentTools",
+    "references": [
+        "Development Essentials",
+        "ComponentNames",
+        "Unity.2D.Sprite.Editor",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor",
+        "Unity.RenderPipelines.Universal.Runtime"
+    ],
+    "precompiledReferences": [
+        "Sirenix.OdinInspector.Attributes.dll",
+        "Sirenix.Serialization.dll",
+        "Sirenix.OdinInspector.Editor.dll",
+        "Sirenix.Utilities.dll",
+        "Sirenix.Utilities.Editor.dll"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "Missing Newtonsoft.Json.dll",
+            "define": "DEVELOPMENT_TOOLS_NEWTONSOFT_JSON"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_DEVELOPMENT_ESSENTIALS"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_COMPONENT_NAMES"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_UNITY_2D_SPRITE"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_UNITY_ADDRESSABLES"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_UNITY_URP"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_ODIN_INSPECTOR"
+        }
+    ]
+}
