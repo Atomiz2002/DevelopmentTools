@@ -1,1 +1,0 @@
-﻿#define DEVELOPMENT_TOOLS

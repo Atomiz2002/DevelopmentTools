@@ -10,8 +10,8 @@ namespace DevelopmentTools.Editor {
 
     public class SoftDependencyManager : AssetPostprocessor {
 
-        private const string packageAsmdef = "DevelopmentTools.asmdef";
-        private const string definesPrefix = "DEVELOPMENT_TOOLS";
+        private const string packageAsmdef = "DevelopmentTools.Editor.asmdef";
+        private const string definesPrefix = "DEVELOPMENT_TOOLS_"; // PREFIXES THE SOFT DEPENDENCY DEFINE
 
         private static readonly List<SoftDependency> softAsmdefDependencies = new() {
             new("COMPONENT_NAMES", "ComponentNames"),
@@ -19,7 +19,6 @@ namespace DevelopmentTools.Editor {
             new("UNITY_ADDRESSABLES", "Unity.Addressables", "Unity.Addressables.Editor"),
             new("UNITY_URP", "Unity.RenderPipelines.Universal.Runtime"),
             // precompiled
-            new("ODIN_INSPECTOR", "Sirenix.OdinInspector.Attributes.dll", "Sirenix.Serialization.dll", "Sirenix.OdinInspector.Editor.dll", "Sirenix.Utilities.dll", "Sirenix.Utilities.Editor.dll"),
             new("NEWTONSOFT_JSON", "Newtonsoft.Json.dll")
         };
 
@@ -31,7 +30,7 @@ namespace DevelopmentTools.Editor {
                 .FirstOrDefault(p => Path.GetFileName(p) == packageAsmdef); // kind of an unnecessary check?
 
             if (string.IsNullOrEmpty(packageAsmdefPath))
-                throw new("Failed to find package asmdef");
+                throw new("Failed to find packageAsmdef");
 
             AsmdefData asmdefData = JsonUtility.FromJson<AsmdefData>(File.ReadAllText(packageAsmdefPath, Encoding.UTF8));
             bool       modified   = false;
@@ -137,7 +136,7 @@ namespace DevelopmentTools.Editor {
             public readonly Dictionary<string, bool> dependencies;
 
             public SoftDependency(string define, params string[] dependencies) {
-                this.define = $"{definesPrefix}_{define}";
+                this.define = definesPrefix + define;
 
                 this.dependencies = dependencies.Select(dependency =>
                         (dependency, located: !string.IsNullOrEmpty(dependency.EndsWith(".dll")

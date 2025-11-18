@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using DevelopmentEssentials.Extensions.Unity;
+using DevelopmentEssentials.Editor.Extensions.Unity;
 using UnityEditor;
 
 namespace DevelopmentTools.Editor.ContextMenus {

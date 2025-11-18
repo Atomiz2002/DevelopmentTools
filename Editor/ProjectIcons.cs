@@ -1,8 +1,9 @@
 ﻿#if UNITY_EDITOR && !SIMULATE_BUILD
 using System;
+using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.Editor_;
+using DevelopmentTools.Editor.Editor_;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
