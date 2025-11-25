@@ -1,3 +1,4 @@
+#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
 using System;
 using Sirenix.Serialization;
 
@@ -15,3 +16,4 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
     }
 
 }
+#endif

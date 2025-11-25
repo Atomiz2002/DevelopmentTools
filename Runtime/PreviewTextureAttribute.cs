@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+using System;
 using Sirenix.OdinInspector;
 using Color = UnityEngine.Color;
 #if UNITY_EDITOR && !SIMULATE_BUILD
@@ -64,3 +65,4 @@ namespace DevelopmentTools {
     }
 
 }
+#endif

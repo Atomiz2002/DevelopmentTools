@@ -3,12 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 using PopupWindow = UnityEditor.PopupWindow;
+#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+using Sirenix.Utilities.Editor;
+#endif
 
 namespace DevelopmentTools.Editor.Editor_.Toolbar_Injections {
 
@@ -77,7 +79,11 @@ namespace DevelopmentTools.Editor.Editor_.Toolbar_Injections {
                 if (side is ToolbarSide.Right or ToolbarSide.RightOfPlay)
                     GUILayout.Space(space);
 
+#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
                 if (GUILayout.Button(buttonName, SirenixGUIStyles.DropDownMiniButton)) {
+#else
+                if (GUILayout.Button(buttonName)) {
+#endif
                     Vector2 position = GUILayoutUtility.GetLastRect().position;
                     position.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 

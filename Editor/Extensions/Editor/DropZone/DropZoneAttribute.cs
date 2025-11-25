@@ -1,3 +1,4 @@
+#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
 using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -17,3 +18,4 @@ namespace DevelopmentTools.Editor.Extensions.Editor.DropZone {
     }
 
 }
+#endif

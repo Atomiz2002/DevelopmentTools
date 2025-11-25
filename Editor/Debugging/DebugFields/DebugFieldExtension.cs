@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+using System;
 using DevelopmentEssentials.Extensions.CS;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -44,3 +45,4 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
     }
 
 }
+#endif

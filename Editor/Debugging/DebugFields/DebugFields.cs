@@ -1,6 +1,4 @@
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +10,9 @@ using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
 using EditorSettings = DevelopmentTools.Editor.Debugging.Settings.EditorSettings;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
@@ -115,3 +116,4 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
     }
 
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -436,3 +437,4 @@ namespace DevelopmentTools.Editor.Debugging.DebugLogger {
     }
 
 }
+#endif

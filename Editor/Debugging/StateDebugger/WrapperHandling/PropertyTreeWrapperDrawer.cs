@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR && !SIMULATE_BUILD
+﻿#if UNITY_EDITOR && !SIMULATE_BUILD && DEVELOPMENT_TOOLS_ODIN_INSPECTOR
 using DevelopmentEssentials.Extensions.Unity;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;

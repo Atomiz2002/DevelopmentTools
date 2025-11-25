@@ -31,28 +31,28 @@
     "versionDefines": [
         {
             "name": "Unity",
-            "expression": "",
-            "define": "DEVELOPMENT_TOOLS_COMPONENT_NAMES"
+            "expression": "Missing Newtonsoft.Json.dll",
+            "define": "DEVELOPMENT_TOOLS_NEWTONSOFT_JSON"
         },
         {
             "name": "Unity",
-            "expression": "",
-            "define": "DEVELOPMENT_TOOLS_UNITY_2D_SPRITE"
-        },
-        {
-            "name": "Unity",
-            "expression": "",
-            "define": "DEVELOPMENT_TOOLS_UNITY_ADDRESSABLES"
-        },
-        {
-            "name": "Unity",
-            "expression": "",
+            "expression": "Missing Unity.RenderPipelines.Universal.Runtime",
             "define": "DEVELOPMENT_TOOLS_UNITY_URP"
         },
         {
             "name": "Unity",
-            "expression": "",
-            "define": "DEVELOPMENT_TOOLS_NEWTONSOFT_JSON"
+            "expression": "Missing Unity.Addressables.Editor",
+            "define": "DEVELOPMENT_TOOLS_UNITY_ADDRESSABLES"
+        },
+        {
+            "name": "Unity",
+            "expression": "Missing Unity.2D.Sprite.Editor",
+            "define": "DEVELOPMENT_TOOLS_UNITY_2D_SPRITE"
+        },
+        {
+            "name": "Unity",
+            "expression": "Missing ComponentNames",
+            "define": "DEVELOPMENT_TOOLS_COMPONENT_NAMES"
         }
     ]
 }

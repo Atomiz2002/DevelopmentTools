@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+using System;
 using DevelopmentEssentials.Extensions.CS;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -87,3 +88,4 @@ namespace DevelopmentTools.Editor.Debugging.DebugLogger {
     }
 
 }
+#endif

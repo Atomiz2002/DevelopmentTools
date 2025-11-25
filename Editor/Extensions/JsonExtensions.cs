@@ -1,10 +1,10 @@
-﻿#if NEWTONSOFT_JSON
+﻿#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 #endif
 
-#if NEWTONSOFT_JSON
+#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
 #else
 using UnityEngine;
 #endif
@@ -14,7 +14,7 @@ namespace DevelopmentTools.Editor.Extensions {
 
     public static class JsonExtensions {
 
-#if NEWTONSOFT_JSON
+#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
 
         #region NEWTONSOFT JSON
 

@@ -1,4 +1,5 @@
-﻿using DevelopmentTools.Editor.Attributes.PreviewTexture2D;
+﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+using DevelopmentTools.Editor.Attributes.PreviewTexture2D;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 
@@ -38,3 +39,4 @@ namespace DevelopmentTools.Editor.Extensions.Editor.Odin {
     }
 
 }
+#endif

@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR && !SIMULATE_BUILD
+﻿#if UNITY_EDITOR && !SIMULATE_BUILD && DEVELOPMENT_TOOLS_ODIN_INSPECTOR
 using System.Collections.Generic;
 using System.Reflection;
 using Sirenix.OdinInspector.Editor;

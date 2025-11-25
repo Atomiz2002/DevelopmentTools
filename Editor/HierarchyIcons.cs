@@ -4,7 +4,9 @@ using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using UnityEditor;
 using UnityEngine;
+#if DEVELOPMENT_TOOLS_UNITY_UI
 using UnityEngine.UI;
+#endif
 
 namespace DevelopmentTools.Editor {
 
@@ -37,15 +39,14 @@ namespace DevelopmentTools.Editor {
 
                 Texture icon = null;
 
-                if (go.TryGetComponent(out SpriteRenderer renderer)) {
+                if (go.TryGetComponent(out SpriteRenderer renderer))
                     icon = renderer.sprite.ToTexture2D();
-                }
-                else if (go.TryGetComponent(out Image image)) {
+#if DEVELOPMENT_TOOLS_UNITY_UI
+                else if (go.TryGetComponent(out Image image))
                     icon = image.sprite.ToTexture2D();
-                }
-                else if (go.TryGetComponent(out RawImage rawImage)) {
+                else if (go.TryGetComponent(out RawImage rawImage))
                     icon = rawImage.texture;
-                }
+#endif
 
                 if (!icon)
                     return;

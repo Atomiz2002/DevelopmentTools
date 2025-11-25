@@ -1,6 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
-#if NEWTONSOFT_JSON
+#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
 using Newtonsoft.Json;
 #endif
 
@@ -21,7 +21,7 @@ namespace DevelopmentTools {
             if (t is Object obj)
                 EditorGUIUtility.systemCopyBuffer = EditorJsonUtility.ToJson(obj, true);
             else
-#if NEWTONSOFT_JSON
+#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
                 EditorGUIUtility.systemCopyBuffer = JsonConvert.SerializeObject(t, Formatting.Indented);
 #else
                 // Fallback to JsonUtility for structs/classes if Newtonsoft not present,
@@ -37,7 +37,7 @@ namespace DevelopmentTools {
                 JsonUtility.FromJsonOverwrite(EditorGUIUtility.systemCopyBuffer, obj);
             }
             else {
-#if NEWTONSOFT_JSON
+#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
                 // Use Newtonsoft for general classes/structs (better handling).
                 JsonConvert.PopulateObject(EditorGUIUtility.systemCopyBuffer, t);
 #else

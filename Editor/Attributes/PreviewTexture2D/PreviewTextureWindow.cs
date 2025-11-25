@@ -1,4 +1,5 @@
-﻿using Sirenix.OdinInspector;
+﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -41,3 +42,4 @@ namespace DevelopmentTools.Editor.Attributes.PreviewTexture2D {
     }
 
 }
+#endif

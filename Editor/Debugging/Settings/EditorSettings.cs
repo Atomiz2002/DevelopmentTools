@@ -4,16 +4,18 @@ using System.Runtime.InteropServices;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentTools.Editor.Editor_.Toolbar_Injections;
 using JetBrains.Annotations;
-using Sirenix.Utilities;
-using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
-#if NEWTONSOFT_JSON
+#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
 using System.Collections.Generic;
 using DevelopmentTools.Editor_.CopyPaste;
 using Newtonsoft.Json;
+#endif
+#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+using Sirenix.Utilities;
+using Sirenix.Utilities.Editor;
 #endif
 
 #if ENABLE_LOGS
@@ -45,6 +47,7 @@ namespace DevelopmentTools.Editor.Debugging.Settings {
             EditorGUI.BeginDisabledGroup(preset);
             preset?.Apply();
 
+#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
             SirenixEditorGUI.Title("Debug Logger", null, TextAlignment.Left, true);
             DebugLogger.ShowOnPlay      = EditorGUILayout.Toggle(nameof(DebugLogger.ShowOnPlay).SplitPascalCase(), DebugLogger.ShowOnPlay);
             DebugLogger.MergeDuplicates = EditorGUILayout.Toggle(nameof(DebugLogger.MergeDuplicates).SplitPascalCase(), DebugLogger.MergeDuplicates);
@@ -55,13 +58,26 @@ namespace DevelopmentTools.Editor.Debugging.Settings {
             OnCompile.PlayOnCompile  = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile).SplitPascalCase(), OnCompile.PlayOnCompile);
             EditorGUI.BeginDisabledGroup(!OnCompile.PlayOnCompile);
             OnCompile.FocusOnPlay = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnPlay).SplitPascalCase(), OnCompile.FocusOnPlay);
+#else
+            EditorGUILayout.LabelField("Debug Logger", EditorStyles.boldLabel);
+            DebugLogger.ShowOnPlay      = EditorGUILayout.Toggle(nameof(DebugLogger.ShowOnPlay), DebugLogger.ShowOnPlay);
+            DebugLogger.MergeDuplicates = EditorGUILayout.Toggle(nameof(DebugLogger.MergeDuplicates), DebugLogger.MergeDuplicates);
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("On Compile", EditorStyles.boldLabel);
+            OnCompile.FocusOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnCompile), OnCompile.FocusOnCompile);
+            OnCompile.PlayOnCompile  = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile), OnCompile.PlayOnCompile);
+            EditorGUI.BeginDisabledGroup(!OnCompile.PlayOnCompile);
+            OnCompile.FocusOnPlay = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnPlay), OnCompile.FocusOnPlay);
+#endif
+
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.BeginHorizontal();
 
-#if NEWTONSOFT_JSON
+#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
             if (GUILayout.Button("Copy")) {
                 new Dictionary<string, object> {
                     { nameof(DebugLogger.ShowOnPlay), DebugLogger.ShowOnPlay },
