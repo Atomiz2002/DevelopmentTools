@@ -9,12 +9,11 @@ using Sirenix.OdinInspector;
 
 namespace DevelopmentTools.Editor.Debugging.Settings {
 
-    [CreateAssetMenu(fileName = "TSH Editor Settings Preset", menuName = "The Sixth Hammer/Editor Settings Preset")]
+    [CreateAssetMenu(fileName = "TSH Editor Settings Preset", menuName = "Development Tools/Editor Settings Preset")]
     public class EditorSettingsPreset : ScriptableObject, ICopyable {
 
 #if UNITY_EDITOR
 #if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
-
         [Title("Debug Logger")]
         [LabelText("ShowOnPlay")] public bool DebugLoggerShowOnPlay;
         [LabelText("MergeDuplicates")] public bool DebugLoggerMergeDuplicates;
@@ -74,9 +73,10 @@ namespace DevelopmentTools.Editor.Debugging.Settings {
         // }
 
         public void Apply() {
+#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
             EditorSettings.DebugLogger.ShowOnPlay      = DebugLoggerShowOnPlay;
             EditorSettings.DebugLogger.MergeDuplicates = DebugLoggerMergeDuplicates;
-
+#endif
             EditorSettings.OnCompile.FocusOnCompile = OnCompileFocus;
             EditorSettings.OnCompile.PlayOnCompile  = OnCompilePlay;
             EditorSettings.OnCompile.FocusOnPlay    = OnCompileFocusOnPlay;

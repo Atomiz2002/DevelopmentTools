@@ -1,14 +1,26 @@
-{
+﻿{
     "name": "DevelopmentTools",
+    "allowUnsafeCode": false,
+    "autoReferenced": true,
+    "noEngineReferences": false,
+    "overrideReferences": true,
     "rootNamespace": "DevelopmentTools",
     "references": [],
+    "precompiledReferences": [
+        "Sirenix.OdinInspector.Attributes.dll",
+        "Sirenix.OdinInspector.Editor.dll",
+        "Sirenix.Serialization.dll",
+        "Sirenix.Utilities.dll",
+        "Sirenix.Utilities.Editor.dll"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": true,
-    "precompiledReferences": [],
-    "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_ODIN_INSPECTOR"
+        }
+    ]
 }

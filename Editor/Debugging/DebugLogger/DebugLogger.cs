@@ -20,7 +20,7 @@ using EditorSettings = DevelopmentTools.Editor.Debugging.Settings.EditorSettings
 
 namespace DevelopmentTools.Editor.Debugging.DebugLogger {
 
-    [CreateAssetMenu(fileName = "Debug Logger", menuName = "The Sixth Hammer/Debug Logger")]
+    [CreateAssetMenu(fileName = "Debug Logger", menuName = "Development Tools/Debug Logger")]
     [HideMonoScript]
     [SuppressMessage("ReSharper", "NotAccessedField.Global")]
     public class DebugLogger : SerializedScriptableObject {

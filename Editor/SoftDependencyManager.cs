@@ -10,21 +10,43 @@ namespace DevelopmentTools.Editor {
 
     public class SoftDependencyManager : AssetPostprocessor {
 
-        private const string packageAsmdef = "DevelopmentTools.Editor.asmdef";
-        private const string definesPrefix = "DEVELOPMENT_TOOLS_"; // PREFIXES THE SOFT DEPENDENCY DEFINE
-
-        private static readonly List<SoftDependency> softAsmdefDependencies = new() {
-            new("COMPONENT_NAMES", "ComponentNames"),
-            new("UNITY_2D_SPRITE", "Unity.2D.Sprite.Editor"),
-            new("UNITY_ADDRESSABLES", "Unity.Addressables", "Unity.Addressables.Editor"),
-            new("UNITY_URP", "Unity.RenderPipelines.Universal.Runtime"),
-            // precompiled
-            new("NEWTONSOFT_JSON", "Newtonsoft.Json.dll")
+        private const string definesPrefix = "DEVELOPMENT_TOOLS_"; // PREFIXES THE SOFT DEPENDENCY DEFINES
+        private static readonly Dictionary<string, List<SoftDependency>> asmdefSoftDependencies = new() {
+            {
+                "DevelopmentTools.Editor.asmdef",
+                new() {
+                    new("COMPONENT_NAMES", "ComponentNames"),
+                    new("UNITY_2D_SPRITE", "Unity.2D.Sprite.Editor"),
+                    new("UNITY_ADDRESSABLES", "Unity.Addressables", "Unity.Addressables.Editor"),
+                    new("UNITY_URP", "Unity.RenderPipelines.Universal.Runtime"),
+                    // precompiled
+                    new("NEWTONSOFT_JSON", "Newtonsoft.Json.dll"),
+                    new("ODIN_INSPECTOR", "Sirenix.OdinInspector.Attributes.dll", "Sirenix.OdinInspector.Editor.dll", "Sirenix.Serialization.dll", "Sirenix.Utilities.dll", "Sirenix.Utilities.Editor.dll")
+                }
+            },
+            {
+                "DevelopmentTools.asmdef",
+                new() {
+                    // precompiled
+                    new("ODIN_INSPECTOR", "Sirenix.OdinInspector.Attributes.dll", "Sirenix.OdinInspector.Editor.dll", "Sirenix.Serialization.dll", "Sirenix.Utilities.dll", "Sirenix.Utilities.Editor.dll")
+                }
+            }
         };
 
         // TODO works every other time
         // TODO safeguard sirenix dependent code with #if
+        // TODO if missing is set, it doesnt get unset automatically when the dependency is later added
         private static void OnPostprocessAllAssets(string[] imported, string[] deleted, string[] moved, string[] movedFromAssetPaths) {
+            bool modified = false;
+
+            foreach ((string asmdef, List<SoftDependency> softDependencies) in asmdefSoftDependencies)
+                ReferenceSoftDependenciesForAssembly(asmdef, softDependencies, ref modified);
+
+            if (modified)
+                AssetDatabase.Refresh();
+        }
+
+        private static void ReferenceSoftDependenciesForAssembly(string packageAsmdef, List<SoftDependency> softDependencies, ref bool modified) {
             string packageAsmdefPath = AssetDatabase.FindAssets($"t:AssemblyDefinitionAsset {Path.GetFileNameWithoutExtension(packageAsmdef)}")
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .FirstOrDefault(p => Path.GetFileName(p) == packageAsmdef); // kind of an unnecessary check?
@@ -33,14 +55,14 @@ namespace DevelopmentTools.Editor {
                 throw new("Failed to find packageAsmdef");
 
             AsmdefData asmdefData = JsonUtility.FromJson<AsmdefData>(File.ReadAllText(packageAsmdefPath, Encoding.UTF8));
-            bool       modified   = false;
+            bool       modifiedThis = false;
 
-            foreach (SoftDependency softDependency in softAsmdefDependencies)
-                ReferenceSoftDependencies(asmdefData, ref modified, softDependency);
+            foreach (SoftDependency softDependency in softDependencies)
+                ReferenceSoftDependencies(asmdefData, ref modifiedThis, softDependency);
 
-            if (modified) {
+            if (modifiedThis) {
                 File.WriteAllText(packageAsmdefPath, JsonUtility.ToJson(asmdefData, true), Encoding.UTF8);
-                AssetDatabase.Refresh();
+                modified = true;
             }
         }
 
