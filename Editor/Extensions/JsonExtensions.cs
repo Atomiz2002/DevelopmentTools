@@ -2,9 +2,6 @@
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-#endif
-
-#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
 #else
 using UnityEngine;
 #endif
