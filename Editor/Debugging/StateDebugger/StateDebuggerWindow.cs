@@ -26,7 +26,7 @@ namespace DevelopmentTools.Editor.Debugging.StateDebugger {
 
         private static readonly Dictionary<PropertyTree, (float min, float max)> visibleStatesRange = new();
 
-        private static bool RealtimeUpdate = false; // TODO + button "snapshot"
+        // private static bool RealtimeUpdate = false; // TODO + button "snapshot"
 
         private readonly Dictionary<string, bool> fieldsStatesFoldouts = new();
 
