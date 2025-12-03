@@ -60,7 +60,7 @@ namespace DevelopmentTools {
 
 #if !ENABLE_LOGS
                 return;
-#endif
+#else
 
 #if ONLY_EXCEPTIONS
             string stackTrace = new StackTrace().SafeString();
@@ -77,6 +77,7 @@ namespace DevelopmentTools {
                         originalLogHandler.LogFormat(logType, context, format, args);
                         break;
                 }
+#endif
             }
 
             [HideInCallstack]
@@ -89,8 +90,7 @@ namespace DevelopmentTools {
 
 #if !ENABLE_LOGS
                 return;
-#endif
-
+#else
                 if (blacklistException.Any(str => exception.Message.Contains(str)))
                     return;
 
@@ -117,6 +117,7 @@ namespace DevelopmentTools {
                 //     originalLogHandler.LogException(new _(message), context);
                 //     ex = ex.InnerException;
                 // }
+#endif
 #endif
             }
 

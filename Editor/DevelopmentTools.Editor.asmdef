@@ -10,49 +10,11 @@
         "DevelopmentEssentials.Editor",
         "DevelopmentTools"
     ],
-    "precompiledReferences": [
-        "Sirenix.OdinInspector.Attributes.dll",
-        "Sirenix.OdinInspector.Editor.dll",
-        "Sirenix.Serialization.dll",
-        "Sirenix.Utilities.dll",
-        "Sirenix.Utilities.Editor.dll",
-        "Newtonsoft.Json.dll"
-    ],
+    "precompiledReferences": [],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "defineConstraints": [],
-    "versionDefines": [
-        {
-            "name": "Unity",
-            "expression": "Missing Unity.RenderPipelines.Universal.Runtime",
-            "define": "DEVELOPMENT_TOOLS_UNITY_URP"
-        },
-        {
-            "name": "Unity",
-            "expression": "Missing Unity.Addressables.Editor",
-            "define": "DEVELOPMENT_TOOLS_UNITY_ADDRESSABLES"
-        },
-        {
-            "name": "Unity",
-            "expression": "Missing Unity.2D.Sprite.Editor",
-            "define": "DEVELOPMENT_TOOLS_UNITY_2D_SPRITE"
-        },
-        {
-            "name": "Unity",
-            "expression": "Missing ComponentNames",
-            "define": "DEVELOPMENT_TOOLS_COMPONENT_NAMES"
-        },
-        {
-            "name": "Unity",
-            "expression": "",
-            "define": "DEVELOPMENT_TOOLS_NEWTONSOFT_JSON"
-        },
-        {
-            "name": "Unity",
-            "expression": "",
-            "define": "DEVELOPMENT_TOOLS_ODIN_INSPECTOR"
-        }
-    ]
+    "versionDefines": []
 }
