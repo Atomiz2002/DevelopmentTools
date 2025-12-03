@@ -16,6 +16,7 @@ namespace DevelopmentTools.Editor {
                             new("UNITY_2D_SPRITE", "Unity.2D.Sprite.Editor"),
                             new("UNITY_ADDRESSABLES", "Unity.Addressables", "Unity.Addressables.Editor"),
                             new("UNITY_URP", "Unity.RenderPipelines.Universal.Runtime"),
+                            new("UNITY_UI", "UnityEngine.UI"),
                             // precompiled
                             new("NEWTONSOFT_JSON", "Newtonsoft.Json.dll"),
                             new("ODIN_INSPECTOR", "Sirenix.OdinInspector.Attributes.dll", "Sirenix.OdinInspector.Editor.dll", "Sirenix.Serialization.dll", "Sirenix.Utilities.dll", "Sirenix.Utilities.Editor.dll")
