@@ -7,7 +7,7 @@ using UnityEditor;
 using Sirenix.OdinInspector;
 #endif
 
-namespace DevelopmentTools.Editor.Debugging.Settings {
+namespace DevelopmentTools.Editor.Settings {
 
     [CreateAssetMenu(fileName = "TSH Editor Settings Preset", menuName = "Development Tools/Editor Settings Preset")]
     public class EditorSettingsPreset : ScriptableObject, ICopyable {
@@ -24,28 +24,28 @@ namespace DevelopmentTools.Editor.Debugging.Settings {
         [LabelText("Focus On Play")] public bool OnCompileFocusOnPlay;
 
         private void OnValidate() {
-            if (EditorSettings.PresetGUID == AssetDatabase.GetAssetPath(this).PathToGUID())
+            if (EngineSettings.PresetGUID == AssetDatabase.GetAssetPath(this).PathToGUID())
                 Apply();
         }
 
         [Button]
         public void UpdateValues() {
-            DebugLoggerShowOnPlay      = EditorSettings.DebugLogger.ShowOnPlay;
-            DebugLoggerMergeDuplicates = EditorSettings.DebugLogger.MergeDuplicates;
+            DebugLoggerShowOnPlay      = EngineSettings.DebugLogger.ShowOnPlay;
+            DebugLoggerMergeDuplicates = EngineSettings.DebugLogger.MergeDuplicates;
 
-            OnCompileFocus       = EditorSettings.OnCompile.FocusOnCompile;
-            OnCompilePlay        = EditorSettings.OnCompile.PlayOnCompile;
-            OnCompileFocusOnPlay = EditorSettings.OnCompile.FocusOnPlay;
+            OnCompileFocus       = EngineSettings.OnCompile.FocusOnCompile;
+            OnCompilePlay        = EngineSettings.OnCompile.PlayOnCompile;
+            OnCompileFocusOnPlay = EngineSettings.OnCompile.FocusOnPlay;
         }
 
         [Button]
         public void Apply() {
-            EditorSettings.DebugLogger.ShowOnPlay      = DebugLoggerShowOnPlay;
-            EditorSettings.DebugLogger.MergeDuplicates = DebugLoggerMergeDuplicates;
+            EngineSettings.DebugLogger.ShowOnPlay      = DebugLoggerShowOnPlay;
+            EngineSettings.DebugLogger.MergeDuplicates = DebugLoggerMergeDuplicates;
 
-            EditorSettings.OnCompile.FocusOnCompile = OnCompileFocus;
-            EditorSettings.OnCompile.PlayOnCompile  = OnCompilePlay;
-            EditorSettings.OnCompile.FocusOnPlay    = OnCompileFocusOnPlay;
+            EngineSettings.OnCompile.FocusOnCompile = OnCompileFocus;
+            EngineSettings.OnCompile.PlayOnCompile  = OnCompilePlay;
+            EngineSettings.OnCompile.FocusOnPlay    = OnCompileFocusOnPlay;
         }
 #else
         [Header("Debug Logger")]
@@ -58,28 +58,28 @@ namespace DevelopmentTools.Editor.Debugging.Settings {
         [InspectorName("Focus On Play")] public bool OnCompileFocusOnPlay;
 
         private void OnValidate() {
-            if (EditorSettings.PresetGUID == AssetDatabase.GetAssetPath(this).PathToGUID())
+            if (EngineSettings.PresetGUID == AssetDatabase.GetAssetPath(this).PathToGUID())
                 Apply();
         }
 
         // TODO where does this even show?
         // public void UpdateValues() {
-        //     DebugLoggerShowOnPlay      = EditorSettings.DebugLogger.ShowOnPlay;
-        //     DebugLoggerMergeDuplicates = EditorSettings.DebugLogger.MergeDuplicates;
+        //     DebugLoggerShowOnPlay      = EngineSettings.DebugLogger.ShowOnPlay;
+        //     DebugLoggerMergeDuplicates = EngineSettings.DebugLogger.MergeDuplicates;
         //
-        //     OnCompileFocus       = EditorSettings.OnCompile.FocusOnCompile;
-        //     OnCompilePlay        = EditorSettings.OnCompile.PlayOnCompile;
-        //     OnCompileFocusOnPlay = EditorSettings.OnCompile.FocusOnPlay;
+        //     OnCompileFocus       = EngineSettings.OnCompile.FocusOnCompile;
+        //     OnCompilePlay        = EngineSettings.OnCompile.PlayOnCompile;
+        //     OnCompileFocusOnPlay = EngineSettings.OnCompile.FocusOnPlay;
         // }
 
         public void Apply() {
 #if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
-            EditorSettings.DebugLogger.ShowOnPlay      = DebugLoggerShowOnPlay;
-            EditorSettings.DebugLogger.MergeDuplicates = DebugLoggerMergeDuplicates;
+            EngineSettings.DebugLogger.ShowOnPlay = DebugLoggerShowOnPlay;
+            EngineSettings.DebugLogger.MergeDuplicates = DebugLoggerMergeDuplicates;
 #endif
-            EditorSettings.OnCompile.FocusOnCompile = OnCompileFocus;
-            EditorSettings.OnCompile.PlayOnCompile  = OnCompilePlay;
-            EditorSettings.OnCompile.FocusOnPlay    = OnCompileFocusOnPlay;
+            EngineSettings.OnCompile.FocusOnCompile = OnCompileFocus;
+            EngineSettings.OnCompile.PlayOnCompile = OnCompilePlay;
+            EngineSettings.OnCompile.FocusOnPlay = OnCompileFocusOnPlay;
         }
 
 #endif

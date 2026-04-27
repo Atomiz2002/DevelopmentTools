@@ -1,5 +1,5 @@
 ﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
-using DevelopmentTools.Editor.Attributes.PreviewTexture2D;
+using DevelopmentTools.Editor.AttributeDrawers;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 

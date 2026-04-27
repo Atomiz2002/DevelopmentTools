@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
+using DevelopmentTools.Runtime.Settings;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector.Editor.ValueResolvers;
 using Sirenix.Serialization;
@@ -12,7 +13,6 @@ using Sirenix.Utilities;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using EditorSettings = DevelopmentTools.Editor.Debugging.Settings.EditorSettings;
 
 namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
 
@@ -27,8 +27,8 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
         private static readonly Dictionary<GameObject, bool>    gameObjectFoldouts = new();
         private static readonly Dictionary<MonoBehaviour, bool> behavioursFoldouts = new();
 
-        [MenuItem(EditorSettings.MenuGroupPath + "Realtime Debugger")]
-        public static void TryShowWindow() => EditorSettings.TryShowWindow(GetWindow<RealtimeDebuggerWindow>(), "Realtime Debugger");
+        [MenuItem(EngineSettings.MenuGroupPath + "Realtime Debugger")]
+        public static void TryShowWindow() => EngineSettings.TryShowWindow(GetWindow<RealtimeDebuggerWindow>(), "Realtime Debugger");
 
         private void OnEnable() {
             SceneManager.sceneLoaded -= CachePropertiesOnSceneLoad;

@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEditor.AddressableAssets.Settings;
 #endif
 
-namespace DevelopmentTools.Editor.Debugging.Settings {
+namespace DevelopmentTools.Editor.Settings {
 
     public class BuildSettings : EditorWindow {
 
@@ -20,7 +20,7 @@ namespace DevelopmentTools.Editor.Debugging.Settings {
         public static void Initialize() =>
             ToolbarGUIInjector.AddToolbarPopupButton(ToolbarGUIInjector.ToolbarSide.LeftOfPlay, "Build Settings", 100, DrawGUI, 500, 0, 100, 5);
 
-        [MenuItem(EditorSettings.MenuGroupPath + "Build Settings", false, -10000)]
+        [MenuItem(EngineSettings.MenuGroupPath + "Build Settings", false, -10000)]
         public static void ShowWindow() {
             SettingsService.OpenProjectSettings("Atomiz/Build Settings");
         }
@@ -57,6 +57,7 @@ namespace DevelopmentTools.Editor.Debugging.Settings {
             EditorGUI.BeginDisabledGroup(true);
             if (GUILayout.Button("Build Check (Alt + B)"))
                 RunBuildCheck();
+
             EditorGUI.EndDisabledGroup();
 #endif
 

@@ -20,9 +20,9 @@ using Sirenix.Utilities.Editor;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 #endif
 
-namespace DevelopmentTools.Editor.Debugging.Settings {
+namespace DevelopmentTools.Editor.Settings {
 
-    public static class EditorSettings {
+    public static class EngineSettings {
 
         public const string MenuGroupPath = "Window/Atomiz/";
 
@@ -62,7 +62,7 @@ namespace DevelopmentTools.Editor.Debugging.Settings {
 #else
             EditorGUILayout.LabelField("On Compile", EditorStyles.boldLabel);
             OnCompile.FocusOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnCompile), OnCompile.FocusOnCompile);
-            OnCompile.PlayOnCompile  = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile), OnCompile.PlayOnCompile);
+            OnCompile.PlayOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile), OnCompile.PlayOnCompile);
             EditorGUI.BeginDisabledGroup(!OnCompile.PlayOnCompile);
             OnCompile.FocusOnPlay = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnPlay), OnCompile.FocusOnPlay);
 #endif

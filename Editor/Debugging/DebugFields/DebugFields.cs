@@ -9,8 +9,8 @@ using DevelopmentEssentials.Editor.Extensions.Unity;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
-using EditorSettings = DevelopmentTools.Editor.Debugging.Settings.EditorSettings;
 #if UNITY_EDITOR
+using DevelopmentTools.Runtime.Settings;
 using UnityEditor;
 #endif
 
@@ -56,9 +56,9 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
         }
 
-        [MenuItem(EditorSettings.MenuGroupPath + "Debug Fields")]
+        [MenuItem(EngineSettings.MenuGroupPath + "Debug Fields")]
         public static void Show() {
-            if (!EditorSettings.TryFocusWindow(Instance.name))
+            if (!EngineSettings.TryFocusWindow(Instance.name))
                 EditorUtility.OpenPropertyEditor(instance);
         }
 

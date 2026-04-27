@@ -6,21 +6,21 @@ using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.Editor.Editor_.Toolbar_Injections;
 using DevelopmentTools.Editor.Extensions.Editor;
+using DevelopmentTools.Runtime.Settings;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Color = System.Drawing.Color;
-using EditorSettings = DevelopmentTools.Editor.Debugging.Settings.EditorSettings;
 
 namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
     public class QuickAccessPanel : EditorWindow {
 
-        private static          List<Object> pinned        = new();
-        private static          List<Object> history       = new();
-        private static readonly List<Object> removeObjects = new();
+        private static          List<Object> pinned              = new();
+        private static          List<Object> history             = new();
+        private static readonly List<Object> requestedForRemoval = new(); // contains objects the user pressed X on and are queued for removal on window close
 
         private static          Vector2 scroll;
         private static          bool?   openedFromShortcut;
@@ -45,7 +45,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             };
         }
 
-        [MenuItem(EditorSettings.MenuGroupPath + "Quick Access Panel %q")]
+        [MenuItem(EngineSettings.MenuGroupPath + "Quick Access Panel %q")]
         private static void OpenWindow(MenuCommand command) => GetWindow<QuickAccessPanel>("Quick Access").Show();
 
         private void OnEnable() {
@@ -163,24 +163,27 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             iconRect.y   -= elementHeight;
             labelRect.y  -= elementHeight;
 
+            pinned.RemoveAll(x => !x);
+
             foreach (Object o in pinned) {
+                if (!o) continue;
                 modifyRect.y += elementHeight;
                 iconRect.y   += elementHeight;
                 labelRect.y  += elementHeight;
 
-                bool queuedForRemoval = removeObjects.Contains(o);
+                bool queuedForRemoval = requestedForRemoval.Contains(o);
                 label.normal.textColor = queuedForRemoval ? Color.Tomato.ToUnityColor() : label.normal.textColor;
 
                 if (queuedForRemoval) {
                     if (SirenixEditorGUI.SDFIconButton(modifyRect, SdfIconType.ArrowCounterclockwise, GUI.skin.label))
-                        removeObjects.Remove(o);
+                        requestedForRemoval.Remove(o);
                 }
                 else {
                     if (SirenixEditorGUI.SDFIconButton(modifyRect, SdfIconType.X, GUI.skin.label))
-                        removeObjects.Add(o);
+                        requestedForRemoval.Add(o);
                 }
 
-                Texture icon = EditorGUIUtility.ObjectContent(o, o.GetType()).image;
+                Texture icon = EditorGUIUtility.ObjectContent(o, o.GetType())?.image;
                 GUI.DrawTexture(iconRect, icon);
 
                 if (GUI.Button(labelRect, o.name, label)) {
@@ -212,7 +215,11 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             iconRect.y   -= elementHeight;
             labelRect.y  -= elementHeight;
 
+            history.RemoveAll(x => !x);
+
             foreach (Object o in history) {
+                if (!o) continue;
+
                 modifyRect.y += elementHeight;
                 iconRect.y   += elementHeight;
                 labelRect.y  += elementHeight;
@@ -238,7 +245,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
                         pinned.Add(o);
                 }
 
-                Texture icon = EditorGUIUtility.ObjectContent(o, o.GetType()).image;
+                Texture icon = EditorGUIUtility.ObjectContent(o, o.GetType())?.image;
                 GUI.DrawTexture(iconRect, icon);
 
                 if (GUI.Button(labelRect, o.name, label)) {
@@ -251,8 +258,8 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
         private static void Deselect() => selectedIndex = -1;
 
         private void OnDestroy() {
-            pinned.RemoveAll(removeObjects.Contains);
-            removeObjects.Clear();
+            pinned.RemoveAll(requestedForRemoval.Contains);
+            requestedForRemoval.Clear();
 
             Save();
 

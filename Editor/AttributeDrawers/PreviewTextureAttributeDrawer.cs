@@ -2,12 +2,13 @@
 using System;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
+using DevelopmentTools.Attributes;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace DevelopmentTools.Editor.Attributes.PreviewTexture2D {
+namespace DevelopmentTools.Editor.AttributeDrawers {
 
     public class PreviewTextureAttributeDrawer<T> : OdinAttributeDrawer<PreviewTextureAttribute, T> where T : Object {
 

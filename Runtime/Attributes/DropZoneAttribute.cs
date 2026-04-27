@@ -3,7 +3,7 @@ using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace DevelopmentTools {
+namespace DevelopmentTools.Attributes {
 
     [AttributeUsage(AttributeTargets.Field)]
     [DontApplyToListElements]

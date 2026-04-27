@@ -7,12 +7,12 @@ using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentTools.Editor.Debugging.StateDebugger.IndexedList;
 using DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling;
 using DevelopmentTools.Editor.Extensions;
+using DevelopmentTools.Runtime.Settings;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Serialization;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
-using EditorSettings = DevelopmentTools.Editor.Debugging.Settings.EditorSettings;
 
 namespace DevelopmentTools.Editor.Debugging.StateDebugger {
 
@@ -32,8 +32,8 @@ namespace DevelopmentTools.Editor.Debugging.StateDebugger {
 
         private static Vector2 scrollPosition;
 
-        [MenuItem(EditorSettings.MenuGroupPath + "State Debugger")]
-        public static void TryShowWindow() => EditorSettings.TryShowWindow(GetWindow<StateDebuggerWindow>(), "State Debugger");
+        [MenuItem(EngineSettings.MenuGroupPath + "State Debugger")]
+        public static void TryShowWindow() => EngineSettings.TryShowWindow(GetWindow<StateDebuggerWindow>(), "State Debugger");
 
         public static void DebugState<T>(T t, string name) {
             StateDebuggerWindow debugger = GetWindow<StateDebuggerWindow>();
