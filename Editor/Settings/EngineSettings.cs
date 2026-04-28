@@ -12,6 +12,7 @@ using Object = UnityEngine.Object;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 #endif
+
 #if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
@@ -27,7 +28,6 @@ namespace DevelopmentTools.Editor.Settings {
         public const string MenuGroupPath = "Window/Atomiz/";
 
 #if !SIMULATE_BUILD
-
         [InitializeOnLoadMethod]
         public static void Initialize() =>
             ToolbarGUIInjector.AddToolbarPopupButton(ToolbarGUIInjector.ToolbarSide.LeftOfPlay, "Engine Settings", 115, DrawEngineSettingsGUI, 500, 0, 101);
@@ -62,7 +62,7 @@ namespace DevelopmentTools.Editor.Settings {
 #else
             EditorGUILayout.LabelField("On Compile", EditorStyles.boldLabel);
             OnCompile.FocusOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnCompile), OnCompile.FocusOnCompile);
-            OnCompile.PlayOnCompile  = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile), OnCompile.PlayOnCompile);
+            OnCompile.PlayOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile), OnCompile.PlayOnCompile);
             EditorGUI.BeginDisabledGroup(!OnCompile.PlayOnCompile);
             OnCompile.FocusOnPlay = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnPlay), OnCompile.FocusOnPlay);
 #endif
@@ -113,12 +113,12 @@ namespace DevelopmentTools.Editor.Settings {
             EditorGUILayout.EndHorizontal();
         }
 
+#endif
+
         public static GUID PresetGUID {
             get => new(EditorPrefs.GetString(nameof(PresetGUID)));
             set => EditorPrefs.SetString(nameof(PresetGUID), value.ToString());
         }
-
-#endif
 
 #if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
         public static class DebugLogger {
