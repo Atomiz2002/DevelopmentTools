@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEVELOPMENT_TOOLS
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DevelopmentEssentials.Editor.Extensions.Unity;
@@ -48,12 +49,12 @@ public partial class DebugLogger : SerializedScriptableObject {
     };
 
     public List<string>     DisplayedPinnedInfo = new();
-    public List<DebugEntry> DisplayedEntries    = new();
+    public List<DebugEntry> DisplayedEntries = new();
 
     public List<string> SelectedGroups = new();
 
-    public Dictionary<string, string>           pinnedInfo    = new();
-    public Dictionary<string, List<DebugEntry>> debugEntries  = new();
+    public Dictionary<string, string>           pinnedInfo = new();
+    public Dictionary<string, List<DebugEntry>> debugEntries = new();
     public Dictionary<string, List<DebugEntry>> pausedEntries = new();
 
     [MenuItem(MenuGroupPath + "Debug Logger &#e")]
@@ -290,8 +291,8 @@ public partial class DebugLogger : SerializedScriptableObject {
         if (method == null) return ("Unknown", "Unknown", string.Empty);
 
         Type   declaringType = method.DeclaringType;
-        string methodName    = method.Name;
-        string className     = "Global";
+        string methodName = method.Name;
+        string className = "Global";
 
         if (declaringType != null) {
             // Fix: If the class itself is compiler-generated (DisplayClass or StateMachine),
@@ -313,10 +314,10 @@ public partial class DebugLogger : SerializedScriptableObject {
 
         // 2. Local Functions
         if (methodName.Contains("g__")) {
-            string parent   = ExtractBetweenBrackets(methodName);
+            string parent = ExtractBetweenBrackets(methodName);
             int    subStart = methodName.IndexOf("g__") + 3;
-            int    subEnd   = methodName.LastIndexOf('|'); // Use LastIndexOf for safety
-            string subName  = subEnd > subStart ? methodName.Substring(subStart, subEnd - subStart) : "local";
+            int    subEnd = methodName.LastIndexOf('|'); // Use LastIndexOf for safety
+            string subName = subEnd > subStart ? methodName.Substring(subStart, subEnd - subStart) : "local";
             return (className, parent, subName);
         }
 
@@ -331,7 +332,7 @@ public partial class DebugLogger : SerializedScriptableObject {
 
     private static string ExtractBetweenBrackets(string input) {
         int start = input.IndexOf('<') + 1;
-        int end   = input.IndexOf('>');
+        int end = input.IndexOf('>');
         return start > 0 && end > start ? input.Substring(start, end - start) : input;
     }
 
@@ -341,3 +342,4 @@ public partial class DebugLogger : SerializedScriptableObject {
 #endif
 
 }
+#endif

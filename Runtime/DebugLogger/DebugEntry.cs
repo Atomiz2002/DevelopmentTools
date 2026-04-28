@@ -1,5 +1,5 @@
-﻿using System;
-using DevelopmentEssentials.Editor.Extensions.Unity;
+﻿#if DEVELOPMENT_TOOLS
+using System;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
@@ -98,13 +98,13 @@ public sealed class DebugEntry {
         try { // TODO parametersValues as details if method takes no parameters
             this.guid = guid;
 
-            this.color  = color;
+            this.color = color;
             stackFrames = (stackTrace ??= new(3, true)).GetFrames()!;
 
             StackFrame frame = stackFrames[0];
 
-            filePath     = frame.GetFileName();
-            lineNumber   = frame.GetFileLineNumber();
+            filePath = frame.GetFileName();
+            lineNumber = frame.GetFileLineNumber();
             columnNumber = frame.GetFileColumnNumber();
 
             DisplayedCallerSignature = GetSignature(frame, parametersValues,
@@ -132,11 +132,11 @@ public sealed class DebugEntry {
                 .JoinSmart("\n")
                 .Colored(color.AlterEditorOnlyForNow(.2f));
 
-            IsEvent  = isEvent;
+            IsEvent = isEvent;
             Received = received;
-            IsError  = isError;
+            IsError = isError;
 
-            timestamp     = TimeSpan.FromSeconds(Time.realtimeSinceStartup);
+            timestamp = TimeSpan.FromSeconds(Time.realtimeSinceStartup);
             DisplayedTime = $"{(int) timestamp.TotalMinutes:D2}m {timestamp.Seconds:D2}s {timestamp.Milliseconds:D3}".Size(10).Colored(Color.White);
 
             DisplayedDetails = details?.JoinSmart("\n", string.Empty).Colored(Color.White);
@@ -246,19 +246,19 @@ public sealed class DebugEntry {
         Func<string, string> paramMissingValueFormatting,
         Func<string, string> lineNumberFormatting,
         Func<string, string> returnValueFormatting) {
-        classNameFormatting         ??= x => x;
-        methodNameFormatting        ??= x => x;
-        suffixFormatting            ??= x => x;
-        paramLabelFormatting        ??= x => x;
-        paramValueFormatting        ??= x => x;
+        classNameFormatting ??= x => x;
+        methodNameFormatting ??= x => x;
+        suffixFormatting ??= x => x;
+        paramLabelFormatting ??= x => x;
+        paramValueFormatting ??= x => x;
         paramMissingValueFormatting ??= x => x;
-        lineNumberFormatting        ??= x => x;
-        this.returnValueFormatting  =   returnValueFormatting ?? (x => x);
+        lineNumberFormatting ??= x => x;
+        this.returnValueFormatting = returnValueFormatting ?? (x => x);
 
         (string className, string methodName, string suffix) = DebugLogger.GetHumanReadableCaller(frame);
-        MethodBase method     = frame.GetMethod();
+        MethodBase method = frame.GetMethod();
         MethodInfo methodInfo = method as MethodInfo;
-        Type       classType  = method.DeclaringType!;
+        Type       classType = method.DeclaringType!;
 
         if (method.TryGet(out ColoredLogsAttribute methodAttribute))
             methodNameFormatting += name => name.Colored(methodAttribute.Color);
@@ -266,23 +266,23 @@ public sealed class DebugEntry {
         if (classType.TryGet(out ColoredLogsAttribute classAttribute))
             classNameFormatting += name => name.Colored(classAttribute.Color);
 
-        string callerClassName  = classNameFormatting($"{CleanUp(className)}.");
+        string callerClassName = classNameFormatting($"{CleanUp(className)}.");
         string callerMethodName = methodNameFormatting($"{CleanUp(methodName)}()");
-        string callerSuffix     = suffix.IsNullOrWhiteSpace() ? string.Empty : suffixFormatting($"[{suffix}]");
+        string callerSuffix = suffix.IsNullOrWhiteSpace() ? string.Empty : suffixFormatting($"[{suffix}]");
         string callerLineNumber = lineNumberFormatting($":{frame.GetFileLineNumber()}");
 
-        string returnTypeName  = methodInfo?.ReturnType.Name;
+        string returnTypeName = methodInfo?.ReturnType.Name;
         string returnTypeValue = returnTypeName == "Void" ? string.Empty : $"\n{paramLabelFormatting("returned:")} {paramValueFormatting(CleanUp(returnTypeName))}";
 
         if (parametersValues == null)
             return $"{callerClassName}{callerMethodName}{callerSuffix}{callerLineNumber}{returnTypeValue}";
 
-        ParameterInfo[] parametersInfo       = method.GetParameters();
+        ParameterInfo[] parametersInfo = method.GetParameters();
         string          parametersWithValues = string.Empty;
 
         if (parametersInfo.Length > 0)
             for (int i = 0; i < parametersInfo.Length; i++) {
-                string paramName  = parametersInfo[i].Name;
+                string paramName = parametersInfo[i].Name;
                 string paramValue = i < parametersValues.Length ? parametersValues[i].SafeString("null") : paramMissingValueFormatting("???");
                 parametersWithValues += $"\n{paramLabelFormatting($"{paramLabelFormatting(paramName)}: {paramValueFormatting(CleanUp(paramValue))}")}";
             }
@@ -310,3 +310,4 @@ public sealed class DebugEntry {
 #endif
 
 }
+#endif

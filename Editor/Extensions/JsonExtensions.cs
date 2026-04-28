@@ -11,8 +11,9 @@ namespace DevelopmentTools.Editor.Extensions {
 
     public static class JsonExtensions {
 
-#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
+        // TODO update from TT3D
 
+#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
         #region NEWTONSOFT JSON
 
         [Pure]
@@ -48,6 +49,7 @@ namespace DevelopmentTools.Editor.Extensions {
         #endregion
 
 #else
+
         #region JSON UTILITY
 
         [Pure]

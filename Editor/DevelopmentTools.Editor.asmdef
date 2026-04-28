@@ -4,13 +4,66 @@
     "autoReferenced": true,
     "noEngineReferences": false,
     "overrideReferences": true,
-    "rootNamespace": "DevelopmentTools",
-    "references": [],
-    "precompiledReferences": [],
+    "rootNamespace": "DevelopmentTools.Editor",
+    "references": [
+        "DevelopmentEssentials.Editor",
+        "DevelopmentTools",
+        "DevelopmentEssentials",
+        "Unity.2D.Sprite.Editor",
+        "Unity.Addressables.Editor",
+        "Unity.Addressables",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "UnityEngine.UI",
+        "ComponentNames"
+    ],
+    "precompiledReferences": [
+        "Newtonsoft.Json.dll",
+        "Sirenix.OdinInspector.Editor.dll",
+        "Sirenix.Serialization.dll",
+        "Sirenix.Utilities.dll",
+        "Sirenix.Utilities.Editor.dll",
+        "Sirenix.OdinInspector.Attributes.dll"
+    ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_EDITOR_UNITY_2D_SPRITE"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_EDITOR_UNITY_ADDRESSABLES"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_EDITOR_UNITY_URP"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_EDITOR_UNITY_UI"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_EDITOR_NEWTONSOFT_JSON"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_EDITOR_COMPONENT_NAMES"
+        }
+    ]
 }

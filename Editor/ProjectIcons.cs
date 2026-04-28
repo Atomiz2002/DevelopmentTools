@@ -2,15 +2,12 @@
 using System;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.Editor.Editor_;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace DevelopmentTools.Editor {
 
-    [InitializeOnLoad]
     public class ProjectIcons {
 
         static ProjectIcons() => EditorApplication.projectWindowItemOnGUI += OnProjectGUI;
