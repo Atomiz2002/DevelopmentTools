@@ -18,11 +18,5 @@
     "includePlatforms": [],
     "excludePlatforms": [],
     "defineConstraints": [],
-    "versionDefines": [
-        {
-            "name": "Unity",
-            "expression": "",
-            "define": "DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR"
-        }
-    ]
+    "versionDefines": []
 }
