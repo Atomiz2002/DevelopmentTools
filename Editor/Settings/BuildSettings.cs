@@ -3,7 +3,6 @@ using DevelopmentTools.Editor.Editor_.Toolbar_Injections;
 using DevelopmentTools.Editor.Extensions.Editor;
 using UnityEditor;
 using UnityEditor.Build;
-using UnityEditor.ShortcutManagement;
 using UnityEngine;
 #if DEVELOPMENT_TOOLS_UNITY_ADDRESSABLES
 using UnityEditor.AddressableAssets.Settings;
@@ -14,7 +13,7 @@ namespace DevelopmentTools.Editor.Settings {
     public class BuildSettings : EditorWindow {
 
         public static           string   Versions => $"Current Versions - Bundle: v{PlayerSettings.bundleVersion}  |  Android: v{PlayerSettings.Android.bundleVersionCode}  |  IOS: v{PlayerSettings.iOS.buildNumber}";
-        private static readonly string[] symbols = { "SIMULATE_BUILD", "DISABLESTEAMWORKS", "ONLY_EXCEPTIONS", "ENABLE_LOGS" };
+        private static readonly string[] symbols = { "SIMULATE_BUILD", "ONLY_EXCEPTIONS", "ENABLE_LOGS" };
 
         [InitializeOnLoadMethod]
         public static void Initialize() =>
