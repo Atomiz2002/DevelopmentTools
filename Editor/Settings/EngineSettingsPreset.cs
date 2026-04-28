@@ -3,14 +3,15 @@
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using UnityEditor;
 #endif
+
 #if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 #endif
 
 namespace DevelopmentTools.Editor.Settings {
 
-    [CreateAssetMenu(fileName = "TSH Editor Settings Preset", menuName = "Development Tools/Editor Settings Preset")]
-    public class EditorSettingsPreset : ScriptableObject, ICopyable {
+    [CreateAssetMenu(fileName = "Engine Settings Preset", menuName = "Development Tools/Engine Settings Preset")]
+    public class EngineSettingsPreset : ScriptableObject, ICopyable {
 
 #if UNITY_EDITOR
 #if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
@@ -30,22 +31,22 @@ namespace DevelopmentTools.Editor.Settings {
 
         [Button]
         public void UpdateValues() {
-            DebugLoggerShowOnPlay      = EngineSettings.DebugLogger.ShowOnPlay;
+            DebugLoggerShowOnPlay = EngineSettings.DebugLogger.ShowOnPlay;
             DebugLoggerMergeDuplicates = EngineSettings.DebugLogger.MergeDuplicates;
 
-            OnCompileFocus       = EngineSettings.OnCompile.FocusOnCompile;
-            OnCompilePlay        = EngineSettings.OnCompile.PlayOnCompile;
+            OnCompileFocus = EngineSettings.OnCompile.FocusOnCompile;
+            OnCompilePlay = EngineSettings.OnCompile.PlayOnCompile;
             OnCompileFocusOnPlay = EngineSettings.OnCompile.FocusOnPlay;
         }
 
         [Button]
         public void Apply() {
-            EngineSettings.DebugLogger.ShowOnPlay      = DebugLoggerShowOnPlay;
+            EngineSettings.DebugLogger.ShowOnPlay = DebugLoggerShowOnPlay;
             EngineSettings.DebugLogger.MergeDuplicates = DebugLoggerMergeDuplicates;
 
             EngineSettings.OnCompile.FocusOnCompile = OnCompileFocus;
-            EngineSettings.OnCompile.PlayOnCompile  = OnCompilePlay;
-            EngineSettings.OnCompile.FocusOnPlay    = OnCompileFocusOnPlay;
+            EngineSettings.OnCompile.PlayOnCompile = OnCompilePlay;
+            EngineSettings.OnCompile.FocusOnPlay = OnCompileFocusOnPlay;
         }
 #else
         [Header("Debug Logger")]
@@ -78,8 +79,8 @@ namespace DevelopmentTools.Editor.Settings {
             EngineSettings.DebugLogger.MergeDuplicates = DebugLoggerMergeDuplicates;
 #endif
             EngineSettings.OnCompile.FocusOnCompile = OnCompileFocus;
-            EngineSettings.OnCompile.PlayOnCompile = OnCompilePlay;
-            EngineSettings.OnCompile.FocusOnPlay = OnCompileFocusOnPlay;
+            EngineSettings.OnCompile.PlayOnCompile  = OnCompilePlay;
+            EngineSettings.OnCompile.FocusOnPlay    = OnCompileFocusOnPlay;
         }
 
 #endif

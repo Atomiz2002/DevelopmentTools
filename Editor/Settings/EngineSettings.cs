@@ -30,17 +30,17 @@ namespace DevelopmentTools.Editor.Settings {
 
         [InitializeOnLoadMethod]
         public static void Initialize() =>
-            ToolbarGUIInjector.AddToolbarPopupButton(ToolbarGUIInjector.ToolbarSide.LeftOfPlay, "Editor Settings", 115, DrawEditorSettingsGUI, 500, 0, 101);
+            ToolbarGUIInjector.AddToolbarPopupButton(ToolbarGUIInjector.ToolbarSide.LeftOfPlay, "Engine Settings", 115, DrawEngineSettingsGUI, 500, 0, 101);
 
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider() =>
-            new("Atomiz/Editor Settings", SettingsScope.Project) {
-                guiHandler = _ => DrawEditorSettingsGUI()
+            new("Atomiz/Engine Settings", SettingsScope.Project) {
+                guiHandler = _ => DrawEngineSettingsGUI()
             };
 
-        private static void DrawEditorSettingsGUI() {
-            EditorSettingsPreset preset = PresetGUID.GUIDToPath().LoadAsset<EditorSettingsPreset>();
-            PresetGUID = EditorGUILayout.ObjectField("Preset", preset, typeof(EditorSettingsPreset), false).GetAssetPath().PathToGUID();
+        private static void DrawEngineSettingsGUI() {
+            EngineSettingsPreset preset = PresetGUID.GUIDToPath().LoadAsset<EngineSettingsPreset>();
+            PresetGUID = EditorGUILayout.ObjectField("Preset", preset, typeof(EngineSettingsPreset), false).GetAssetPath().PathToGUID();
             EditorGUILayout.Space();
 
             EditorGUI.BeginDisabledGroup(preset);
@@ -48,7 +48,7 @@ namespace DevelopmentTools.Editor.Settings {
 
 #if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
             SirenixEditorGUI.Title("Debug Logger", null, TextAlignment.Left, true);
-            DebugLogger.ShowOnPlay      = EditorGUILayout.Toggle(nameof(DebugLogger.ShowOnPlay).SplitPascalCase(), DebugLogger.ShowOnPlay);
+            DebugLogger.ShowOnPlay = EditorGUILayout.Toggle(nameof(DebugLogger.ShowOnPlay).SplitPascalCase(), DebugLogger.ShowOnPlay);
             DebugLogger.MergeDuplicates = EditorGUILayout.Toggle(nameof(DebugLogger.MergeDuplicates).SplitPascalCase(), DebugLogger.MergeDuplicates);
             EditorGUILayout.Space();
 #endif
@@ -56,13 +56,13 @@ namespace DevelopmentTools.Editor.Settings {
 #if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
             SirenixEditorGUI.Title("On Compile", null, TextAlignment.Left, true);
             OnCompile.FocusOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnCompile).SplitPascalCase(), OnCompile.FocusOnCompile);
-            OnCompile.PlayOnCompile  = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile).SplitPascalCase(), OnCompile.PlayOnCompile);
+            OnCompile.PlayOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile).SplitPascalCase(), OnCompile.PlayOnCompile);
             EditorGUI.BeginDisabledGroup(!OnCompile.PlayOnCompile);
             OnCompile.FocusOnPlay = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnPlay).SplitPascalCase(), OnCompile.FocusOnPlay);
 #else
             EditorGUILayout.LabelField("On Compile", EditorStyles.boldLabel);
             OnCompile.FocusOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnCompile), OnCompile.FocusOnCompile);
-            OnCompile.PlayOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile), OnCompile.PlayOnCompile);
+            OnCompile.PlayOnCompile  = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile), OnCompile.PlayOnCompile);
             EditorGUI.BeginDisabledGroup(!OnCompile.PlayOnCompile);
             OnCompile.FocusOnPlay = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnPlay), OnCompile.FocusOnPlay);
 #endif

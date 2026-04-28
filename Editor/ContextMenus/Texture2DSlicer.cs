@@ -13,7 +13,7 @@ namespace DevelopmentTools.Editor.ContextMenus {
 
     public static class Texture2DSlicer {
 
-        private const int tilesetTileSize  = 16;
+        private const int tilesetTileSize = 16;
         private const int maxSpritesPerRow = 10;
 
         [MenuItem("Assets/Slice Tilesets x16")]
@@ -38,14 +38,14 @@ namespace DevelopmentTools.Editor.ContextMenus {
             ContextMenuUtils.BulkEdit(guids,
                 () => {
                     foreach (Texture2D tex in guids.Select(guid => guid.GUIDToPath().LoadAsset<Texture2D>()).Existing())
-                        ApplySpriteEditorSettings(tex, slices(tex));
+                        ApplySpriteEngineSettings(tex, slices(tex));
                 });
         }
 
-        private static void ApplySpriteEditorSettings(Texture2D texture, SpriteRect[] referenceSlices) {
+        private static void ApplySpriteEngineSettings(Texture2D texture, SpriteRect[] referenceSlices) {
             if (referenceSlices == null) return;
 
-            string          path     = AssetDatabase.GetAssetPath(texture);
+            string          path = AssetDatabase.GetAssetPath(texture);
             TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
 
             if (!importer) return;
@@ -87,13 +87,13 @@ namespace DevelopmentTools.Editor.ContextMenus {
                 int row = Mathf.FloorToInt(i / (float) maxSpritesPerRow); // Row will increase after every 10 slices
 
                 // Calculate the slice width and height
-                float sliceWidth  = texture.width / Mathf.Min(sliceCount, (float) maxSpritesPerRow); // Calculate width based on sprites per row
+                float sliceWidth = texture.width / Mathf.Min(sliceCount, (float) maxSpritesPerRow); // Calculate width based on sprites per row
                 float sliceHeight = texture.height / Mathf.Ceil(sliceCount / (float) maxSpritesPerRow); // Divide height into rows
 
                 // For bottom to top row, adjust row calculation
                 int   flippedRow = Mathf.CeilToInt(sliceCount / (float) maxSpritesPerRow) - row - 1;
-                float x          = col * sliceWidth;
-                float y          = flippedRow * sliceHeight;
+                float x = col * sliceWidth;
+                float y = flippedRow * sliceHeight;
 
                 // Create a rectangle for each slice based on the current row and column
 

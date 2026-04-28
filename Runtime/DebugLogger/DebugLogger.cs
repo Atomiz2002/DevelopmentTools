@@ -116,10 +116,10 @@ public partial class DebugLogger : SerializedScriptableObject {
         }
     }
 #else
-    [MenuItem(TSHEditorSettings.MenuGroupPath + "Debug Logger (ENABLE_LOGS is off) &#e")]
+    [MenuItem(EngineSettings.MenuGroupPath + "Debug Logger (ENABLE_LOGS is off) &#e")]
     public static void ContextMenuItem() {}
 
-    [MenuItem(TSHEditorSettings.MenuGroupPath + "Debug Logger (ENABLE_LOGS is off) &#e", true)]
+    [MenuItem(EngineSettings.MenuGroupPath + "Debug Logger (ENABLE_LOGS is off) &#e", true)]
     public static bool DisabledContextMenuItem() => false;
 #endif
 #endif
