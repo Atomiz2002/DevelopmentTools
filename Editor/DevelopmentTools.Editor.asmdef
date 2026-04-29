@@ -4,7 +4,7 @@
     "autoReferenced": true,
     "noEngineReferences": false,
     "overrideReferences": true,
-    "rootNamespace": "DevelopmentTools.Editor",
+    "rootNamespace": "DevelopmentTools",
     "references": [
         "DevelopmentEssentials.Editor",
         "DevelopmentTools",
