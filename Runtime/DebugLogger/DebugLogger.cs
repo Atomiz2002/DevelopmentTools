@@ -109,7 +109,7 @@ namespace DevelopmentTools {
                 if (i)
                     return i;
 
-                AssetDatabase.CreateAsset(i = CreateInstance<DebugLogger>(), new StackTrace(true).GetFrame(0).GetFileName()?.RelativePath().EndAt(".cs", false, ".asset"));
+                AssetDatabase.CreateAsset(i = CreateInstance<DebugLogger>(), $"Assets/{nameof(DebugLogger)}.asset");
 
                 return i;
             }

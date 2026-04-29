@@ -13,6 +13,12 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using Object = UnityEngine.Object;
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+using DevelopmentTools.Editor.Editor.Debugging;
+using Sirenix.OdinInspector;
+using Sirenix.Utilities;
+using Sirenix.Utilities.Editor;
+#endif
 
 namespace DevelopmentTools.Editor.Editor {
 
@@ -310,6 +316,14 @@ namespace DevelopmentTools.Editor.Editor {
 
         public static void NotifyGameView(string notification, float duration = 1) =>
             EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.PlayModeView")).ShowNotification(new(notification), duration);
+
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+
+        public static void DrawTabbedList(IEnumerable<string> tabs) {
+            // TODO take from DebugLoggerEditor
+        }
+
+#endif
 
     }
 

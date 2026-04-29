@@ -11,7 +11,7 @@ using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.DebugLogger {
+namespace DevelopmentTools.Editor.Editor.Debugging {
 
     public class DebugEntryDrawer : OdinDrawer {
 

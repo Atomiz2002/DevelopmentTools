@@ -1,11 +1,14 @@
-﻿#if UNITY_EDITOR && !SIMULATE_BUILD && ENABLE_LOGS
+#if UNITY_EDITOR && !SIMULATE_BUILD && ENABLE_LOGS
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
+using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Editor.Editor.AttributeDrawers;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -14,14 +17,16 @@ using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.DebugLogger {
+namespace DevelopmentTools.Editor.Editor.Debugging {
 
-    [CustomEditor(typeof(DevelopmentTools.DebugLogger))]
+    [CustomEditor(typeof(DebugLogger))]
     public class DebugLoggerEditor : OdinEditor {
 
-        private DevelopmentTools.DebugLogger t;
-        private DebugEntry                   selectedEntry;
-        private int                          selectedEntryOccurrences;
+        private static List<string> categories;
+
+        private DebugLogger t;
+        private DebugEntry  selectedEntry;
+        private int         selectedEntryOccurrences;
         /// otherwise compare StackTrace
         private bool compareCaller;
         private int page = 1;
@@ -36,17 +41,48 @@ namespace DevelopmentTools.Editor.Editor.Debugging.DebugLogger {
         private CancellationTokenSource clearConfirmCancellationTokenSource;
 
         protected override void OnEnable() {
-            t             = (DevelopmentTools.DebugLogger) target;
+            t             = (DebugLogger) target;
             selectedEntry = null;
             page          = 1;
         }
 
         public override void OnInspectorGUI() {
+            DrawCategories();
             DrawPinnedInfo();
             DrawButtons();
             EditorGUILayout.Space(1);
             DrawEntries();
             Repaint();
+        }
+
+        private void DrawCategories() {
+            if (categories == null)
+                return;
+
+            categories = categories.Distinct().ToList();
+
+            for (int i = 0; i < categories.Count; i++)
+                categories[i] = GUILayout.TextField(categories[i]);
+
+            GUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Generate")) {
+                foreach (string category in categories)
+                    GenerateCategoryClass(category);
+
+                categories = null;
+
+                GUILayout.EndHorizontal();
+                return;
+            }
+
+            if (GUILayout.Button("Create new", GUILayout.ExpandWidth(false)))
+                categories.Add(string.Empty);
+
+            if (GUILayout.Button("Delete empty", GUILayout.ExpandWidth(false)))
+                categories.Remove(string.Empty);
+
+            GUILayout.EndHorizontal();
         }
 
         private void DrawPinnedInfo() {
@@ -256,6 +292,63 @@ namespace DevelopmentTools.Editor.Editor.Debugging.DebugLogger {
 
             EditorGUILayout.Space(-1);
             SirenixEditorGUI.EndToolbarBox();
+        }
+
+        [MenuItem("CONTEXT/DebugLogger/Edit Categories")]
+        private static void EditCategories() => categories = typeof(DebugLogger).GetNestedTypes().Select(t => t.Name).ToList();
+
+        private static void GenerateCategoryClass(string categoryName) {
+            // @formatter:off
+            string script = "using System.Diagnostics;\n" +
+                            "using System.Runtime.CompilerServices;\n" +
+                            "using DevelopmentEssentials.Extensions.CS;\n" +
+                            "using UnityEngine;\n" +
+                            "\n" +
+                            "namespace " + nameof(DevelopmentTools) + " {\n" +
+                            "\n" +
+                            "    public partial class " + nameof(DebugLogger) + " {\n" +
+                            "\n" +
+                            "        public static class " + categoryName + " {\n" +
+                            "\n" +
+                            "            private const string conditional = \"" + nameof(DebugLogger) + "\" + \"_\" + \"" + categoryName + "\";\n" +
+                            "\n" +
+                            "// @formatter:off\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void Log                  (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + categoryName + "\", false, false, false, details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogError             (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + categoryName + "\", false, false, true,  details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogSendEvent         (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + categoryName + "\", true,  false, false, details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogSendEventError    (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + categoryName + "\", true,  false, true,  details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEvent     (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + categoryName + "\", true,  true,  false, details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEventError(object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + categoryName + "\", true,  true,  true,  details);\n" +
+                            "\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void Log                  (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + categoryName + "\", false, false, false, details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogError             (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + categoryName + "\", false, false, true,  details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogSendEvent         (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + categoryName + "\", true,  false, false, details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogSendEventError    (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + categoryName + "\", true,  false, true,  details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEvent     (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + categoryName + "\", true,  true,  false, details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEventError(ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + categoryName + "\", true, true, true, details);\n" +
+                            "\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogGoodDetails(params object[] details) => AddGoodDetails(\"" + categoryName + "\", details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogBadDetails (params object[] details) => AddBadDetails (\"" + categoryName + "\", details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogDetails    (params object[] details) => AddDetails    (\"" + categoryName + "\", details);\n" +
+                            "        [Conditional(conditional)] [HideInCallstack] public static void LogReturn     (object returnValue)      => SetReturn     (\"" + categoryName + "\", returnValue);\n" +
+                            "// @formatter:on\n" +
+                            "\n" +
+                            "        }\n" +
+                            "\n" +
+                            "    }\n" +
+                            "\n" +
+                            "}";
+            // @formatter:on
+
+            string categoriesDir = new StackTrace(true).GetFrame(0).GetFileName()?.Replace("\\", "/").Replace(nameof(Editor) + "/" + nameof(Debugging) + "/" + nameof(DebugLogger) + "/" + nameof(DebugLoggerEditor) + ".cs", nameof(Runtime) + "/" + nameof(DebugLogger) + "/Categories");
+            string categoryPath  = categoriesDir + "/" + categoryName + ".cs";
+
+            foreach (string file in Directory.GetFiles(categoriesDir!))
+                File.Delete(file);
+
+            File.WriteAllText(categoryPath, script);
+            AssetDatabase.ImportAsset(categoryPath, ImportAssetOptions.ForceUpdate);
+            AssetDatabase.Refresh();
         }
 
     }
