@@ -1,9 +1,9 @@
-﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
-using DevelopmentTools.Editor.AttributeDrawers;
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+using DevelopmentTools.Editor.Editor.AttributeDrawers;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Extensions.Editor.Odin {
+namespace DevelopmentTools.Editor.Editor.Extensions.Odin {
 
     public class TextureDrawer : OdinValueDrawer<Texture2D> {
 
@@ -11,7 +11,7 @@ namespace DevelopmentTools.Editor.Extensions.Editor.Odin {
             CallNextDrawer(label);
 
             if (ValueEntry.SmartValue)
-                PreviewTextureWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue, true);
+                PreviewTexture2DWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue, true);
         }
 
     }
@@ -22,7 +22,7 @@ namespace DevelopmentTools.Editor.Extensions.Editor.Odin {
             CallNextDrawer(label);
 
             if (ValueEntry.SmartValue)
-                PreviewTextureWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue.texture, true);
+                PreviewTexture2DWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue.texture, true);
         }
 
     }
@@ -33,7 +33,7 @@ namespace DevelopmentTools.Editor.Extensions.Editor.Odin {
             CallNextDrawer(label);
 
             if (ValueEntry.SmartValue)
-                PreviewTextureWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue, true);
+                PreviewTexture2DWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue, true);
         }
 
     }

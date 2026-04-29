@@ -1,8 +1,8 @@
-﻿#if UNITY_EDITOR && !SIMULATE_BUILD && DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+﻿#if UNITY_EDITOR && !SIMULATE_BUILD && DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 
-namespace DevelopmentTools.Editor.Editor_ {
+namespace DevelopmentTools.Editor.Editor {
 
     public class OdinIconsViewer : EditorWindow {
 

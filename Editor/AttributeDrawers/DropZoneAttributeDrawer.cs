@@ -1,14 +1,13 @@
-﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System.Reflection;
 using DevelopmentTools.Attributes;
-using DevelopmentTools.Editor.Extensions.Editor;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace DevelopmentTools.Editor.AttributeDrawers {
+namespace DevelopmentTools.Editor.Editor.AttributeDrawers {
 
     public class DropZoneAttributeDrawer<T> : OdinAttributeDrawer<DropZoneAttribute, T> {
 

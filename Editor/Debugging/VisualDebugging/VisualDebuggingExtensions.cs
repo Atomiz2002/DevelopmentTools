@@ -8,7 +8,7 @@ using DevelopmentEssentials.Extensions.Unity;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Debugging.VisualDebugging {
+namespace DevelopmentTools.Editor.Editor.Debugging.VisualDebugging {
 
     public static class VisualDebuggerExtensions {
 
@@ -32,10 +32,12 @@ namespace DevelopmentTools.Editor.Debugging.VisualDebugging {
             v3.V2().Draw(offset, thickness, color, index, member, line);
 
         public static Vector2Int Draw(this Vector2Int v2, Vector2 offset, int thickness = 1, Color color = default)
-            => Draw((Vector2) v2, offset, thickness, color).Int();
+            =>
+                ((Vector2) v2).Draw(offset, thickness, color).Int();
 
         public static Vector2Int Draw(this Vector2Int v2, Vector2Int offset, int thickness = 1, Color color = default)
-            => Draw((Vector2) v2, offset, thickness, color).Int();
+            =>
+                ((Vector2) v2).Draw(offset, thickness, color).Int();
 
         /// Colors with A &lt; 5 will be set to A = .5
         public static Vector2 Draw(this Vector2 v2, Vector2 offset, int thickness = 1, Color color = default, int index = 0, [CallerMemberName] string member = null, [CallerLineNumber] int line = 0) {

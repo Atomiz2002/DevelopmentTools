@@ -1,4 +1,4 @@
-﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+﻿#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
 using System;
 using Sirenix.OdinInspector;
 using Color = UnityEngine.Color;
@@ -10,7 +10,7 @@ using Sirenix.OdinInspector.Editor.ValueResolvers;
 namespace DevelopmentTools {
 
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class PreviewTextureAttribute : PreviewFieldAttribute {
+    public class PreviewTexture2DAttribute : PreviewFieldAttribute {
 
 #if UNITY_EDITOR && !SIMULATE_BUILD
 
@@ -26,23 +26,23 @@ namespace DevelopmentTools {
         public bool DrawIfNull   = true;
         public bool ExpandHeight = true;
 
-        public PreviewTextureAttribute() {}
+        public PreviewTexture2DAttribute() {}
 
-        public PreviewTextureAttribute(Color outlineColor, int outlineThickness, Color backgroundColor, bool drawIfNull = false) {
+        public PreviewTexture2DAttribute(Color outlineColor, int outlineThickness, Color backgroundColor, bool drawIfNull = false) {
             OutlineColor     = outlineColor;
             OutlineThickness = outlineThickness;
             BackgroundColor  = backgroundColor;
             DrawIfNull       = drawIfNull;
         }
 
-        public PreviewTextureAttribute(string outlineColorGetter, string outlineThicknessGetter, string backgroundColorGetter = null, bool drawIfNull = false) {
+        public PreviewTexture2DAttribute(string outlineColorGetter, string outlineThicknessGetter, string backgroundColorGetter = null, bool drawIfNull = false) {
             OutlineColorGetter     = outlineColorGetter;
             OutlineThicknessGetter = outlineThicknessGetter;
             BackgroundColorGetter  = backgroundColorGetter;
             DrawIfNull             = drawIfNull;
         }
 
-        public PreviewTextureAttribute(string outlineColorGetter, int outlineThickness, string backgroundColorGetter = null, bool drawIfNull = false) {
+        public PreviewTexture2DAttribute(string outlineColorGetter, int outlineThickness, string backgroundColorGetter = null, bool drawIfNull = false) {
             OutlineColorGetter    = outlineColorGetter;
             OutlineThickness      = outlineThickness;
             BackgroundColorGetter = backgroundColorGetter;

@@ -1,10 +1,10 @@
-﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System;
 using DevelopmentEssentials.Extensions.CS;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.Editor.Editor.Debugging.DebugFields {
 
     // todo: does it work with nulls???
     public static class DebugFieldExtension {

@@ -1,16 +1,15 @@
-﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
-using DevelopmentTools.Attributes;
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.AttributeDrawers {
+namespace DevelopmentTools.Editor.Editor.AttributeDrawers {
 
-    public class PreviewTextureWindow : OdinEditorWindow {
+    public class PreviewTexture2DWindow : OdinEditorWindow {
 
         [HideLabel]
-        [PreviewTexture]
+        [PreviewTexture2D]
         public Texture texture;
 
         public void Show(Texture texture) {
@@ -22,7 +21,7 @@ namespace DevelopmentTools.Editor.AttributeDrawers {
             if (!mouseOverWindow)
                 return;
 
-            if (mouseOverWindow is PreviewTextureWindow)
+            if (mouseOverWindow is PreviewTexture2DWindow)
                 return;
 
             if (!rect.Contains(Event.current.mousePosition))
@@ -33,7 +32,7 @@ namespace DevelopmentTools.Editor.AttributeDrawers {
             EditorGUIUtility.AddCursorRect(rect, zoomOnClick ? MouseCursor.Zoom : MouseCursor.Arrow);
 
             if (Event.current.type == EventType.MouseDown && zoomOnClick) {
-                GetWindow<PreviewTextureWindow>().Show(texture);
+                GetWindow<PreviewTexture2DWindow>().Show(texture);
                 Event.current.Use();
             }
 

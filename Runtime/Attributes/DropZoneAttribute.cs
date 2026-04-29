@@ -1,4 +1,4 @@
-﻿#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+﻿#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
 using System;
 using Sirenix.OdinInspector;
 using UnityEngine;

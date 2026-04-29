@@ -1,4 +1,4 @@
-﻿namespace DevelopmentTools.DebugLogger {
+﻿namespace DevelopmentTools {
 
     public enum DebugLogGroup {
 

@@ -1,9 +1,9 @@
-#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Extensions.Editor.DropZone {
+namespace DevelopmentTools.Editor.Editor.Extensions.DropZone {
 
     [AttributeUsage(AttributeTargets.Field)]
     [DontApplyToListElements]

@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR && DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+﻿#if UNITY_EDITOR && DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -6,13 +6,12 @@ using System.IO;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentTools.Attributes;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 using Color = System.Drawing.Color;
 
-namespace DevelopmentTools.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.Editor.Editor.Debugging.DebugFields {
 
     [Serializable]
     [InlineProperty]
@@ -38,7 +37,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
         [HorizontalGroup("_", Width = 32)]
         [HideLabel]
-        [PreviewTexture]
+        [PreviewTexture2D]
         [SerializeField]
         public Texture2D Icon;
 

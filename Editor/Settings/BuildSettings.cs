@@ -1,25 +1,26 @@
 ﻿#if UNITY_EDITOR
-using DevelopmentTools.Editor.Editor_.Toolbar_Injections;
-using DevelopmentTools.Editor.Extensions.Editor;
+using System.Collections.Generic;
+using DevelopmentTools.Editor.Editor.Toolbar_Injections;
+using Sirenix.Utilities.Editor;
 using UnityEditor;
-using UnityEditor.Build;
-using UnityEngine;
-#if DEVELOPMENT_TOOLS_UNITY_ADDRESSABLES
 using UnityEditor.AddressableAssets.Settings;
-#endif
+using UnityEditor.Build;
+using UnityEditor.ShortcutManagement;
+using UnityEngine;
 
-namespace DevelopmentTools.Editor.Settings {
+namespace DevelopmentTools.Editor.Editor.Settings {
 
     public class BuildSettings : EditorWindow {
 
-        public static           string   Versions => $"Current Versions - Bundle: v{PlayerSettings.bundleVersion}  |  Android: v{PlayerSettings.Android.bundleVersionCode}  |  IOS: v{PlayerSettings.iOS.buildNumber}";
-        private static readonly string[] symbols = { "SIMULATE_BUILD", "ONLY_EXCEPTIONS", "ENABLE_LOGS" };
+        public static           string          Versions => $"Current Versions - Bundle: v{PlayerSettings.bundleVersion}  |  Android: v{PlayerSettings.Android.bundleVersionCode}  |  IOS: v{PlayerSettings.iOS.buildNumber}";
+        private static readonly HashSet<string> symbols        = new() { EngineSettings.SIMULATE_BUILD, EngineSettings.ENABLE_LOGS, EngineSettings.ONLY_EXCEPTIONS };
+        private static readonly HashSet<string> currentSymbols = new();
 
         [InitializeOnLoadMethod]
         public static void Initialize() =>
             ToolbarGUIInjector.AddToolbarPopupButton(ToolbarGUIInjector.ToolbarSide.LeftOfPlay, "Build Settings", 100, DrawGUI, 500, 0, 100, 5);
 
-        [MenuItem(EngineSettings.MenuGroupPath + "Build Settings", false, -10000)]
+        [MenuItem(Runtime.Settings.EngineSettings.MenuGroupPath + "Build Settings", false, -10000)]
         public static void ShowWindow() {
             SettingsService.OpenProjectSettings("Atomiz/Build Settings");
         }
@@ -52,7 +53,7 @@ namespace DevelopmentTools.Editor.Settings {
         }
 
         private static void GUI_Build() {
-#if DEVELOPMENT_TOOLS_UNITY_ADDRESSABLES
+#if DEVELOPMENT_TOOLS_EDITOR_UNITY_ADDRESSABLES
             EditorGUI.BeginDisabledGroup(true);
             if (GUILayout.Button("Build Check (Alt + B)"))
                 RunBuildCheck();
@@ -104,27 +105,71 @@ namespace DevelopmentTools.Editor.Settings {
         }
 
         private static void GUI_Symbols() {
+            bool     updatable    = false;
+            GUIStyle greenButton  = new(GUI.skin.button) { normal = { textColor = Color.green }, hover  = { textColor = Color.green } };
+            GUIStyle yellowButton = new(GUI.skin.button) { normal = { textColor = Color.yellow }, hover = { textColor = Color.yellow } };
+
+            SirenixEditorGUI.BeginVerticalList(); // just draws the background
+            EditorGUILayout.Space(2);
             GUILayout.Label("Configure Symbols", EditorStyles.boldLabel);
 
             foreach (string symbol in symbols) {
-                // display if the symbol is already defined in the current platform
-                bool isDefined = EditorHelper.IsSymbolDefined(symbol);
+                if (DebugLogger.GetSymbols().Contains(symbol))
+                    continue;
 
-                GUIStyle style = new(GUI.skin.button) {
-                    normal = {
-                        textColor = isDefined ? Color.green : Color.yellow
-                    }
-                };
+                EditorGUI.BeginDisabledGroup(!currentSymbols.Contains(EngineSettings.ENABLE_LOGS) && symbol == EngineSettings.ONLY_EXCEPTIONS);
+                drawSymbolButton(symbol);
+                EditorGUI.EndDisabledGroup();
+            }
 
-                if (isDefined) {
-                    if (GUILayout.Button($"Remove Symbol: {symbol}", style)) {
-                        EditorHelper.RemoveSymbol(symbol);
-                    }
+            if (EditorHelper.IsSymbolDefined(EngineSettings.ENABLE_LOGS)) {
+                EditorHelper.GUILayoutLine();
+                GUILayout.Label("DebugLogger Symbols", EditorStyles.boldLabel);
+
+                foreach (string symbol in DebugLogger.GetSymbols())
+                    drawSymbolButton(symbol);
+
+                EditorGUILayout.Space(1);
+
+                if (GUILayout.Button("Add All"))
+                    foreach (string s in DebugLogger.GetSymbols())
+                        currentSymbols.Add(s);
+
+                if (GUILayout.Button("Remove All"))
+                    foreach (string s in DebugLogger.GetSymbols())
+                        currentSymbols.Remove(s);
+            }
+
+            EditorGUILayout.Space();
+
+            EditorGUI.BeginDisabledGroup(!updatable);
+
+            if (GUILayout.Button("Apply Updated Symbols", new GUIStyle(GUI.skin.button) { fontStyle = updatable ? FontStyle.Bold : FontStyle.Normal })) {
+                foreach (string s in symbols)
+                    EditorHelper.RemoveSymbol(s);
+
+                foreach (string s in currentSymbols)
+                    EditorHelper.AddSymbol(s);
+            }
+
+            EditorGUI.EndDisabledGroup();
+
+            EditorGUILayout.Space(2);
+            SirenixEditorGUI.EndVerticalList();
+            return;
+
+            void drawSymbolButton(string symbol) {
+                if (currentSymbols.Contains(symbol)) {
+                    bool modified = !EditorHelper.IsSymbolDefined(symbol);
+                    updatable |= modified;
+                    if (GUILayout.Button($"Remove Symbol: {symbol}" + (modified ? "*" : ""), greenButton))
+                        currentSymbols.Remove(symbol);
                 }
                 else {
-                    if (GUILayout.Button($"Add Symbol: {symbol}", style)) {
-                        EditorHelper.AddSymbol(symbol);
-                    }
+                    bool modified = EditorHelper.IsSymbolDefined(symbol);
+                    updatable |= modified;
+                    if (GUILayout.Button($"Add Symbol: {symbol}" + (modified ? "*" : ""), yellowButton))
+                        currentSymbols.Add(symbol);
                 }
             }
         }
@@ -187,7 +232,7 @@ namespace DevelopmentTools.Editor.Settings {
             return null;
         }
 
-#if DEVELOPMENT_TOOLS_UNITY_ADDRESSABLES
+#if DEVELOPMENT_TOOLS_EDITOR_UNITY_ADDRESSABLES
         [Shortcut("Run Build check", KeyCode.B, ShortcutModifiers.Alt)]
         public static void RunBuildCheck() => AddressableAssetSettings.BuildPlayerContent();
 #endif

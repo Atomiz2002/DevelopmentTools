@@ -4,11 +4,9 @@ using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using UnityEditor;
 using UnityEngine;
-#if DEVELOPMENT_TOOLS_UNITY_UI
 using UnityEngine.UI;
-#endif
 
-namespace DevelopmentTools.Editor {
+namespace DevelopmentTools.Editor.Editor {
 
     [InitializeOnLoad]
     public static class HierarchyIcons {
@@ -41,7 +39,7 @@ namespace DevelopmentTools.Editor {
 
                 if (go.TryGetComponent(out SpriteRenderer renderer))
                     icon = renderer.sprite.ToTexture2D();
-#if DEVELOPMENT_TOOLS_UNITY_UI
+#if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
                 else if (go.TryGetComponent(out Image image))
                     icon = image.sprite.ToTexture2D();
                 else if (go.TryGetComponent(out RawImage rawImage))

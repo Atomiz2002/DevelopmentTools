@@ -1,7 +1,8 @@
 ﻿using DevelopmentEssentials.Editor.DependencyManagement;
 using UnityEditor;
+using static AsmdefDependencies;
 
-namespace DevelopmentTools.Editor {
+namespace DevelopmentTools.Editor.Editor {
 
     public class DevelopmentToolsSoftDependencyManager : SoftDependencyManager {
 
@@ -9,7 +10,9 @@ namespace DevelopmentTools.Editor {
             .SetHardDependencies(
                 new("DevelopmentEssentials"))
             .SetSoftDependencies(
-                new("ODIN_INSPECTOR",
+                new("NEWTONSOFT_JSON",
+                    "Newtonsoft.Json.dll"),
+                new SoftAsmdefDependency("ODIN_INSPECTOR",
                     "Sirenix.OdinInspector.Attributes.dll",
                     "Sirenix.OdinInspector.Editor.dll",
                     "Sirenix.Serialization.dll",
@@ -20,7 +23,8 @@ namespace DevelopmentTools.Editor {
             .SetHardDependencies(
                 new("DevelopmentEssentials"),
                 new("DevelopmentEssentials.Editor"),
-                new("DevelopmentTools"))
+                new("DevelopmentTools"),
+                new("UniTask"))
             .SetSoftDependencies(
                 new("COMPONENT_NAMES",
                     "ComponentNames"),

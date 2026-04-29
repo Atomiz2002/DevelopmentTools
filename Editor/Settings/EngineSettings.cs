@@ -1,31 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DevelopmentEssentials.Editor.Extensions.Unity;
-using DevelopmentTools.Editor.Editor_.Toolbar_Injections;
+using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
+using DevelopmentTools.Editor.Editor.Toolbar_Injections;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
+using Sirenix.Utilities;
+using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
-#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
-using System.Collections.Generic;
-using Newtonsoft.Json;
-#endif
 
-#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
-using Sirenix.Utilities;
-using Sirenix.Utilities.Editor;
-#endif
-#if ENABLE_LOGS
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-#endif
-
-namespace DevelopmentTools.Editor.Settings {
+namespace DevelopmentTools.Editor.Editor.Settings {
 
     public static class EngineSettings {
 
-        public const string MenuGroupPath = "Window/Atomiz/";
+        public const string ENABLE_LOGS     = "ENABLE_LOGS";
+        public const string SIMULATE_BUILD  = "SIMULATE_BUILD";
+        public const string ONLY_EXCEPTIONS = "ONLY_EXCEPTIONS";
 
 #if !SIMULATE_BUILD
         [InitializeOnLoadMethod]
@@ -46,17 +41,17 @@ namespace DevelopmentTools.Editor.Settings {
             EditorGUI.BeginDisabledGroup(preset);
             preset?.Apply();
 
-#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
             SirenixEditorGUI.Title("Debug Logger", null, TextAlignment.Left, true);
-            DebugLogger.ShowOnPlay = EditorGUILayout.Toggle(nameof(DebugLogger.ShowOnPlay).SplitPascalCase(), DebugLogger.ShowOnPlay);
+            DebugLogger.ShowOnPlay      = EditorGUILayout.Toggle(nameof(DebugLogger.ShowOnPlay).SplitPascalCase(), DebugLogger.ShowOnPlay);
             DebugLogger.MergeDuplicates = EditorGUILayout.Toggle(nameof(DebugLogger.MergeDuplicates).SplitPascalCase(), DebugLogger.MergeDuplicates);
             EditorGUILayout.Space();
 #endif
 
-#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
             SirenixEditorGUI.Title("On Compile", null, TextAlignment.Left, true);
             OnCompile.FocusOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnCompile).SplitPascalCase(), OnCompile.FocusOnCompile);
-            OnCompile.PlayOnCompile = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile).SplitPascalCase(), OnCompile.PlayOnCompile);
+            OnCompile.PlayOnCompile  = EditorGUILayout.Toggle(nameof(OnCompile.PlayOnCompile).SplitPascalCase(), OnCompile.PlayOnCompile);
             EditorGUI.BeginDisabledGroup(!OnCompile.PlayOnCompile);
             OnCompile.FocusOnPlay = EditorGUILayout.Toggle(nameof(OnCompile.FocusOnPlay).SplitPascalCase(), OnCompile.FocusOnPlay);
 #else
@@ -73,13 +68,13 @@ namespace DevelopmentTools.Editor.Settings {
 
             EditorGUILayout.BeginHorizontal();
 
-#if DEVELOPMENT_TOOLS_NEWTONSOFT_JSON
-#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+#if DEVELOPMENT_TOOLS_EDITOR_NEWTONSOFT_JSON
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
             if (GUILayout.Button("Copy")) {
                 new Dictionary<string, object> {
                     { nameof(DebugLogger.ShowOnPlay), DebugLogger.ShowOnPlay },
                     { nameof(DebugLogger.MergeDuplicates), DebugLogger.MergeDuplicates }
-                }.CopyToClipboard();
+                }.CopyObjToClipboard();
             }
 
             if (GUILayout.Button("Paste")) {
@@ -120,7 +115,7 @@ namespace DevelopmentTools.Editor.Settings {
             set => EditorPrefs.SetString(nameof(PresetGUID), value.ToString());
         }
 
-#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
         public static class DebugLogger {
 
             public static bool ShowOnPlay {
@@ -213,8 +208,8 @@ namespace DevelopmentTools.Editor.Settings {
 
             // [MenuItem("Test/Test")]
             // public static async void Test() {
-            //     await Task.Delay(TimeSpan.FromSeconds(2));
-            //     await Task.Run(FocusProcess);
+            //     await UniTask.Delay(TimeSpan.FromSeconds(2));
+            //     await UniTask.Void(FocusProcess);
             // }
 
         }

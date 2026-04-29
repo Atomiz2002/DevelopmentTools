@@ -1,11 +1,11 @@
-﻿#if UNITY_EDITOR && DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+﻿#if UNITY_EDITOR && DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.Editor.Editor.Debugging.DebugFields {
 
     [Serializable]
     public class DebugFieldsValues {

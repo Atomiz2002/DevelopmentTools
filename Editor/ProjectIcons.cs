@@ -2,11 +2,12 @@
 using System;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity;
+using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace DevelopmentTools.Editor {
+namespace DevelopmentTools.Editor.Editor {
 
     public class ProjectIcons {
 

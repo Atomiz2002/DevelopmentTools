@@ -1,8 +1,8 @@
-#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System;
 using Sirenix.Serialization;
 
-namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
+namespace DevelopmentTools.Editor.Editor.Debugging.RealtimeDebugger {
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field /* | AttributeTargets.Property |*/ /*AttributeTargets.Method*/)]
     public class RealtimeDebugAttribute : OdinSerializeAttribute {

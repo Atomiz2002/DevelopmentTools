@@ -1,20 +1,18 @@
-#if DEVELOPMENT_TOOLS_ODIN_INSPECTOR
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DevelopmentEssentials.Editor.Extensions.Unity;
+using DevelopmentTools.Runtime.Settings;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
-using UnityEngine;
-#if UNITY_EDITOR
-using DevelopmentTools.Runtime.Settings;
 using UnityEditor;
-#endif
+using UnityEngine;
 
-namespace DevelopmentTools.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.Editor.Editor.Debugging.DebugFields {
 
     [CreateAssetMenu(fileName = "Debug Fields", menuName = "Development Tools/Debug Fields")]
     public class DebugFields : SerializedScriptableObject {
@@ -86,12 +84,12 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
             clearConfirmCancellationTokenSource?.Cancel();
             clearConfirmCancellationTokenSource = new();
 
-            Task.Run(async () => {
+            UniTask.Void(async () => {
                 try {
-                    await Task.Delay(TimeSpan.FromSeconds(1), clearConfirmCancellationTokenSource.Token);
+                    await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: clearConfirmCancellationTokenSource.Token);
                     clearConfirm = 0;
                 }
-                catch (TaskCanceledException) {}
+                catch (OperationCanceledException) {}
             });
 
             if (clearConfirm < 2)

@@ -1,13 +1,10 @@
-﻿using JetBrains.Annotations;
-using UnityEngine;
-
-#if DEVELOPMENT_TOOLS_EDITOR_NEWTONSOFT_JSON
-using System.Reflection;
+﻿using System.Reflection;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-#endif
+using UnityEngine;
 
-namespace DevelopmentTools.Editor.Extensions {
+namespace DevelopmentTools.Editor.Editor.Extensions {
 
     public static class JsonExtensions {
 
@@ -50,14 +47,13 @@ namespace DevelopmentTools.Editor.Extensions {
 
             public static JsonSerializerSettings Settings => new() {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                ContractResolver = new SafeContractResolver(),
+                ContractResolver      = new SafeContractResolver(),
                 // TypeNameHandling      = TypeNameHandling.All
             };
 
         }
 
 #else
-
         /// Uses Unity's JsonUtility.<br/>Install Newtonsoft JSON to automatically use unity's JsonUtility for unity <see cref="Object"/>s and newtonsoft's JsonConvert for the rest
         [Pure]
         public static T FromJson<T>(this string json) => JsonUtility.FromJson<T>(json);
