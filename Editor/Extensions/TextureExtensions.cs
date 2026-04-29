@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-namespace DevelopmentTools.Editor.Editor.Extensions {
+namespace DevelopmentTools.Editor.Extensions {
 
     public static class TextureExtensions {
 
@@ -10,8 +10,10 @@ namespace DevelopmentTools.Editor.Editor.Extensions {
             texture = camera.CaptureSnapshot(width, height, trim, pointFilter);
 
         public static Texture2D CaptureSnapshot(this Camera camera, int width = 0, int height = 0, bool trim = false, bool pointFilter = false) {
+#if DEVELOPMENT_TOOLS_EDITOR_UNITY_URP
             float renderScale = UniversalRenderPipeline.asset.renderScale;
             UniversalRenderPipeline.asset.renderScale = 1;
+#endif
             bool cameraInitiallyEnabled = camera.isActiveAndEnabled;
 
             camera.SetActive(true);
@@ -45,7 +47,9 @@ namespace DevelopmentTools.Editor.Editor.Extensions {
 
             camera.SetActive(cameraInitiallyEnabled);
 
+#if DEVELOPMENT_TOOLS_EDITOR_UNITY_URP
             UniversalRenderPipeline.asset.renderScale = renderScale;
+#endif
             return snapshot;
         }
 

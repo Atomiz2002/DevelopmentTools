@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentTools.Editor.Editor.Extensions;
+using DevelopmentTools.Editor.Extensions;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Events;
@@ -13,14 +13,10 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using Object = UnityEngine.Object;
-#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
-using DevelopmentTools.Editor.Editor.Debugging;
-using Sirenix.OdinInspector;
-using Sirenix.Utilities;
-using Sirenix.Utilities.Editor;
+#if DEVELOPMENT_TOOLS_EDITOR_UNITY_ADDRESSABLES
 #endif
 
-namespace DevelopmentTools.Editor.Editor {
+namespace DevelopmentTools.Editor {
 
     public static class EditorHelper {
 
@@ -192,11 +188,6 @@ namespace DevelopmentTools.Editor.Editor {
             return false;
         }
 
-        public static AssetReferenceGameObject GameObjectRefToAddressableRef(GameObject prefab) {
-            AssetDatabase.TryGetGUIDAndLocalFileIdentifier(prefab, out string guid, out long localID);
-            return new AssetReferenceGameObject(guid);
-        }
-
         public static void AddSymbol(string symbol) {
             NamedBuildTarget buildTarget    = EditorUserBuildSettings.selectedBuildTargetGroup.ToNamed();
             string           currentDefines = PlayerSettings.GetScriptingDefineSymbols(buildTarget);
@@ -316,6 +307,15 @@ namespace DevelopmentTools.Editor.Editor {
 
         public static void NotifyGameView(string notification, float duration = 1) =>
             EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.PlayModeView")).ShowNotification(new(notification), duration);
+
+#if DEVELOPMENT_TOOLS_EDITOR_UNITY_ADDRESSABLES
+
+        public static AssetReferenceGameObject GameObjectRefToAddressableRef(GameObject prefab) {
+            AssetDatabase.TryGetGUIDAndLocalFileIdentifier(prefab, out string guid, out long localID);
+            return new AssetReferenceGameObject(guid);
+        }
+
+#endif
 
 #if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 

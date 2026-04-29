@@ -1,10 +1,10 @@
 ﻿#if UNITY_EDITOR && !SIMULATE_BUILD && DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System;
-using DevelopmentTools.Editor.Editor.Extensions;
+using DevelopmentTools.Editor.Extensions;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.StateDebugger.WrapperHandling {
+namespace DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling {
 
     [Serializable]
     public class PropertyTreeWrapper<T> {

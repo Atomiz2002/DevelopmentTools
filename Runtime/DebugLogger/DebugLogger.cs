@@ -4,7 +4,7 @@ using System.Diagnostics;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.Runtime.Settings;
+using DevelopmentTools.Settings;
 using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -25,7 +25,7 @@ namespace DevelopmentTools {
 
     [CreateAssetMenu(fileName = nameof(DebugLogger), menuName = "Atomiz/" + nameof(DebugLogger))]
     [HideMonoScript]
-    public partial class DebugLogger : SerializedScriptableObject {
+    public class DebugLogger : SerializedScriptableObject {
 
 #if UNITY_EDITOR
 #if !SIMULATE_BUILD && ENABLE_LOGS

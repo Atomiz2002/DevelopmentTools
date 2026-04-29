@@ -1,26 +1,31 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
-using DevelopmentTools.Editor.Editor.Toolbar_Injections;
-using Sirenix.Utilities.Editor;
+using DevelopmentTools.Editor.Toolbar_Injections;
 using UnityEditor;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build;
 using UnityEditor.ShortcutManagement;
 using UnityEngine;
+using static DevelopmentTools.Settings.EngineSettings;
+#if DEVELOPMENT_TOOLS_EDITOR_UNITY_ADDRESSABLES
+using UnityEditor.AddressableAssets.Settings;
+#endif
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+using Sirenix.Utilities.Editor;
+#endif
 
-namespace DevelopmentTools.Editor.Editor.Settings {
+namespace DevelopmentTools.Editor.Settings {
 
     public class BuildSettings : EditorWindow {
 
         public static           string          Versions => $"Current Versions - Bundle: v{PlayerSettings.bundleVersion}  |  Android: v{PlayerSettings.Android.bundleVersionCode}  |  IOS: v{PlayerSettings.iOS.buildNumber}";
-        private static readonly HashSet<string> symbols        = new() { EngineSettings.SIMULATE_BUILD, EngineSettings.ENABLE_LOGS, EngineSettings.ONLY_EXCEPTIONS };
+        private static readonly HashSet<string> symbols        = new() { EngineSettings.SIMULATE_BUILD, ENABLE_LOGS, ONLY_EXCEPTIONS };
         private static readonly HashSet<string> currentSymbols = new();
 
         [InitializeOnLoadMethod]
         public static void Initialize() =>
             ToolbarGUIInjector.AddToolbarPopupButton(ToolbarGUIInjector.ToolbarSide.LeftOfPlay, "Build Settings", 100, DrawGUI, 500, 0, 100, 5);
 
-        [MenuItem(Runtime.Settings.EngineSettings.MenuGroupPath + "Build Settings", false, -10000)]
+        [MenuItem(MenuGroupPath + "Build Settings", false, -10000)]
         public static void ShowWindow() {
             SettingsService.OpenProjectSettings("Atomiz/Build Settings");
         }
@@ -109,7 +114,9 @@ namespace DevelopmentTools.Editor.Editor.Settings {
             GUIStyle greenButton  = new(GUI.skin.button) { normal = { textColor = Color.green }, hover  = { textColor = Color.green } };
             GUIStyle yellowButton = new(GUI.skin.button) { normal = { textColor = Color.yellow }, hover = { textColor = Color.yellow } };
 
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
             SirenixEditorGUI.BeginVerticalList(); // just draws the background
+#endif
             EditorGUILayout.Space(2);
             GUILayout.Label("Configure Symbols", EditorStyles.boldLabel);
 
@@ -117,12 +124,12 @@ namespace DevelopmentTools.Editor.Editor.Settings {
                 if (DebugLogger.GetSymbols().Contains(symbol))
                     continue;
 
-                EditorGUI.BeginDisabledGroup(!currentSymbols.Contains(EngineSettings.ENABLE_LOGS) && symbol == EngineSettings.ONLY_EXCEPTIONS);
+                EditorGUI.BeginDisabledGroup(!currentSymbols.Contains(ENABLE_LOGS) && symbol == ONLY_EXCEPTIONS);
                 drawSymbolButton(symbol);
                 EditorGUI.EndDisabledGroup();
             }
 
-            if (EditorHelper.IsSymbolDefined(EngineSettings.ENABLE_LOGS)) {
+            if (EditorHelper.IsSymbolDefined(ENABLE_LOGS)) {
                 EditorHelper.GUILayoutLine();
                 GUILayout.Label("DebugLogger Symbols", EditorStyles.boldLabel);
 
@@ -155,7 +162,9 @@ namespace DevelopmentTools.Editor.Editor.Settings {
             EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.Space(2);
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
             SirenixEditorGUI.EndVerticalList();
+#endif
             return;
 
             void drawSymbolButton(string symbol) {

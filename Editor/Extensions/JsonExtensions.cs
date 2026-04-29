@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.Extensions {
+namespace DevelopmentTools.Editor.Extensions {
 
     public static class JsonExtensions {
 

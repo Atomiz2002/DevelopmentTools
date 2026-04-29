@@ -6,12 +6,13 @@ using System.IO;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
+using DevelopmentTools.ODIN_INSPECTOR;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 using Color = System.Drawing.Color;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
     [Serializable]
     [InlineProperty]

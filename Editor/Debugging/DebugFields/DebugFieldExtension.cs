@@ -4,7 +4,7 @@ using DevelopmentEssentials.Extensions.CS;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
     // todo: does it work with nulls???
     public static class DebugFieldExtension {

@@ -6,12 +6,13 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace DevelopmentTools.Runtime.Settings {
+namespace DevelopmentTools.Settings {
 
     public static class EngineSettings {
 
-        public const string MenuGroupPath = "Window/Atomiz/";
-        public const string ENABLE_LOGS   = "ENABLE_LOGS";
+        public const string MenuGroupPath   = "Window/Atomiz/";
+        public const string ENABLE_LOGS     = "ENABLE_LOGS";
+        public const string ONLY_EXCEPTIONS = "ONLY_EXCEPTIONS";
 
         [CanBeNull]
         public static EditorWindow TryFocusWindow(string name) {

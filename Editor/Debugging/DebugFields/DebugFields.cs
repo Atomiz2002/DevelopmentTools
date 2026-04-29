@@ -6,13 +6,13 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DevelopmentEssentials.Editor.Extensions.Unity;
-using DevelopmentTools.Runtime.Settings;
+using DevelopmentTools.Settings;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
     [CreateAssetMenu(fileName = "Debug Fields", menuName = "Development Tools/Debug Fields")]
     public class DebugFields : SerializedScriptableObject {

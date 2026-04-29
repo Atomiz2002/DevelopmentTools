@@ -1,11 +1,12 @@
 ﻿#if UNITY_EDITOR && !SIMULATE_BUILD && DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using DevelopmentEssentials.Extensions.CS;
+using DevelopmentTools.ODIN_INSPECTOR;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.AttributeDrawers {
+namespace DevelopmentTools.Editor.AttributeDrawers {
 
     public class ColoredBoxGroupDrawer : OdinGroupDrawer<ColoredBoxGroupAttribute> {
 

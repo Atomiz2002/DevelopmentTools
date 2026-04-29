@@ -4,7 +4,7 @@ using DevelopmentEssentials.Extensions.CS;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor {
+namespace DevelopmentTools.Editor {
 
     public class CustomPopup : PopupWindowContent {
 

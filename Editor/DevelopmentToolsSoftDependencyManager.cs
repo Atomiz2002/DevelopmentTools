@@ -2,7 +2,7 @@
 using UnityEditor;
 using static AsmdefDependencies;
 
-namespace DevelopmentTools.Editor.Editor {
+namespace DevelopmentTools.Editor {
 
     public class DevelopmentToolsSoftDependencyManager : SoftDependencyManager {
 

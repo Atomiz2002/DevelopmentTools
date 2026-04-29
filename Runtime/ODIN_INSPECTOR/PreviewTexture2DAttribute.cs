@@ -1,13 +1,11 @@
 ﻿#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
 using System;
 using Sirenix.OdinInspector;
-using Color = UnityEngine.Color;
-#if UNITY_EDITOR && !SIMULATE_BUILD
 using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector.Editor.ValueResolvers;
-#endif
+using Color = UnityEngine.Color;
 
-namespace DevelopmentTools {
+namespace DevelopmentTools.ODIN_INSPECTOR {
 
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class PreviewTexture2DAttribute : PreviewFieldAttribute {

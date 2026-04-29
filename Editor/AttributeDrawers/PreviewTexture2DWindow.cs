@@ -1,10 +1,11 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+using DevelopmentTools.ODIN_INSPECTOR;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.AttributeDrawers {
+namespace DevelopmentTools.Editor.AttributeDrawers {
 
     public class PreviewTexture2DWindow : OdinEditorWindow {
 

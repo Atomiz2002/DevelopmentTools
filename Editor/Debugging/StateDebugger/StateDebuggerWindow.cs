@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DevelopmentEssentials.Editor.Extensions.Unity;
-using DevelopmentTools.Editor.Editor.Debugging.StateDebugger.IndexedList;
-using DevelopmentTools.Editor.Editor.Debugging.StateDebugger.WrapperHandling;
-using DevelopmentTools.Editor.Editor.Extensions;
-using DevelopmentTools.Runtime.Settings;
+using DevelopmentTools.Editor.Debugging.StateDebugger.IndexedList;
+using DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling;
+using DevelopmentTools.Editor.Extensions;
+using DevelopmentTools.Settings;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Serialization;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.StateDebugger {
+namespace DevelopmentTools.Editor.Debugging.StateDebugger {
 
     public class StateDebuggerWindow : EditorWindow {
 

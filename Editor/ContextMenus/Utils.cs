@@ -8,11 +8,11 @@ using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.Runtime.Settings;
+using DevelopmentTools.Settings;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.ContextMenus {
+namespace DevelopmentTools.Editor.ContextMenus {
 
     public static class ContextMenuUtils {
 

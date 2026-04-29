@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentTools.Runtime.Settings;
+using DevelopmentTools.Settings;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector.Editor.ValueResolvers;
 using Sirenix.Serialization;
@@ -14,7 +14,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.RealtimeDebugger {
+namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
 
     public class RealtimeDebuggerWindow : EditorWindow {
 

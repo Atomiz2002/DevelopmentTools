@@ -1,11 +1,10 @@
 ﻿#if UNITY_EDITOR && !SIMULATE_BUILD && DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentTools.Runtime.Settings;
+using DevelopmentTools.Settings;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
@@ -14,7 +13,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using Color = System.Drawing.Color;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.QuickAccess {
+namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
     public class QuickAccessPanel : EditorWindow {
 

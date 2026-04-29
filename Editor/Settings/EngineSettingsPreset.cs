@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.Settings {
+namespace DevelopmentTools.Editor.Settings {
 
     [CreateAssetMenu(fileName = "Engine Settings Preset", menuName = "Development Tools/Engine Settings Preset")]
     public class EngineSettingsPreset : ScriptableObject, ICopyable {

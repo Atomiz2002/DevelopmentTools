@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DevelopmentTools.Editor.Editor {
+namespace DevelopmentTools.Editor {
 
     [InitializeOnLoad]
     public static class HierarchyIcons {

@@ -2,7 +2,7 @@
 using System;
 using Sirenix.OdinInspector;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.StateDebugger.WrapperHandling {
+namespace DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling {
 
     [DontApplyToListElements]
 // [AttributeUsage(AttributeTargets.All, Inherited = false)]

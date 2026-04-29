@@ -4,23 +4,25 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.Editor.Editor.Toolbar_Injections;
+using DevelopmentTools.Editor.Toolbar_Injections;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
-using Sirenix.Utilities;
-using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
+#if DEVELOPMENT_TOOLS_EDITOR_NEWTONSOFT_JSON
+using Newtonsoft.Json;
+#endif
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+using Sirenix.Utilities;
+using Sirenix.Utilities.Editor;
+#endif
 
-namespace DevelopmentTools.Editor.Editor.Settings {
+namespace DevelopmentTools.Editor.Settings {
 
     public static class EngineSettings {
 
-        public const string ENABLE_LOGS     = "ENABLE_LOGS";
-        public const string SIMULATE_BUILD  = "SIMULATE_BUILD";
-        public const string ONLY_EXCEPTIONS = "ONLY_EXCEPTIONS";
+        public const string SIMULATE_BUILD = "SIMULATE_BUILD";
 
 #if !SIMULATE_BUILD
         [InitializeOnLoadMethod]

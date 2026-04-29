@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Sirenix.OdinInspector.Editor;
 
-namespace DevelopmentTools.Editor.Editor.Debugging.StateDebugger.WrapperHandling {
+namespace DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling {
 
     public class PropertyTreeWrapperAttributeProcessor : OdinAttributeProcessor {
 

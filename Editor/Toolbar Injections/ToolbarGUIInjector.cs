@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 using PopupWindow = UnityEditor.PopupWindow;
 
-namespace DevelopmentTools.Editor.Editor.Toolbar_Injections {
+namespace DevelopmentTools.Editor.Toolbar_Injections {
 
     [InitializeOnLoad]
     public static class ToolbarGUIInjector {

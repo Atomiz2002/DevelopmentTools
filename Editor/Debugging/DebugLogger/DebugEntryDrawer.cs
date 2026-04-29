@@ -3,7 +3,7 @@ using System.Linq;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.Editor.Editor.AttributeDrawers;
+using DevelopmentTools.Editor.AttributeDrawers;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
@@ -11,7 +11,7 @@ using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Editor.Debugging {
+namespace DevelopmentTools.Editor.Debugging {
 
     public class DebugEntryDrawer : OdinDrawer {
 
