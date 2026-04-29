@@ -7,6 +7,7 @@ using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Settings;
 using JetBrains.Annotations;
 using UnityEngine;
+using Color = System.Drawing.Color;
 #if UNITY_EDITOR
 using UnityEditor;
 #if ENABLE_LOGS
@@ -36,21 +37,21 @@ namespace DevelopmentTools {
 #if !SIMULATE_BUILD && ENABLE_LOGS
 
         public static readonly List<Color> colors = new() {
-            Color.yellowGreen,
-            Color.orangeRed,
-            Color.cyan,
-            Color.violet,
-            Color.coral,
-            Color.crimson,
-            Color.bisque,
-            Color.gold,
-            Color.mediumSlateBlue,
-            Color.darkKhaki,
-            Color.deepSkyBlue,
-            Color.darkGray,
-            Color.aquamarine,
-            Color.lightBlue,
-            Color.cadetBlue
+            Color.YellowGreen,
+            Color.OrangeRed,
+            Color.Cyan,
+            Color.Violet,
+            Color.Coral,
+            Color.Crimson,
+            Color.Bisque,
+            Color.Gold,
+            Color.MediumSlateBlue,
+            Color.DarkKhaki,
+            Color.DeepSkyBlue,
+            Color.DarkGray,
+            Color.Aquamarine,
+            Color.LightBlue,
+            Color.CadetBlue
         };
 
         public List<string>     DisplayedPinnedInfo = new();
@@ -137,7 +138,7 @@ namespace DevelopmentTools {
 #if UNITY_EDITOR && !SIMULATE_BUILD
             try {
                 if (info != null)
-                    I.pinnedInfo[key] = $"{key.Colored(Color.red)} {info.JoinSmart().Flatten().SafeString()}".Bold();
+                    I.pinnedInfo[key] = $"{key.Colored(Color.Red)} {info.JoinSmart().Flatten().SafeString()}".Bold();
                 else
                     I.pinnedInfo.Remove(key);
 
@@ -165,10 +166,10 @@ namespace DevelopmentTools {
                 key.Value = Guid.NewGuid();
 
                 Color entryColor = I.debugEntries.TryGetValue(group, out List<DebugEntry> entry)
-                    ? entry[0].color
+                    ? entry[0].color.ToCsColor()
                     : colors[I.debugEntries.Keys.Count % colors.Count];
 
-                I.AddEntry(group, new(key.Value, isQuantum, entryColor, stackTrace, parameters, isEvent, isReceived, isError, details));
+                I.AddEntry(group, new(key.Value, isQuantum, entryColor.ToUnityColor(), stackTrace, parameters, isEvent, isReceived, isError, details));
             }
             catch (Exception e) {
                 $"Failed to add DebugLog entry:\n{isQuantum}\n{stackTrace}\n{parameters}\n{isEvent}\n{isReceived}\n{isError}\n{details}\n{e}".LogException();
@@ -181,8 +182,8 @@ namespace DevelopmentTools {
 #endif
         }
 
-        protected static void AddGoodDetails([CanBeNull] string specificGroup, object[] details) => AddLastEntryDetails(specificGroup, details.EnsureString("null").Colored(Color.green));
-        protected static void AddBadDetails([CanBeNull] string specificGroup, object[] details)  => AddLastEntryDetails(specificGroup, details.EnsureString("null").Colored(Color.red));
+        protected static void AddGoodDetails([CanBeNull] string specificGroup, object[] details) => AddLastEntryDetails(specificGroup, details.EnsureString("null").Colored(Color.Lime));
+        protected static void AddBadDetails([CanBeNull] string specificGroup, object[] details)  => AddLastEntryDetails(specificGroup, details.EnsureString("null").Colored(Color.Red));
         protected static void AddDetails([CanBeNull] string specificGroup, object[] details)     => AddLastEntryDetails(specificGroup, details.EnsureString("null"));
 
         private static void AddLastEntryDetails([CanBeNull] string specificGroup, string details) {
