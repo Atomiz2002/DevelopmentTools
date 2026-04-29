@@ -1,7 +1,9 @@
 ﻿using DevelopmentEssentials.Editor.Extensions.Unity;
-using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#endif
 
 namespace DevelopmentTools.Editor.Settings {
 
