@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
-using Sirenix.Utilities;
 using UnityEditor;
 using UnityEditor.Build;
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+using Sirenix.Utilities;
+#endif
 
 namespace DevelopmentTools.Editor.Extensions {
 

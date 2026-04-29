@@ -10,10 +10,10 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Events;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using Object = UnityEngine.Object;
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_ADDRESSABLES
+using UnityEngine.AddressableAssets;
 #endif
 
 namespace DevelopmentTools.Editor {

@@ -1,6 +1,8 @@
 ﻿using DevelopmentEssentials.Extensions.Unity;
 using UnityEngine;
+#if DEVELOPMENT_TOOLS_EDITOR_UNITY_URP
 using UnityEngine.Rendering.Universal;
+#endif
 
 namespace DevelopmentTools.Editor.Extensions {
 

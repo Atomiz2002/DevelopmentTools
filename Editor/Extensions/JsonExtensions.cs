@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
 using JetBrains.Annotations;
+using UnityEngine;
+#if DEVELOPMENT_TOOLS_EDITOR_NEWTONSOFT_JSON
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using UnityEngine;
+#endif
 
 namespace DevelopmentTools.Editor.Extensions {
 
