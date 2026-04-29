@@ -6,7 +6,6 @@ using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Settings;
 using JetBrains.Annotations;
-using Sirenix.OdinInspector;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,16 +15,22 @@ using System.Linq;
 using System.Threading;
 using System.Reflection;
 #endif
-
 #endif
-
+#endif
+#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
+using Sirenix.OdinInspector;
 #endif
 
 namespace DevelopmentTools {
 
     [CreateAssetMenu(fileName = nameof(DebugLogger), menuName = "Atomiz/" + nameof(DebugLogger))]
+#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
     [HideMonoScript]
     public class DebugLogger : SerializedScriptableObject {
+
+#else
+    public class DebugLogger : ScriptableObject {
+#endif
 
 #if UNITY_EDITOR
 #if !SIMULATE_BUILD && ENABLE_LOGS

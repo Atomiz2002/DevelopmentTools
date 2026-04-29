@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
@@ -11,7 +10,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using Color = System.Drawing.Color;
 #endif
@@ -26,7 +24,7 @@ namespace DevelopmentTools {
         [SerializeField] [HideInInspector] public bool Received;
         [SerializeField] [HideInInspector] public bool IsError;
 
-        [ReadOnly] [DisplayAsString] [ShowIf(nameof(IsSeparator))] [GUIColor("black")] public bool IsSeparator;
+        public bool IsSeparator;
 
         [HideInInspector]
         public UnityEngine.Color color;
