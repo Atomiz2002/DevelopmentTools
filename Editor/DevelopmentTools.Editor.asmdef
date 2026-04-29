@@ -8,22 +8,9 @@
     "references": [
         "DevelopmentEssentials.Editor",
         "DevelopmentTools",
-        "DevelopmentEssentials",
-        "Unity.2D.Sprite.Editor",
-        "Unity.Addressables.Editor",
-        "Unity.Addressables",
-        "Unity.RenderPipelines.Universal.Runtime",
-        "UnityEngine.UI",
-        "ComponentNames"
+        "DevelopmentEssentials"
     ],
-    "precompiledReferences": [
-        "Newtonsoft.Json.dll",
-        "Sirenix.OdinInspector.Editor.dll",
-        "Sirenix.Serialization.dll",
-        "Sirenix.Utilities.dll",
-        "Sirenix.Utilities.Editor.dll",
-        "Sirenix.OdinInspector.Attributes.dll"
-    ],
+    "precompiledReferences": [],
     "includePlatforms": [
         "Editor"
     ],
