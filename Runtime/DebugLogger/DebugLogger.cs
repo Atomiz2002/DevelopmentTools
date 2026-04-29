@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DevelopmentEssentials.Extensions.CS;
@@ -6,6 +7,7 @@ using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Settings;
 using JetBrains.Annotations;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Color = System.Drawing.Color;
 #if UNITY_EDITOR
@@ -16,10 +18,8 @@ using System.Linq;
 using System.Threading;
 using System.Reflection;
 #endif
+
 #endif
-#endif
-#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
-using Sirenix.OdinInspector;
 #endif
 
 namespace DevelopmentTools {
@@ -345,3 +345,4 @@ namespace DevelopmentTools {
     }
 
 }
+#endif

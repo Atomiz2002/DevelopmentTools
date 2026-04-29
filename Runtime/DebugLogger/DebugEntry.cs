@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
+using System;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
@@ -200,43 +201,43 @@ namespace DevelopmentTools {
         private void UpdateIcons() {}
 
         public void AddDetails([NotNull] string details) {
-        // @formatter:off
-        if (DisplayedDetails.IsNullOrEmpty()) DisplayedDetails = details;
-        else {
-            TimeSpan delay          = TimeSpan.FromSeconds(Time.realtimeSinceStartupAsDouble) - timestamp;
-            string   displayedDelay = $"+{delay:ss}s {delay.Milliseconds:000}";
+            // @formatter:off
+            if (DisplayedDetails.IsNullOrEmpty()) DisplayedDetails = details;
+            else {
+                TimeSpan delay          = TimeSpan.FromSeconds(Time.realtimeSinceStartupAsDouble) - timestamp;
+                string   displayedDelay = $"+{delay:ss}s {delay.Milliseconds:000}";
 
-            if (Details2.IsNullOrEmpty())       { Details2 = details;  Details2Timestamp  = displayedDelay; }
-            else if (Details3.IsNullOrEmpty())  { Details3 = details;  Details3Timestamp  = displayedDelay; }
-            else if (Details4.IsNullOrEmpty())  { Details4 = details;  Details4Timestamp  = displayedDelay; }
-            else if (Details5.IsNullOrEmpty())  { Details5 = details;  Details5Timestamp  = displayedDelay; }
-            else if (Details6.IsNullOrEmpty())  { Details6 = details;  Details6Timestamp  = displayedDelay; }
-            else if (Details7.IsNullOrEmpty())  { Details7 = details;  Details7Timestamp  = displayedDelay; }
-            else if (Details8.IsNullOrEmpty())  { Details8 = details;  Details8Timestamp  = displayedDelay; }
-            else if (Details9.IsNullOrEmpty())  { Details9 = details;  Details9Timestamp  = displayedDelay; }
-            else if (Details10.IsNullOrEmpty()) { Details10 = details; Details10Timestamp = displayedDelay; }
-            else if (Details11.IsNullOrEmpty()) { Details11 = details; Details11Timestamp = displayedDelay; }
-            else if (Details12.IsNullOrEmpty()) { Details12 = details; Details12Timestamp = displayedDelay; }
-            else if (Details13.IsNullOrEmpty()) { Details13 = details; Details13Timestamp = displayedDelay; }
-            else if (Details14.IsNullOrEmpty()) { Details14 = details; Details14Timestamp = displayedDelay; }
-            else if (Details15.IsNullOrEmpty()) { Details15 = details; Details15Timestamp = displayedDelay; }
-            else if (Details16.IsNullOrEmpty()) { Details16 = details; Details16Timestamp = displayedDelay; }
-            else if (Details17.IsNullOrEmpty()) { Details17 = details; Details17Timestamp = displayedDelay; }
-            else if (Details18.IsNullOrEmpty()) { Details18 = details; Details18Timestamp = displayedDelay; }
-            else if (Details19.IsNullOrEmpty()) { Details19 = details; Details19Timestamp = displayedDelay; }
-            else if (Details20.IsNullOrEmpty()) { Details20 = details; Details20Timestamp = displayedDelay; }
-            else if (Details21.IsNullOrEmpty()) { Details21 = details; Details21Timestamp = displayedDelay; }
-            else if (Details22.IsNullOrEmpty()) { Details22 = details; Details22Timestamp = displayedDelay; }
-            else if (Details23.IsNullOrEmpty()) { Details23 = details; Details23Timestamp = displayedDelay; }
-            else if (Details24.IsNullOrEmpty()) { Details24 = details; Details24Timestamp = displayedDelay; }
-            else if (Details25.IsNullOrEmpty()) { Details25 = details; Details25Timestamp = displayedDelay; }
-            else if (Details26.IsNullOrEmpty()) { Details26 = details; Details26Timestamp = displayedDelay; }
-            else if (Details27.IsNullOrEmpty()) { Details27 = details; Details27Timestamp = displayedDelay; }
-            else if (Details28.IsNullOrEmpty()) { Details28 = details; Details28Timestamp = displayedDelay; }
-            else if (Details29.IsNullOrEmpty()) { Details29 = details; Details29Timestamp = displayedDelay; }
-            else if (Details30.IsNullOrEmpty()) { Details30 = details; Details30Timestamp = displayedDelay; }
-            else                                  Details30 += $"⤵\n{details}";
-        }
+                if (Details2.IsNullOrEmpty())       { Details2  = details;  Details2Timestamp = displayedDelay; }
+                else if (Details3.IsNullOrEmpty())  { Details3  = details;  Details3Timestamp = displayedDelay; }
+                else if (Details4.IsNullOrEmpty())  { Details4  = details;  Details4Timestamp = displayedDelay; }
+                else if (Details5.IsNullOrEmpty())  { Details5  = details;  Details5Timestamp = displayedDelay; }
+                else if (Details6.IsNullOrEmpty())  { Details6  = details;  Details6Timestamp = displayedDelay; }
+                else if (Details7.IsNullOrEmpty())  { Details7  = details;  Details7Timestamp = displayedDelay; }
+                else if (Details8.IsNullOrEmpty())  { Details8  = details;  Details8Timestamp = displayedDelay; }
+                else if (Details9.IsNullOrEmpty())  { Details9  = details;  Details9Timestamp = displayedDelay; }
+                else if (Details10.IsNullOrEmpty()) { Details10 = details; Details10Timestamp = displayedDelay; }
+                else if (Details11.IsNullOrEmpty()) { Details11 = details; Details11Timestamp = displayedDelay; }
+                else if (Details12.IsNullOrEmpty()) { Details12 = details; Details12Timestamp = displayedDelay; }
+                else if (Details13.IsNullOrEmpty()) { Details13 = details; Details13Timestamp = displayedDelay; }
+                else if (Details14.IsNullOrEmpty()) { Details14 = details; Details14Timestamp = displayedDelay; }
+                else if (Details15.IsNullOrEmpty()) { Details15 = details; Details15Timestamp = displayedDelay; }
+                else if (Details16.IsNullOrEmpty()) { Details16 = details; Details16Timestamp = displayedDelay; }
+                else if (Details17.IsNullOrEmpty()) { Details17 = details; Details17Timestamp = displayedDelay; }
+                else if (Details18.IsNullOrEmpty()) { Details18 = details; Details18Timestamp = displayedDelay; }
+                else if (Details19.IsNullOrEmpty()) { Details19 = details; Details19Timestamp = displayedDelay; }
+                else if (Details20.IsNullOrEmpty()) { Details20 = details; Details20Timestamp = displayedDelay; }
+                else if (Details21.IsNullOrEmpty()) { Details21 = details; Details21Timestamp = displayedDelay; }
+                else if (Details22.IsNullOrEmpty()) { Details22 = details; Details22Timestamp = displayedDelay; }
+                else if (Details23.IsNullOrEmpty()) { Details23 = details; Details23Timestamp = displayedDelay; }
+                else if (Details24.IsNullOrEmpty()) { Details24 = details; Details24Timestamp = displayedDelay; }
+                else if (Details25.IsNullOrEmpty()) { Details25 = details; Details25Timestamp = displayedDelay; }
+                else if (Details26.IsNullOrEmpty()) { Details26 = details; Details26Timestamp = displayedDelay; }
+                else if (Details27.IsNullOrEmpty()) { Details27 = details; Details27Timestamp = displayedDelay; }
+                else if (Details28.IsNullOrEmpty()) { Details28 = details; Details28Timestamp = displayedDelay; }
+                else if (Details29.IsNullOrEmpty()) { Details29 = details; Details29Timestamp = displayedDelay; }
+                else if (Details30.IsNullOrEmpty()) { Details30 = details; Details30Timestamp = displayedDelay; }
+                else                                  Details30 += $"⤵\n{details}";
+            }
             // @formatter:on
 
             UpdateIcons();
@@ -332,3 +333,4 @@ namespace DevelopmentTools {
     }
 
 }
+#endif
