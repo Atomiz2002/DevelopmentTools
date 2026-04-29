@@ -121,14 +121,17 @@ namespace DevelopmentTools.Editor.Settings {
             GUILayout.Label("Configure Symbols", EditorStyles.boldLabel);
 
             foreach (string symbol in symbols) {
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
                 if (DebugLogger.GetSymbols().Contains(symbol))
                     continue;
+#endif
 
                 EditorGUI.BeginDisabledGroup(!currentSymbols.Contains(ENABLE_LOGS) && symbol == ONLY_EXCEPTIONS);
                 drawSymbolButton(symbol);
                 EditorGUI.EndDisabledGroup();
             }
 
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
             if (EditorHelper.IsSymbolDefined(ENABLE_LOGS)) {
                 EditorHelper.GUILayoutLine();
                 GUILayout.Label("DebugLogger Symbols", EditorStyles.boldLabel);
@@ -146,6 +149,7 @@ namespace DevelopmentTools.Editor.Settings {
                     foreach (string s in DebugLogger.GetSymbols())
                         currentSymbols.Remove(s);
             }
+#endif
 
             EditorGUILayout.Space();
 
