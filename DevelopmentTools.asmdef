@@ -8,13 +8,7 @@
     "references": [
         "DevelopmentEssentials"
     ],
-    "precompiledReferences": [
-        "Sirenix.OdinInspector.Editor.dll",
-        "Sirenix.Serialization.dll",
-        "Sirenix.Utilities.dll",
-        "Sirenix.Utilities.Editor.dll",
-        "Sirenix.OdinInspector.Attributes.dll"
-    ],
+    "precompiledReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "defineConstraints": [],
