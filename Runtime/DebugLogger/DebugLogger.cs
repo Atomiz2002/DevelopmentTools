@@ -121,6 +121,7 @@ namespace DevelopmentTools {
                 if (i)
                     return i;
 
+                Directory.CreateDirectory(DebugLoggerDir);
                 AssetDatabase.CreateAsset(i = CreateInstance<DebugLogger>(), Path.Combine(DebugLoggerDir, nameof(DebugLogger) + ".asset").RelativePath());
 
                 return i;
