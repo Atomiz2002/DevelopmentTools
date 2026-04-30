@@ -1,14 +1,12 @@
 #if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR && !SIMULATE_BUILD && ENABLE_LOGS
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Editor.AttributeDrawers;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -42,9 +40,9 @@ namespace DevelopmentTools.Editor.Debugging {
         private CancellationTokenSource clearConfirmCancellationTokenSource;
 
         protected override void OnEnable() {
-            t = (DebugLogger) target;
+            t             = (DebugLogger) target;
             selectedEntry = null;
-            page = 1;
+            page          = 1;
         }
 
         public override void OnInspectorGUI() {
@@ -73,7 +71,7 @@ namespace DevelopmentTools.Editor.Debugging {
                 indexToFocus = -1;
             }
 
-            bool enterPressed = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
+            bool enterPressed  = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
             bool escapePressed = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape;
 
             // 3. Draw Fields
@@ -84,7 +82,7 @@ namespace DevelopmentTools.Editor.Debugging {
             }
 
             string focusedControl = GUI.GetNameOfFocusedControl();
-            int    focusedIndex = focusedControl.Length - 1;
+            int    focusedIndex   = focusedControl.Length - 1;
 
             if (focusedIndex >= 0) {
                 if (enterPressed) {
@@ -103,7 +101,7 @@ namespace DevelopmentTools.Editor.Debugging {
                     if (nextIndex >= groups.Count) {
                         if (groups.HasDuplicates(groups[focusedIndex])) {
                             groups[focusedIndex] = "";
-                            indexToFocus = focusedIndex;
+                            indexToFocus         = focusedIndex;
                         }
                         else {
                             groups.Add("");
@@ -216,8 +214,8 @@ namespace DevelopmentTools.Editor.Debugging {
 
         private void DrawEntries() {
             const int entriesPerPage = 20;
-            float     currentWidth = 0;
-            float     maxWidth = EditorGUIUtility.currentViewWidth - 60 - 70; // 70 -> page buttons width
+            float     currentWidth   = 0;
+            float     maxWidth       = EditorGUIUtility.currentViewWidth - 60 - 70; // 70 -> page buttons width
 
             SirenixEditorGUI.BeginToolbarBox();
             EditorGUILayout.Space(1);
@@ -228,7 +226,7 @@ namespace DevelopmentTools.Editor.Debugging {
                     continue;
 
                 bool  isActive = SelectedGroups.Contains(group);
-                Color color = DebugEntries[group][0].color;
+                Color color    = DebugEntries[group][0].color;
 
                 float btnWidth = SirenixGUIStyles.ToolbarTab.CalcSize(group).x + 25;
                 float rowWidth = currentWidth + btnWidth;
@@ -280,7 +278,7 @@ namespace DevelopmentTools.Editor.Debugging {
             Event e = Event.current;
 
             int start = (page - 1) * entriesPerPage;
-            int end = Math.Min(start + entriesPerPage, DisplayedEntries.Count);
+            int end   = Math.Min(start + entriesPerPage, DisplayedEntries.Count);
 
             for (int i = start; i < end; i++) {
                 DebugEntry entry = DisplayedEntries[i];
@@ -338,7 +336,7 @@ namespace DevelopmentTools.Editor.Debugging {
 
         [MenuItem("CONTEXT/DebugLogger/Edit Groups")]
         private static void EditGroups() {
-            groups = typeof(DebugLogger).GetNestedTypes().Select(t => t.Name).ToList();
+            groups       = typeof(DebugLogger).GetNestedTypes().Select(t => t.Name).ToList();
             indexToFocus = groups.Count - 1;
         }
 
