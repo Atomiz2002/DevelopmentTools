@@ -8,6 +8,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
+using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Editor.AttributeDrawers;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -46,7 +47,11 @@ namespace DevelopmentTools.Editor.Debugging {
         }
 
         public override void OnInspectorGUI() {
-            DrawCategories();
+            if (categories != null) {
+                DrawCategories();
+                return;
+            }
+
             DrawPinnedInfo();
             DrawButtons();
             EditorGUILayout.Space(1);
@@ -54,32 +59,72 @@ namespace DevelopmentTools.Editor.Debugging {
             Repaint();
         }
 
+        private int _indexToFocus = -1; // Class member
+
         private void DrawCategories() {
-            if (categories == null)
-                return;
+// 1. Ensure list is never empty
+            if (categories.Count == 0) {
+                categories.Add("");
+                _indexToFocus = 0;
+            }
 
-            for (int i = 0; i < categories.Count; i++)
+// 2. Handle Deferred Focus
+            if (_indexToFocus != -1 && Event.current.type == EventType.Repaint) {
+                GUI.FocusControl(".".Repeat(_indexToFocus + 1));
+                _indexToFocus = -1;
+            }
+
+            bool enterPressed     = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
+            bool backspacePressed = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Backspace;
+
+// 3. Draw Fields
+            for (int i = 0; i < categories.Count; i++) {
+                GUI.SetNextControlName(".".Repeat(i + 1));
                 categories[i] = GUILayout.TextField(categories[i]);
+            }
 
-            GUILayout.BeginHorizontal();
+            string focusedControl = GUI.GetNameOfFocusedControl();
+            int    focusedIndex   = focusedControl.Length - 1;
+
+            if (focusedIndex >= 0) {
+                if (enterPressed) {
+                    Event.current.Use();
+
+                    // Prevent adding empty/duplicate categories
+                    if (string.IsNullOrWhiteSpace(categories[focusedIndex])) return;
+
+                    int nextIndex = focusedIndex + 1;
+
+                    if (nextIndex >= categories.Count) {
+                        if (categories.Count(categories[focusedIndex]) > 1) { // Using your extension
+                            categories[focusedIndex] = "";
+                            _indexToFocus            = focusedIndex;
+                        }
+                        else {
+                            categories.Add("");
+                            _indexToFocus = nextIndex;
+                        }
+                    }
+                    else {
+                        _indexToFocus = nextIndex;
+                    }
+                }
+
+                if (backspacePressed) {
+                    if (string.IsNullOrEmpty(categories[focusedIndex]) && categories.Count > 1) {
+                        Event.current.Use();
+                        categories.RemoveAt(focusedIndex);
+                        _indexToFocus = Math.Max(0, focusedIndex - 1);
+                    }
+                }
+            }
 
             if (GUILayout.Button("Generate")) {
                 foreach (string category in categories.Distinct())
                     GenerateCategoryClass(category);
 
                 categories = null;
-
-                GUILayout.EndHorizontal();
-                return;
             }
-
-            if (GUILayout.Button("Create new", GUILayout.ExpandWidth(false)))
-                categories.Add(string.Empty);
-
-            if (GUILayout.Button("Delete empty", GUILayout.ExpandWidth(false)))
-                categories.Remove(string.Empty);
-
-            GUILayout.EndHorizontal();
         }
 
         private void DrawPinnedInfo() {
@@ -343,7 +388,7 @@ namespace DevelopmentTools.Editor.Debugging {
             string categoriesDir = new StackTrace(true).GetFrame(0).GetFileName()?.Replace("\\", "/").Replace(nameof(Editor) + "/" + nameof(Debugging) + "/" + nameof(DebugLogger) + "/" + nameof(DebugLoggerEditor) + ".cs", "Runtime/" + nameof(DebugLogger) + "/Categories");
             string categoryPath  = categoriesDir + "/" + categoryName + ".cs";
 
-            Directory.CreateDirectory(categoriesDir!);
+            Directory.CreateDirectory(categoriesDir.LOG());
 
             foreach (string file in Directory.GetFiles(categoriesDir))
                 File.Delete(file);

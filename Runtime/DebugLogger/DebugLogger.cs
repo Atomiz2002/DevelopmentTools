@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
@@ -18,16 +19,16 @@ using System.Linq;
 using System.Threading;
 using System.Reflection;
 #endif
-
 #endif
 #endif
 
 namespace DevelopmentTools {
 
+    [SuppressMessage("ReSharper", "PartialTypeWithSinglePart")]
     [CreateAssetMenu(fileName = nameof(DebugLogger), menuName = "Atomiz/" + nameof(DebugLogger))]
 #if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
     [HideMonoScript]
-    public class DebugLogger : SerializedScriptableObject {
+    public partial class DebugLogger : SerializedScriptableObject {
 
 #else
     public class DebugLogger : ScriptableObject {
@@ -133,7 +134,7 @@ namespace DevelopmentTools {
 
         /// Use the <paramref name="key"/> to edit already pinned info
         [Conditional(EngineSettings.ENABLE_LOGS)]
-        public static void Pin([NotNull] string key, params object[] info) {
+        public static void Pin([JetBrains.Annotations.NotNull] string key, params object[] info) {
 #if ENABLE_LOGS
 #if UNITY_EDITOR && !SIMULATE_BUILD
             try {
@@ -155,7 +156,7 @@ namespace DevelopmentTools {
         }
 
         [Conditional(EngineSettings.ENABLE_LOGS)]
-        public void Unpin([NotNull] string key) => Pin(key);
+        public void Unpin([JetBrains.Annotations.NotNull] string key) => Pin(key);
 
         #endregion
 
