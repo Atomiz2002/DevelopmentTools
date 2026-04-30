@@ -99,36 +99,38 @@ namespace DevelopmentTools.Editor.Debugging {
             #region Details StackTrace
 
             DrawDetails(entry.DisplayedDetails, string.Empty);
+            foreach ((string details, string timestamp) in entry.Details)
+                DrawDetails(details, timestamp);
 
-            DrawDetails(entry.Details2, entry.Details2Timestamp);
-            DrawDetails(entry.Details3, entry.Details3Timestamp);
-            DrawDetails(entry.Details4, entry.Details4Timestamp);
-            DrawDetails(entry.Details5, entry.Details5Timestamp);
-            DrawDetails(entry.Details6, entry.Details6Timestamp);
-            DrawDetails(entry.Details7, entry.Details7Timestamp);
-            DrawDetails(entry.Details8, entry.Details8Timestamp);
-            DrawDetails(entry.Details9, entry.Details9Timestamp);
-            DrawDetails(entry.Details10, entry.Details10Timestamp);
-            DrawDetails(entry.Details11, entry.Details11Timestamp);
-            DrawDetails(entry.Details12, entry.Details12Timestamp);
-            DrawDetails(entry.Details13, entry.Details13Timestamp);
-            DrawDetails(entry.Details14, entry.Details14Timestamp);
-            DrawDetails(entry.Details15, entry.Details15Timestamp);
-            DrawDetails(entry.Details16, entry.Details16Timestamp);
-            DrawDetails(entry.Details17, entry.Details17Timestamp);
-            DrawDetails(entry.Details18, entry.Details18Timestamp);
-            DrawDetails(entry.Details19, entry.Details19Timestamp);
-            DrawDetails(entry.Details20, entry.Details20Timestamp);
-            DrawDetails(entry.Details21, entry.Details21Timestamp);
-            DrawDetails(entry.Details22, entry.Details22Timestamp);
-            DrawDetails(entry.Details23, entry.Details23Timestamp);
-            DrawDetails(entry.Details24, entry.Details24Timestamp);
-            DrawDetails(entry.Details25, entry.Details25Timestamp);
-            DrawDetails(entry.Details26, entry.Details26Timestamp);
-            DrawDetails(entry.Details27, entry.Details27Timestamp);
-            DrawDetails(entry.Details28, entry.Details28Timestamp);
-            DrawDetails(entry.Details29, entry.Details29Timestamp);
-            DrawDetails(entry.Details30, entry.Details30Timestamp);
+            // DrawDetails(entry.Details2, entry.Details2Timestamp);
+            // DrawDetails(entry.Details3, entry.Details3Timestamp);
+            // DrawDetails(entry.Details4, entry.Details4Timestamp);
+            // DrawDetails(entry.Details5, entry.Details5Timestamp);
+            // DrawDetails(entry.Details6, entry.Details6Timestamp);
+            // DrawDetails(entry.Details7, entry.Details7Timestamp);
+            // DrawDetails(entry.Details8, entry.Details8Timestamp);
+            // DrawDetails(entry.Details9, entry.Details9Timestamp);
+            // DrawDetails(entry.Details10, entry.Details10Timestamp);
+            // DrawDetails(entry.Details11, entry.Details11Timestamp);
+            // DrawDetails(entry.Details12, entry.Details12Timestamp);
+            // DrawDetails(entry.Details13, entry.Details13Timestamp);
+            // DrawDetails(entry.Details14, entry.Details14Timestamp);
+            // DrawDetails(entry.Details15, entry.Details15Timestamp);
+            // DrawDetails(entry.Details16, entry.Details16Timestamp);
+            // DrawDetails(entry.Details17, entry.Details17Timestamp);
+            // DrawDetails(entry.Details18, entry.Details18Timestamp);
+            // DrawDetails(entry.Details19, entry.Details19Timestamp);
+            // DrawDetails(entry.Details20, entry.Details20Timestamp);
+            // DrawDetails(entry.Details21, entry.Details21Timestamp);
+            // DrawDetails(entry.Details22, entry.Details22Timestamp);
+            // DrawDetails(entry.Details23, entry.Details23Timestamp);
+            // DrawDetails(entry.Details24, entry.Details24Timestamp);
+            // DrawDetails(entry.Details25, entry.Details25Timestamp);
+            // DrawDetails(entry.Details26, entry.Details26Timestamp);
+            // DrawDetails(entry.Details27, entry.Details27Timestamp);
+            // DrawDetails(entry.Details28, entry.Details28Timestamp);
+            // DrawDetails(entry.Details29, entry.Details29Timestamp);
+            // DrawDetails(entry.Details30, entry.Details30Timestamp);
 
             if (entry.showStackTrace) {
                 ColoredBoxGroupDrawer.BeginColoredBox(Color.black);
@@ -145,25 +147,11 @@ namespace DevelopmentTools.Editor.Debugging {
 
             #region Icons
 
-            if (entry.Icon1) {
+            if (entry.Icons.Any()) {
                 EditorGUILayout.BeginVertical(GUILayout.Width(64));
 
-                PreviewTexture2DAttributeDrawer<Texture2D>.Draw(entry.Icon1, outline: Color.black, thickness: 2);
-
-                if (entry.Icon2) {
-                    PreviewTexture2DAttributeDrawer<Texture2D>.Draw(entry.Icon2, outline: Color.black, thickness: 2);
-
-                    if (entry.Icon3) {
-                        PreviewTexture2DAttributeDrawer<Texture2D>.Draw(entry.Icon3, outline: Color.black, thickness: 2);
-
-                        if (entry.Icon4) {
-                            PreviewTexture2DAttributeDrawer<Texture2D>.Draw(entry.Icon4, outline: Color.black, thickness: 2);
-
-                            if (entry.Icon5)
-                                PreviewTexture2DAttributeDrawer<Texture2D>.Draw(entry.Icon5, outline: Color.black, thickness: 2);
-                        }
-                    }
-                }
+                foreach (Texture2D icon in entry.Icons.Existing())
+                    PreviewTexture2DAttributeDrawer<Texture2D>.Draw(icon, outline: Color.black, thickness: 2);
 
                 EditorGUILayout.EndVertical();
             }

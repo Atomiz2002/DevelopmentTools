@@ -189,6 +189,22 @@ namespace DevelopmentTools {
 #endif
         }
 
+        protected static void AddIcon([CanBeNull] string specificGroup, params Texture2D[] textures) {
+#if ENABLE_LOGS
+#if UNITY_EDITOR && !SIMULATE_BUILD
+            try {
+                if (textures == null || textures.Length == 0)
+                    return;
+
+                I.GetEntryByKeyGUID(specificGroup).AddIcons(textures);
+            }
+            catch (Exception e) {
+                $"Failed to add textures to ({key.Value}) entry: {textures.n()?.Join(t => t.name)}.\n\n{e}".LogException();
+            }
+#endif
+#endif
+        }
+
         protected static void AddGoodDetails([CanBeNull] string specificGroup, object[] details) => AddLastEntryDetails(specificGroup, details.EnsureString("null").Colored(Color.Lime));
         protected static void AddBadDetails([CanBeNull] string specificGroup, object[] details)  => AddLastEntryDetails(specificGroup, details.EnsureString("null").Colored(Color.Red));
         protected static void AddDetails([CanBeNull] string specificGroup, object[] details)     => AddLastEntryDetails(specificGroup, details.EnsureString("null"));
@@ -197,15 +213,16 @@ namespace DevelopmentTools {
 #if ENABLE_LOGS
 #if UNITY_EDITOR && !SIMULATE_BUILD
             try {
-                if (I.TryGetEntryWithMatchingCaller(specificGroup, out DebugEntry entry, out _))
-                    entry.AddDetails(details);
+                if (details.IsNullOrWhiteSpace())
+                    return;
+
+                I.GetEntryByKeyGUID(specificGroup).AddDetails(details);
             }
             catch (Exception e) {
-                $"Failed to add more details to last entry:\n{details}\n\n{e}".LogException();
+                $"Failed to add more details to ({key.Value}) entry:\n{details}\n\n{e}".LogException();
             }
 #else
-            if (!details.IsNullOrWhiteSpace())
-                $"[+details+] {details.SafeString("broken details")} -> {new StackTrace(2, true)}".Log();
+            $"[+details+] {details.SafeString("broken details")} -> {new StackTrace(2, true)}".Log();
 #endif
 #endif
         }
@@ -214,11 +231,10 @@ namespace DevelopmentTools {
 #if ENABLE_LOGS
 #if UNITY_EDITOR && !SIMULATE_BUILD
             try {
-                if (I.TryGetEntryWithMatchingCaller(specificGroup, out DebugEntry entry, out _))
-                    entry.SetReturn(returnValue);
+                I.GetEntryByKeyGUID(specificGroup).SetReturn(returnValue);
             }
             catch (Exception e) {
-                $"Failed to set LogReturn to last entry:\n{e}".LogException();
+                $"Failed to set LogReturn to ({key.Value}) entry:\n{e}".LogException();
             }
 #else
             $"[-return-] {returnValue} -> {new StackTrace(2, true)}".Log();
@@ -241,32 +257,10 @@ namespace DevelopmentTools {
         }
 
 #if UNITY_EDITOR && !SIMULATE_BUILD && ENABLE_LOGS
-        private bool TryGetEntryWithMatchingCaller([CanBeNull] string specificGroup, out DebugEntry entry, out string group) {
-            if (specificGroup.IsNullOrEmpty()) {
-                foreach (string g in debugEntries.Keys) {
-                    DebugEntry e = debugEntries[g].FirstOrDefault(e => e.guid == key.Value);
-
-                    if (e != null) {
-                        entry = e;
-                        group = g;
-                        return true;
-                    }
-                }
-            }
-            else {
-                DebugEntry e = debugEntries[specificGroup].FirstOrDefault(e => e.guid == key.Value);
-
-                if (e != null) {
-                    entry = e;
-                    group = specificGroup;
-                    return true;
-                }
-            }
-
-            entry = null;
-            group = null;
-            return false;
-        }
+        private DebugEntry GetEntryByKeyGUID([CanBeNull] string specificGroup) =>
+            specificGroup.IsNullOrEmpty()
+                ? debugEntries.Keys.Select(g => debugEntries[g].FirstOrDefault(e => e.guid == key.Value)).FirstOrDefault(e => e != null)
+                : debugEntries[specificGroup].FirstOrDefault(e => e.guid == key.Value);
 
         public void AddEntry(string group, DebugEntry newEntry) {
             if (!debugEntries.ContainsKey(group))
@@ -346,7 +340,6 @@ namespace DevelopmentTools {
 
         private static string FormatClassName(string name) =>
             name.StartsWith("<") ? ExtractBetweenBrackets(name) : name;
-
 #endif
 
     }

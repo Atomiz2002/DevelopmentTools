@@ -26,9 +26,7 @@ namespace DevelopmentTools.Editor.ContextMenus {
             }
 
             EditorApplication.ExecuteMenuItem("Edit/Copy");
-            string clipboard = GUIUtility.systemCopyBuffer;
-            ExtendedLogger.ReplacePathsWithLinks(ref clipboard);
-            clipboard.LOG();
+            GUIUtility.systemCopyBuffer.LinkPaths().LOG();
         }
 
         [MenuItem(MenuGroupPath + "Copy With StackTraces Unformatted ^#&c")]

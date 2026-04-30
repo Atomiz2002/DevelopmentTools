@@ -21,6 +21,8 @@ namespace DevelopmentTools {
     public sealed class DebugEntry {
 
 #if UNITY_EDITOR && !SIMULATE_BUILD && ENABLE_LOGS
+        private static readonly List<Func<string, Texture2D[]>> registeredIconExtractors = new();
+
         [SerializeField] [HideInInspector] public bool IsEvent;
         [SerializeField] [HideInInspector] public bool Received;
         [SerializeField] [HideInInspector] public bool IsError;
@@ -34,45 +36,42 @@ namespace DevelopmentTools {
         public string   DisplayedTime;
         public TimeSpan timestamp;
 
-        public Texture2D Icon1;
-        public Texture2D Icon2;
-        public Texture2D Icon3;
-        public Texture2D Icon4;
-        public Texture2D Icon5;
-
         public string DisplayedDetails;
+
+        public List<Texture2D>                          Icons   = new();
+        public List<(string details, string timestamp)> Details = new();
 
         #region More Details
 
-        public string Details2,  Details2Timestamp;
-        public string Details3,  Details3Timestamp;
-        public string Details4,  Details4Timestamp;
-        public string Details5,  Details5Timestamp;
-        public string Details6,  Details6Timestamp;
-        public string Details7,  Details7Timestamp;
-        public string Details8,  Details8Timestamp;
-        public string Details9,  Details9Timestamp;
-        public string Details10, Details10Timestamp;
-        public string Details11, Details11Timestamp;
-        public string Details12, Details12Timestamp;
-        public string Details13, Details13Timestamp;
-        public string Details14, Details14Timestamp;
-        public string Details15, Details15Timestamp;
-        public string Details16, Details16Timestamp;
-        public string Details17, Details17Timestamp;
-        public string Details18, Details18Timestamp;
-        public string Details19, Details19Timestamp;
-        public string Details20, Details20Timestamp;
-        public string Details21, Details21Timestamp;
-        public string Details22, Details22Timestamp;
-        public string Details23, Details23Timestamp;
-        public string Details24, Details24Timestamp;
-        public string Details25, Details25Timestamp;
-        public string Details26, Details26Timestamp;
-        public string Details27, Details27Timestamp;
-        public string Details28, Details28Timestamp;
-        public string Details29, Details29Timestamp;
-        public string Details30, Details30Timestamp;
+        // public string Details2,  Details2Timestamp;
+        // public string Details3,  Details3Timestamp;
+        // public string Details4,  Details4Timestamp;
+        // public string Details5,  Details5Timestamp;
+        // public string Details6,  Details6Timestamp;
+        // public string Details7,  Details7Timestamp;
+        // public string Details8,  Details8Timestamp;
+        // public string Details9,  Details9Timestamp;
+        // public string Details10, Details10Timestamp;
+        // public string Details11, Details11Timestamp;
+        // public string Details12, Details12Timestamp;
+        // public string Details13, Details13Timestamp;
+        // public string Details14, Details14Timestamp;
+        // public string Details15, Details15Timestamp;
+        // public string Details16, Details16Timestamp;
+        // public string Details17, Details17Timestamp;
+        // public string Details18, Details18Timestamp;
+        // public string Details19, Details19Timestamp;
+        // public string Details20, Details20Timestamp;
+        // public string Details21, Details21Timestamp;
+        // public string Details22, Details22Timestamp;
+        // public string Details23, Details23Timestamp;
+        // public string Details24, Details24Timestamp;
+        // public string Details25, Details25Timestamp;
+        // public string Details26, Details26Timestamp;
+        // public string Details27, Details27Timestamp;
+        // public string Details28, Details28Timestamp;
+        // public string Details29, Details29Timestamp;
+        // public string Details30, Details30Timestamp;
 
         #endregion
 
@@ -98,8 +97,7 @@ namespace DevelopmentTools {
         public DebugEntry(Guid guid, bool isQuantum, UnityEngine.Color color, [CanBeNull] StackTrace stackTrace, [CanBeNull] object[] parametersValues, bool isEvent, bool received, bool isError, [CanBeNull] object[] details) : this() {
 #if UNITY_EDITOR
             try { // TODO parametersValues as details if method takes no parameters
-                this.guid = guid;
-
+                this.guid   = guid;
                 this.color  = color;
                 stackFrames = (stackTrace ??= new(3, true)).GetFrames()!;
 
@@ -144,7 +142,7 @@ namespace DevelopmentTools {
 
                 UpdateIcons();
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR // ENABLE_LOGS is handled in DebugLogger.LogEntry
                 if (isError)
                     if (DisplayedDetails.IsNullOrWhiteSpace())
                         $"{DisplayedCallerSignature}\n{stackTrace}".LogErr();
@@ -161,84 +159,26 @@ namespace DevelopmentTools {
 #endif
         }
 
-        public override string ToString() =>
-            new List<string> {
-                    $"{(IsError ? "[ERROR] " : string.Empty)}{(IsEvent ? Received ? "[RECEIVED] " : "[SENT] " : string.Empty)}DebugEntry: {DisplayedCallerSignature} {DisplayedDetails}",
-                    Details2,
-                    Details3,
-                    Details4,
-                    Details5,
-                    Details6,
-                    Details7,
-                    Details8,
-                    Details9,
-                    Details10,
-                    Details11,
-                    Details12,
-                    Details13,
-                    Details14,
-                    Details15,
-                    Details16,
-                    Details17,
-                    Details18,
-                    Details19,
-                    Details20,
-                    Details21,
-                    Details22,
-                    Details23,
-                    Details24,
-                    Details25,
-                    Details26,
-                    Details27,
-                    Details28,
-                    Details29,
-                    Details30
-                }
-                .Where(s => !s.IsNullOrEmpty())
-                .Select(s => s.Unformatted())
-                .JoinSmart("\n");
+        public static void RegisterIconExtractor(Func<string, Texture2D[]> iconExtractor) => registeredIconExtractors.Add(iconExtractor);
 
-        private void UpdateIcons() {}
+        public void AddIcons(params Texture2D[] textures) => Icons.AddRange(textures);
+
+        private void UpdateIcons() {
+            foreach (Func<string, Texture2D[]> extractor in registeredIconExtractors)
+                Icons.AddRange(extractor.SafeInvoke(ToString()));
+
+            Icons.ClearUnityNulls().Distinctify();
+        }
 
         public void AddDetails([NotNull] string details) {
-            // @formatter:off
-            if (DisplayedDetails.IsNullOrEmpty()) DisplayedDetails = details;
-            else {
-                TimeSpan delay          = TimeSpan.FromSeconds(Time.realtimeSinceStartupAsDouble) - timestamp;
-                string   displayedDelay = $"+{delay:ss}s {delay.Milliseconds:000}";
+            TimeSpan delay          = TimeSpan.FromSeconds(Time.realtimeSinceStartupAsDouble) - timestamp;
+            string   displayedDelay = $"+{delay:ss}s {delay.Milliseconds:000}";
 
-                if (Details2.IsNullOrEmpty())       { Details2  = details;  Details2Timestamp = displayedDelay; }
-                else if (Details3.IsNullOrEmpty())  { Details3  = details;  Details3Timestamp = displayedDelay; }
-                else if (Details4.IsNullOrEmpty())  { Details4  = details;  Details4Timestamp = displayedDelay; }
-                else if (Details5.IsNullOrEmpty())  { Details5  = details;  Details5Timestamp = displayedDelay; }
-                else if (Details6.IsNullOrEmpty())  { Details6  = details;  Details6Timestamp = displayedDelay; }
-                else if (Details7.IsNullOrEmpty())  { Details7  = details;  Details7Timestamp = displayedDelay; }
-                else if (Details8.IsNullOrEmpty())  { Details8  = details;  Details8Timestamp = displayedDelay; }
-                else if (Details9.IsNullOrEmpty())  { Details9  = details;  Details9Timestamp = displayedDelay; }
-                else if (Details10.IsNullOrEmpty()) { Details10 = details; Details10Timestamp = displayedDelay; }
-                else if (Details11.IsNullOrEmpty()) { Details11 = details; Details11Timestamp = displayedDelay; }
-                else if (Details12.IsNullOrEmpty()) { Details12 = details; Details12Timestamp = displayedDelay; }
-                else if (Details13.IsNullOrEmpty()) { Details13 = details; Details13Timestamp = displayedDelay; }
-                else if (Details14.IsNullOrEmpty()) { Details14 = details; Details14Timestamp = displayedDelay; }
-                else if (Details15.IsNullOrEmpty()) { Details15 = details; Details15Timestamp = displayedDelay; }
-                else if (Details16.IsNullOrEmpty()) { Details16 = details; Details16Timestamp = displayedDelay; }
-                else if (Details17.IsNullOrEmpty()) { Details17 = details; Details17Timestamp = displayedDelay; }
-                else if (Details18.IsNullOrEmpty()) { Details18 = details; Details18Timestamp = displayedDelay; }
-                else if (Details19.IsNullOrEmpty()) { Details19 = details; Details19Timestamp = displayedDelay; }
-                else if (Details20.IsNullOrEmpty()) { Details20 = details; Details20Timestamp = displayedDelay; }
-                else if (Details21.IsNullOrEmpty()) { Details21 = details; Details21Timestamp = displayedDelay; }
-                else if (Details22.IsNullOrEmpty()) { Details22 = details; Details22Timestamp = displayedDelay; }
-                else if (Details23.IsNullOrEmpty()) { Details23 = details; Details23Timestamp = displayedDelay; }
-                else if (Details24.IsNullOrEmpty()) { Details24 = details; Details24Timestamp = displayedDelay; }
-                else if (Details25.IsNullOrEmpty()) { Details25 = details; Details25Timestamp = displayedDelay; }
-                else if (Details26.IsNullOrEmpty()) { Details26 = details; Details26Timestamp = displayedDelay; }
-                else if (Details27.IsNullOrEmpty()) { Details27 = details; Details27Timestamp = displayedDelay; }
-                else if (Details28.IsNullOrEmpty()) { Details28 = details; Details28Timestamp = displayedDelay; }
-                else if (Details29.IsNullOrEmpty()) { Details29 = details; Details29Timestamp = displayedDelay; }
-                else if (Details30.IsNullOrEmpty()) { Details30 = details; Details30Timestamp = displayedDelay; }
-                else                                  Details30 += $"⤵\n{details}";
-            }
-            // @formatter:on
+            for (int i = 0; i < Details.Count; i++)
+                if (Details[i].details.IsNullOrEmpty()) {
+                    Details[i] = (details, displayedDelay);
+                    break;
+                }
 
             UpdateIcons();
         }
@@ -327,6 +267,14 @@ namespace DevelopmentTools {
 
             AssetDatabase.OpenAsset(AssetDatabase.LoadMainAssetAtPath(path!.StartAt("Assets")), line, column);
         }
+
+        public override string ToString() =>
+            Details
+                .Select(d => d.details)
+                .Prepend($"{(IsError ? "[ERROR] " : string.Empty)}{(IsEvent ? Received ? "[RECEIVED] " : "[SENT] " : string.Empty)}DebugEntry: {DisplayedCallerSignature} {DisplayedDetails}")
+                .Where(s => !s.IsNullOrEmpty())
+                .Select(s => s.Unformatted())
+                .JoinSmart("\n");
 
 #endif
 

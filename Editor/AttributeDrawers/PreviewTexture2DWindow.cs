@@ -1,11 +1,13 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.ODIN_INSPECTOR;
-using Sirenix.OdinInspector;
-using Sirenix.OdinInspector.Editor;
-using UnityEditor;
-using UnityEngine;
 
 namespace DevelopmentTools.Editor.AttributeDrawers {
+
+    using Sirenix.OdinInspector;
+    using Sirenix.OdinInspector.Editor;
+    using UnityEditor;
+    using UnityEngine;
 
     public class PreviewTexture2DWindow : OdinEditorWindow {
 
@@ -15,25 +17,26 @@ namespace DevelopmentTools.Editor.AttributeDrawers {
 
         public void Show(Texture texture) {
             Show();
+            titleContent = new("Preview");
             this.texture = texture;
         }
 
-        public static void DrawZoomableGUI(Rect rect, Texture texture, bool requireCtrl = false) {
+        public static void Create(Texture texture) => GetWindow<PreviewTexture2DWindow>().Show(texture);
+
+        public static void DrawZoomableGUI(Rect rect, Texture texture) {
             if (!mouseOverWindow)
                 return;
 
-            if (mouseOverWindow is PreviewTexture2DWindow)
+            if (mouseOverWindow.Is<PreviewTexture2DWindow>())
                 return;
 
             if (!rect.Contains(Event.current.mousePosition))
                 return;
 
-            bool zoomOnClick = !requireCtrl || Event.current.control;
+            EditorGUIUtility.AddCursorRect(rect, Event.current.control ? MouseCursor.Zoom : MouseCursor.Arrow);
 
-            EditorGUIUtility.AddCursorRect(rect, zoomOnClick ? MouseCursor.Zoom : MouseCursor.Arrow);
-
-            if (Event.current.type == EventType.MouseDown && zoomOnClick) {
-                GetWindow<PreviewTexture2DWindow>().Show(texture);
+            if (Event.current.type == EventType.MouseDown && Event.current.control) {
+                Create(texture);
                 Event.current.Use();
             }
 

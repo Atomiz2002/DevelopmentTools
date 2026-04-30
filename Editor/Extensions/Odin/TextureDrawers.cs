@@ -11,7 +11,7 @@ namespace DevelopmentTools.Editor.Extensions.Odin {
             CallNextDrawer(label);
 
             if (ValueEntry.SmartValue)
-                PreviewTexture2DWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue, true);
+                PreviewTexture2DWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue);
         }
 
     }
@@ -22,7 +22,7 @@ namespace DevelopmentTools.Editor.Extensions.Odin {
             CallNextDrawer(label);
 
             if (ValueEntry.SmartValue)
-                PreviewTexture2DWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue.texture, true);
+                PreviewTexture2DWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue.texture);
         }
 
     }
@@ -33,7 +33,7 @@ namespace DevelopmentTools.Editor.Extensions.Odin {
             CallNextDrawer(label);
 
             if (ValueEntry.SmartValue)
-                PreviewTexture2DWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue, true);
+                PreviewTexture2DWindow.DrawZoomableGUI(GUILayoutUtility.GetLastRect(), ValueEntry.SmartValue);
         }
 
     }

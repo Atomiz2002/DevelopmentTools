@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR && !SIMULATE_BUILD && DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR && !SIMULATE_BUILD
 using System;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.ODIN_INSPECTOR;
