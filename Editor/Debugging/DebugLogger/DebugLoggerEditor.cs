@@ -73,14 +73,14 @@ namespace DevelopmentTools.Editor.Debugging {
                 indexToFocus = -1;
             }
 
-            bool enterPressed     = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
-            bool backspacePressed = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Backspace || Event.current.keyCode == KeyCode.Delete;
-            bool escapePressed    = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape;
+            bool enterPressed = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
+            bool escapePressed = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape;
 
             // 3. Draw Fields
             for (int i = 0; i < categories.Count; i++) {
                 GUI.SetNextControlName(".".Repeat(i + 1));
-                categories[i] = GUILayout.TextField(categories[i]);
+                Color color = categories[i].IsValidClassName() ? Color.green : Color.red;
+                categories[i] = GUILayout.TextField(categories[i], new GUIStyle(GUI.skin.textField) { normal = { textColor = color }, focused = { textColor = color } });
             }
 
             string focusedControl = GUI.GetNameOfFocusedControl();
@@ -114,13 +114,6 @@ namespace DevelopmentTools.Editor.Debugging {
                         indexToFocus = nextIndex;
                     }
                 }
-
-                if (backspacePressed)
-                    if (categories[focusedIndex].IsNullOrEmpty() && categories.Count > 1) {
-                        Event.current.Use();
-                        categories.RemoveAt(focusedIndex);
-                        indexToFocus = Math.Max(0, focusedIndex - 1);
-                    }
             }
 
             GUILayout.BeginHorizontal();
@@ -369,6 +362,8 @@ namespace DevelopmentTools.Editor.Debugging {
             categories.RemoveAll(x => x.IsNullOrWhiteSpace());
 
             foreach (string category in categories) {
+                if (!category.IsValidClassName())
+                    continue;
 
                 #region script
 
