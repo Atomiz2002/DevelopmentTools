@@ -8,11 +8,11 @@ namespace DevelopmentTools.Editor {
 
     public class CustomPopup : PopupWindowContent {
 
-        private readonly Action drawGUI;
+        private readonly Action<Rect> drawGUI;
 
         private Vector2 size;
 
-        public CustomPopup(Action drawGUI, float width = 400, float height = 0f) {
+        public CustomPopup(Action<Rect> drawGUI, float width = 400, float height = 0f) {
             this.drawGUI = drawGUI;
             size.x       = width;
 
@@ -22,13 +22,15 @@ namespace DevelopmentTools.Editor {
 
         public override void OnGUI(Rect rect) {
             GUILayout.BeginVertical();
-            drawGUI.SafeInvoke();
+            drawGUI.SafeInvoke(rect);
             GUILayout.EndVertical();
 
             Rect lastRect = GUILayoutUtility.GetLastRect();
 
             if (lastRect.height > size.y) // sometimes lastRect.height is near 0
                 size.y = lastRect.height + 5;
+
+            editorWindow.Repaint();
         }
 
         public override Vector2 GetWindowSize() => size;

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DevelopmentEssentials.Extensions.CS;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -62,7 +63,10 @@ namespace DevelopmentTools.Editor.Toolbar_Injections {
             EditorApplication.update -= DrawInjectedGUIs;
         }
 
-        public static void AddToolbarPopupButton(ToolbarSide side, string buttonName, float buttonWidth, Action drawGUI, float popupWidth, float popupHeight = 0, float order = 0, float space = 15) {
+        public static void AddToolbarPopupButton(ToolbarSide side, string buttonName, float buttonWidth, Action drawGUI, float popupWidth, float popupHeight = 0, float order = 0, float space = 15) =>
+            AddToolbarPopupButton(side, buttonName, buttonWidth, _ => drawGUI.SafeInvoke(), popupWidth, popupHeight, order, space);
+
+        public static void AddToolbarPopupButton(ToolbarSide side, string buttonName, float buttonWidth, Action<Rect> drawGUI, float popupWidth, float popupHeight = 0, float order = 0, float space = 15) {
             switch (side) {
                 case ToolbarSide.Left:        leftGUI.Add((drawToolbarPopupButton, buttonWidth, order)); break;
                 case ToolbarSide.Right:       rightGUI.Add((drawToolbarPopupButton, buttonWidth, order)); break;
