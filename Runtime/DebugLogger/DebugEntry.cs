@@ -92,7 +92,8 @@ namespace DevelopmentTools {
 
         public static DebugEntry Separator() => new() { IsSeparator = true };
 
-        private DebugEntry() => timestamp = TimeSpan.FromSeconds(Time.realtimeSinceStartup);
+        /// <param name="_">prevents unity from calling this during serialization (it calls parameterless ctor)</param>
+        private DebugEntry(byte _ = 0) => timestamp = TimeSpan.FromSeconds(Time.realtimeSinceStartup);
 
         public DebugEntry(Guid guid, bool isQuantum, UnityEngine.Color color, [CanBeNull] StackTrace stackTrace, [CanBeNull] object[] parametersValues, bool isEvent, bool received, bool isError, [CanBeNull] object[] details) : this() {
 #if UNITY_EDITOR
@@ -137,7 +138,6 @@ namespace DevelopmentTools {
                 Received = received;
                 IsError  = isError;
 
-                timestamp     = TimeSpan.FromSeconds(Time.realtimeSinceStartup);
                 DisplayedTime = $"{(int) timestamp.TotalMinutes:D2}m {timestamp.Seconds:D2}s {timestamp.Milliseconds:D3}".Size(10).Colored(Color.White);
 
                 DisplayedDetails = details?.JoinSmart("\n", string.Empty).Colored(Color.White);
