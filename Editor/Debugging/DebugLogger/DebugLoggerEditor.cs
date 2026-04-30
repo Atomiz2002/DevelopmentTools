@@ -58,15 +58,13 @@ namespace DevelopmentTools.Editor.Debugging {
             if (categories == null)
                 return;
 
-            categories = categories.Distinct().ToList();
-
             for (int i = 0; i < categories.Count; i++)
                 categories[i] = GUILayout.TextField(categories[i]);
 
             GUILayout.BeginHorizontal();
 
             if (GUILayout.Button("Generate")) {
-                foreach (string category in categories)
+                foreach (string category in categories.Distinct())
                     GenerateCategoryClass(category);
 
                 categories = null;
@@ -297,6 +295,9 @@ namespace DevelopmentTools.Editor.Debugging {
         private static void EditCategories() => categories = typeof(DebugLogger).GetNestedTypes().Select(t => t.Name).ToList();
 
         private static void GenerateCategoryClass(string categoryName) {
+            if (categoryName.IsNullOrWhiteSpace())
+                return;
+
             // @formatter:off
             string script = "using System.Diagnostics;\n" +
                             "using System.Runtime.CompilerServices;\n" +
