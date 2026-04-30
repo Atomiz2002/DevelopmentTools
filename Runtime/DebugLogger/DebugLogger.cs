@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
@@ -19,6 +20,7 @@ using System.Linq;
 using System.Threading;
 using System.Reflection;
 #endif
+
 #endif
 #endif
 
@@ -109,6 +111,9 @@ namespace DevelopmentTools {
 
         public static AsyncLocal<Guid> key = new();
 
+        public static readonly string DebugLoggerDir = Path.Combine(Application.dataPath, nameof(DebugLogger));
+        public static readonly string CategoriesDir  = Path.Combine(DebugLoggerDir, "Categories");
+
         private static DebugLogger i;
         private static DebugLogger I {
             get {
@@ -116,7 +121,7 @@ namespace DevelopmentTools {
                 if (i)
                     return i;
 
-                AssetDatabase.CreateAsset(i = CreateInstance<DebugLogger>(), $"Assets/{nameof(DebugLogger)}.asset");
+                AssetDatabase.CreateAsset(i = CreateInstance<DebugLogger>(), Path.Combine(DebugLoggerDir, nameof(DebugLogger) + ".asset").RelativePath());
 
                 return i;
             }
