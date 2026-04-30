@@ -112,7 +112,7 @@ namespace DevelopmentTools {
         public static AsyncLocal<Guid> key = new();
 
         public static readonly string DebugLoggerDir = Path.Combine(Application.dataPath, nameof(DebugLogger));
-        public static readonly string CategoriesDir  = Path.Combine(DebugLoggerDir, "Categories");
+        public static readonly string GroupsDir      = Path.Combine(DebugLoggerDir, "Groups");
 
         private static DebugLogger i;
         private static DebugLogger I {

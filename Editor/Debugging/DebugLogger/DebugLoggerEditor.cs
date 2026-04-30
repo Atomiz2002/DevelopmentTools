@@ -22,7 +22,7 @@ namespace DevelopmentTools.Editor.Debugging {
     [CustomEditor(typeof(DebugLogger))]
     public class DebugLoggerEditor : OdinEditor {
 
-        private static List<string> categories;
+        private static List<string> groups;
         private static int          indexToFocus = -1;
 
         private DebugLogger t;
@@ -48,8 +48,8 @@ namespace DevelopmentTools.Editor.Debugging {
         }
 
         public override void OnInspectorGUI() {
-            if (categories != null) {
-                DrawCategories();
+            if (groups != null) {
+                DrawGroupEditor();
                 return;
             }
 
@@ -60,10 +60,10 @@ namespace DevelopmentTools.Editor.Debugging {
             Repaint();
         }
 
-        private void DrawCategories() {
+        private void DrawGroupEditor() {
             // 1. Ensure list is never empty
-            if (categories.Count == 0) {
-                categories.Add("");
+            if (groups.Count == 0) {
+                groups.Add("");
                 indexToFocus = 0;
             }
 
@@ -73,14 +73,14 @@ namespace DevelopmentTools.Editor.Debugging {
                 indexToFocus = -1;
             }
 
-            bool enterPressed = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
+            bool enterPressed  = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
             bool escapePressed = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape;
 
             // 3. Draw Fields
-            for (int i = 0; i < categories.Count; i++) {
+            for (int i = 0; i < groups.Count; i++) {
                 GUI.SetNextControlName(".".Repeat(i + 1));
-                Color color = categories[i].IsValidClassName() ? Color.green : Color.red;
-                categories[i] = GUILayout.TextField(categories[i], new GUIStyle(GUI.skin.textField) { normal = { textColor = color }, focused = { textColor = color } });
+                Color color = groups[i].IsValidClassName() ? Color.green : Color.red;
+                groups[i] = GUILayout.TextField(groups[i], new GUIStyle(GUI.skin.textField) { normal = { textColor = color }, focused = { textColor = color } });
             }
 
             string focusedControl = GUI.GetNameOfFocusedControl();
@@ -91,22 +91,22 @@ namespace DevelopmentTools.Editor.Debugging {
                     Event.current.Use();
 
                     if (Event.current.control || Event.current.command) {
-                        GenerateCategories();
+                        GenerateGroups();
                         return;
                     }
 
-                    if (categories[focusedIndex].IsNullOrWhiteSpace()) // Prevent adding empty/duplicate categories
+                    if (groups[focusedIndex].IsNullOrWhiteSpace()) // Prevent adding empty/duplicate groups
                         return;
 
                     int nextIndex = focusedIndex + 1;
 
-                    if (nextIndex >= categories.Count) {
-                        if (categories.HasDuplicates(categories[focusedIndex])) {
-                            categories[focusedIndex] = "";
-                            indexToFocus             = focusedIndex;
+                    if (nextIndex >= groups.Count) {
+                        if (groups.HasDuplicates(groups[focusedIndex])) {
+                            groups[focusedIndex] = "";
+                            indexToFocus         = focusedIndex;
                         }
                         else {
-                            categories.Add("");
+                            groups.Add("");
                             indexToFocus = nextIndex;
                         }
                     }
@@ -119,10 +119,10 @@ namespace DevelopmentTools.Editor.Debugging {
             GUILayout.BeginHorizontal();
 
             if (GUILayout.Button("Generate"))
-                GenerateCategories();
+                GenerateGroups();
 
             if (GUILayout.Button("Cancel", GUILayout.ExpandWidth(false)) || escapePressed)
-                categories = null;
+                groups = null;
 
             GUILayout.EndHorizontal();
         }
@@ -336,13 +336,13 @@ namespace DevelopmentTools.Editor.Debugging {
             SirenixEditorGUI.EndToolbarBox();
         }
 
-        [MenuItem("CONTEXT/DebugLogger/Edit Categories")]
-        private static void EditCategories() {
-            categories   = typeof(DebugLogger).GetNestedTypes().Select(t => t.Name).ToList();
-            indexToFocus = categories.Count - 1;
+        [MenuItem("CONTEXT/DebugLogger/Edit Groups")]
+        private static void EditGroups() {
+            groups       = typeof(DebugLogger).GetNestedTypes().Select(t => t.Name).ToList();
+            indexToFocus = groups.Count - 1;
         }
 
-        private static void GenerateCategories() {
+        private static void GenerateGroups() {
 
             #region asmref
 
@@ -354,15 +354,15 @@ namespace DevelopmentTools.Editor.Debugging {
 
             #endregion
 
-            Directory.CreateDirectory(DebugLogger.CategoriesDir);
+            Directory.CreateDirectory(DebugLogger.GroupsDir);
 
-            foreach (string file in Directory.GetFiles(DebugLogger.CategoriesDir))
+            foreach (string file in Directory.GetFiles(DebugLogger.GroupsDir))
                 File.Delete(file);
 
-            categories.RemoveAll(x => x.IsNullOrWhiteSpace());
+            groups.RemoveAll(x => x.IsNullOrWhiteSpace());
 
-            foreach (string category in categories) {
-                if (!category.IsValidClassName())
+            foreach (string group in groups) {
+                if (!group.IsValidClassName())
                     continue;
 
                 #region script
@@ -377,28 +377,28 @@ namespace DevelopmentTools.Editor.Debugging {
                                 "\n" +
                                 "    public partial class " + nameof(DebugLogger) + " {\n" +
                                 "\n" +
-                                "        public static class " + category + " {\n" +
+                                "        public static class " + group + " {\n" +
                                 "\n" +
-                                "            private const string conditional = \"" + nameof(DebugLogger) + "\" + \"_\" + \"" + category + "\";\n" +
+                                "            private const string conditional = \"" + nameof(DebugLogger) + "\" + \"_\" + \"" + group + "\";\n" +
                                 "\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void Log                  (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + category + "\", false, false, false, details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogError             (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + category + "\", false, false, true,  details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogSendEvent         (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + category + "\", true,  false, false, details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogSendEventError    (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + category + "\", true,  false, true,  details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEvent     (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + category + "\", true,  true,  false, details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEventError(object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + category + "\", true,  true,  true,  details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void Log                  (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + group + "\", false, false, false, details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogError             (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + group + "\", false, false, true,  details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogSendEvent         (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + group + "\", true,  false, false, details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogSendEventError    (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + group + "\", true,  false, true,  details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEvent     (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + group + "\", true,  true,  false, details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEventError(object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + group + "\", true,  true,  true,  details);\n" +
                                 "\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void Log                  (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + category + "\", false, false, false, details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogError             (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + category + "\", false, false, true,  details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogSendEvent         (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + category + "\", true,  false, false, details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogSendEventError    (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + category + "\", true,  false, true,  details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEvent     (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + category + "\", true,  true,  false, details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEventError(ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + category + "\", true, true, true, details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void Log                  (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", false, false, false, details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogError             (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", false, false, true,  details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogSendEvent         (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", true,  false, false, details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogSendEventError    (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", true,  false, true,  details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEvent     (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", true,  true,  false, details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEventError(ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", true, true, true, details);\n" +
                                 "\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogGoodDetails(params object[] details) => AddGoodDetails(\"" + category + "\", details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogBadDetails (params object[] details) => AddBadDetails (\"" + category + "\", details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogDetails    (params object[] details) => AddDetails    (\"" + category + "\", details);\n" +
-                                "        [Conditional(conditional)] [HideInCallstack] public static void LogReturn     (object returnValue)      => SetReturn     (\"" + category + "\", returnValue);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogGoodDetails(params object[] details) => AddGoodDetails(\"" + group + "\", details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogBadDetails (params object[] details) => AddBadDetails (\"" + group + "\", details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogDetails    (params object[] details) => AddDetails    (\"" + group + "\", details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogReturn     (object returnValue)      => SetReturn     (\"" + group + "\", returnValue);\n" +
                                 "\n" +
                                 "        }\n" +
                                 "\n" +
@@ -409,18 +409,18 @@ namespace DevelopmentTools.Editor.Debugging {
 
                 #endregion
 
-                string scriptPath = Path.Combine(DebugLogger.CategoriesDir, category + ".cs");
+                string scriptPath = Path.Combine(DebugLogger.GroupsDir, group + ".cs");
                 File.WriteAllText(scriptPath, script);
                 AssetDatabase.ImportAsset(scriptPath, ImportAssetOptions.ForceUpdate);
             }
 
-            string asmdefRefPath = Path.Combine(DebugLogger.CategoriesDir, "_developmentTools.asmref");
+            string asmdefRefPath = Path.Combine(DebugLogger.GroupsDir, "_developmentTools.asmref");
             File.WriteAllText(asmdefRefPath, asmdefRef);
             AssetDatabase.ImportAsset(asmdefRefPath, ImportAssetOptions.ForceUpdate);
 
             AssetDatabase.Refresh();
 
-            categories = null;
+            groups = null;
         }
 
     }
