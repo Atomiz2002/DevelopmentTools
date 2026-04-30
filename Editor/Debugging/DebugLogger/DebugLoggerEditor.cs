@@ -339,7 +339,7 @@ namespace DevelopmentTools.Editor.Debugging {
                             "}";
             // @formatter:on
 
-            string categoriesDir = new StackTrace(true).GetFrame(0).GetFileName()?.Replace("\\", "/").Replace(nameof(Editor) + "/" + nameof(Debugging) + "/" + nameof(DebugLogger) + "/" + nameof(DebugLoggerEditor) + ".cs", nameof(DebugLogger) + "/Categories");
+            string categoriesDir = new StackTrace(true).GetFrame(0).GetFileName()?.Replace("\\", "/").Replace(nameof(Editor) + "/" + nameof(Debugging) + "/" + nameof(DebugLogger) + "/" + nameof(DebugLoggerEditor) + ".cs", "Runtime/" + nameof(DebugLogger) + "/Categories");
             string categoryPath  = categoriesDir + "/" + categoryName + ".cs";
 
             foreach (string file in Directory.GetFiles(categoriesDir!))
