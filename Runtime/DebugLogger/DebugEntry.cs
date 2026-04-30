@@ -21,6 +21,7 @@ namespace DevelopmentTools {
     public sealed class DebugEntry {
 
 #if UNITY_EDITOR && !SIMULATE_BUILD && ENABLE_LOGS
+        private static readonly List<Func<string, string>>      registeredTextFormatters = new();
         private static readonly List<Func<string, Texture2D[]>> registeredIconExtractors = new();
 
         [SerializeField] [HideInInspector] public bool IsEvent;
@@ -141,6 +142,8 @@ namespace DevelopmentTools {
                 DisplayedDetails = details?.JoinSmart("\n", string.Empty).Colored(Color.White);
 
                 UpdateIcons();
+                ApplyTextFormatters(ref DisplayedCallerSignature);
+                ApplyTextFormatters(ref DisplayedDetails);
 
 #if UNITY_EDITOR // ENABLE_LOGS is handled in DebugLogger.LogEntry
                 if (isError)
@@ -159,6 +162,12 @@ namespace DevelopmentTools {
 #endif
         }
 
+        private void ApplyTextFormatters(ref string input) {
+            foreach (Func<string, string> textFormatter in registeredTextFormatters)
+                input = textFormatter.SafeInvoke(input);
+        }
+
+        public static void RegisterTextFormatter(Func<string, string> textFormatter)      => registeredTextFormatters.Add(textFormatter);
         public static void RegisterIconExtractor(Func<string, Texture2D[]> iconExtractor) => registeredIconExtractors.Add(iconExtractor);
 
         public void AddIcons(params Texture2D[] textures) => Icons.AddRange(textures);
@@ -173,6 +182,8 @@ namespace DevelopmentTools {
         public void AddDetails([NotNull] string details) {
             TimeSpan delay          = TimeSpan.FromSeconds(Time.realtimeSinceStartupAsDouble) - timestamp;
             string   displayedDelay = $"+{delay:ss}s {delay.Milliseconds:000}";
+
+            ApplyTextFormatters(ref details);
 
             for (int i = 0; i < Details.Count; i++)
                 if (Details[i].details.IsNullOrEmpty()) {
@@ -242,6 +253,7 @@ namespace DevelopmentTools {
 
         internal void SetReturn(object returnValue) {
             this.returnValue = CleanUp(returnValue);
+            ApplyTextFormatters(ref this.returnValue);
 
             DisplayedCallerSignature += $" {returnValueFormatting(this.returnValue)}";
             UpdateIcons();
