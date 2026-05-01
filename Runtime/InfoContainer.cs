@@ -26,18 +26,18 @@ namespace DevelopmentTools {
             ((List<Func<T, TResult>>) extractors).Add(extractor);
         }
 
-        public static void RegisterInfoModifier<T, TResult>(Type type, Func<T, TResult> modifier) {
+        public static void RegisterInfoModifier<T>(Type type, Func<T, T> modifier) {
             if (!registeredModifiers.TryGetValue(type, out Dictionary<Type, object> typedModifiers)) {
                 typedModifiers = new();
                 registeredModifiers.Add(type, typedModifiers);
             }
 
-            if (!typedModifiers.TryGetValue(typeof(TResult), out object modifiers)) {
+            if (!typedModifiers.TryGetValue(typeof(T), out object modifiers)) {
                 modifiers = new();
-                typedModifiers.Add(typeof(TResult), modifiers);
+                typedModifiers.Add(typeof(T), modifiers);
             }
 
-            ((List<Func<T, TResult>>) modifiers).Add(modifier);
+            ((List<Func<T, T>>) modifiers).Add(modifier);
         }
 
         public static void ExtractAndModifyInfo<T>(Type type, ref string input, ref List<T> output, bool add = true) {
