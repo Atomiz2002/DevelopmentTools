@@ -366,7 +366,8 @@ namespace DevelopmentTools.Editor.Debugging {
                 #region script
 
                 // @formatter:off
-                string script = "#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR\n" +
+                string script = "// @formatter:off" +
+                                "#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR\n" +
                                 "using System.Diagnostics;\n" +
                                 "using System.Runtime.CompilerServices;\n" +
                                 "using DevelopmentEssentials.Extensions.CS;\n" +
@@ -379,6 +380,7 @@ namespace DevelopmentTools.Editor.Debugging {
                                 "        public static class " + group + " {\n" +
                                 "\n" +
                                 "            private const string conditional = \"" + nameof(DebugLogger) + "\" + \"_\" + \"" + group + "\";\n" +
+                                "\n" +
                                 "\n" +
                                 "            [Conditional(conditional)] [HideInCallstack] public static void Log                  (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + group + "\", false, false, false, details);\n" +
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogError             (object parameter = null, params object[] details) => LogEntry(false, null, new[] { parameter },   \"" + group + "\", false, false, true,  details);\n" +
@@ -398,6 +400,7 @@ namespace DevelopmentTools.Editor.Debugging {
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogBadDetails (params object[] details) => AddBadDetails (\"" + group + "\", details);\n" +
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogDetails    (params object[] details) => AddDetails    (\"" + group + "\", details);\n" +
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogReturn     (object returnValue)      => SetReturn     (\"" + group + "\", returnValue);\n" +
+                                "            // @formatter:on\n" +
                                 "\n" +
                                 "        }\n" +
                                 "\n" +
