@@ -12,32 +12,32 @@ namespace DevelopmentTools {
         private static readonly Dictionary<Type, Dictionary<Type, object>> registeredExtractors = new();
         private static readonly Dictionary<Type, Dictionary<Type, object>> registeredModifiers  = new();
 
-        public static void RegisterInfoExtractor<T>(Type type, Func<object, T> extractor) {
+        public static void RegisterInfoExtractor<T, TResult>(Type type, Func<T, TResult> extractor) {
             if (!registeredExtractors.TryGetValue(type, out Dictionary<Type, object> typedExtractors)) {
                 typedExtractors = new();
                 registeredExtractors.Add(type, typedExtractors);
             }
 
-            if (!typedExtractors.TryGetValue(typeof(T), out object extractors)) {
+            if (!typedExtractors.TryGetValue(typeof(TResult), out object extractors)) {
                 extractors = new();
-                typedExtractors.Add(typeof(T), extractors);
+                typedExtractors.Add(typeof(TResult), extractors);
             }
 
-            ((List<Func<object, T>>) extractors).Add(extractor);
+            ((List<Func<T, TResult>>) extractors).Add(extractor);
         }
 
-        public static void RegisterInfoModifier<T>(Type type, Func<object, T> modifier) {
+        public static void RegisterInfoModifier<T, TResult>(Type type, Func<T, TResult> modifier) {
             if (!registeredModifiers.TryGetValue(type, out Dictionary<Type, object> typedModifiers)) {
                 typedModifiers = new();
                 registeredModifiers.Add(type, typedModifiers);
             }
 
-            if (!typedModifiers.TryGetValue(typeof(T), out object modifiers)) {
+            if (!typedModifiers.TryGetValue(typeof(TResult), out object modifiers)) {
                 modifiers = new();
-                typedModifiers.Add(typeof(T), modifiers);
+                typedModifiers.Add(typeof(TResult), modifiers);
             }
 
-            ((List<Func<object, T>>) modifiers).Add(modifier);
+            ((List<Func<T, TResult>>) modifiers).Add(modifier);
         }
 
         public static void ExtractAndModifyInfo<T>(Type type, ref string input, ref List<T> output, bool add = true) {
