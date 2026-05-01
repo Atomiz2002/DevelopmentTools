@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DevelopmentEssentials.Extensions.CS;
+using DevelopmentEssentials.Extensions.Unity;
 using JetBrains.Annotations;
 
 namespace DevelopmentTools {
@@ -12,32 +14,38 @@ namespace DevelopmentTools {
         private static readonly Dictionary<object, Dictionary<Type, object>> registeredExtractors = new();
         private static readonly Dictionary<object, Dictionary<Type, object>> registeredModifiers  = new();
 
-        public static void RegisterInfoExtractor<T, TResult>(object key, Func<T, TResult> extractor) {
-            if (!registeredExtractors.TryGetValue(key, out Dictionary<Type, object> typedExtractors)) {
-                typedExtractors = new();
-                registeredExtractors.Add(key, typedExtractors);
+        /// <inheritdoc cref="RegisterInfo"/>
+        public static void RegisterInfoExtractor<T, TResult>(object key, Func<T, TResult> extractor) => RegisterInfo(key, extractor, registeredExtractors);
+
+        /// <inheritdoc cref="RegisterInfo"/>
+        public static void RegisterInfoModifier<T>(object key, Func<T, T> modifier) => RegisterInfo(key, modifier, registeredModifiers);
+
+        /// <param name="key_s">can also be a collection</param>
+        private static void RegisterInfo<T, TResult>(object key_s, Func<T, TResult> func, Dictionary<object, Dictionary<Type, object>> registers) {
+            if (key_s is IEnumerable enumerable and not string) {
+                object[] collection = enumerable.Cast<object>().ToArray();
+
+                foreach (object k in collection)
+                    Register(k);
             }
+            else
+                Register(key_s);
 
-            if (!typedExtractors.TryGetValue(typeof(TResult), out object extractors)) {
-                extractors = new List<Func<T, TResult>>();
-                typedExtractors.Add(typeof(TResult), extractors);
+            return;
+
+            void Register(object key) {
+                if (!registers.TryGetValue(key, out Dictionary<Type, object> keyed)) {
+                    keyed = new();
+                    registers.Add(key, keyed);
+                }
+
+                if (!keyed.TryGetValue(typeof(TResult), out object funcs)) {
+                    funcs = new List<Func<T, TResult>>();
+                    keyed.Add(typeof(TResult), funcs);
+                }
+
+                ((List<Func<T, TResult>>) funcs).Add(func);
             }
-
-            ((List<Func<T, TResult>>) extractors).Add(extractor);
-        }
-
-        public static void RegisterInfoModifier<T>(object key, Func<T, T> modifier) {
-            if (!registeredModifiers.TryGetValue(key, out Dictionary<Type, object> typedModifiers)) {
-                typedModifiers = new();
-                registeredModifiers.Add(key, typedModifiers);
-            }
-
-            if (!typedModifiers.TryGetValue(typeof(T), out object modifiers)) {
-                modifiers = new List<Func<T, T>>();
-                typedModifiers.Add(typeof(T), modifiers);
-            }
-
-            ((List<Func<T, T>>) modifiers).Add(modifier);
         }
 
         public static void ExtractAndModifyInfo<T>(object key, ref string input, ref List<T> output, bool add = true) {
@@ -54,10 +62,10 @@ namespace DevelopmentTools {
 
         [Pure]
         public static IEnumerable<T> ExtractInfo<T>(object key, object input) {
-            if (!registeredModifiers.TryGetValue(key, out Dictionary<Type, object> typedExtractors))
+            if (!registeredModifiers.TryGetValue(key, out Dictionary<Type, object> keyedExtractors))
                 yield break;
 
-            if (!typedExtractors.TryGetValue(typeof(T), out object extractors))
+            if (!keyedExtractors.TryGetValue(typeof(T), out object extractors))
                 yield break;
 
             foreach (Func<object, T> extractor in (List<Func<object, T>>) extractors)
@@ -68,10 +76,10 @@ namespace DevelopmentTools {
 
         [Pure]
         public static T ModifyInfo<T>(object key, T input) {
-            if (!registeredModifiers.TryGetValue(key, out Dictionary<Type, object> typedModifiers))
+            if (!registeredModifiers.TryGetValue(key, out Dictionary<Type, object> keyedModifiers))
                 return input;
 
-            if (!typedModifiers.TryGetValue(typeof(T), out object modifiers))
+            if (!keyedModifiers.TryGetValue(typeof(T), out object modifiers))
                 return input;
 
             foreach (Func<object, T> modifier in (List<Func<object, T>>) modifiers)
