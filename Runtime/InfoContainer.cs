@@ -15,32 +15,20 @@ namespace DevelopmentTools {
         private static readonly Dictionary<object, Dictionary<Type, object>> registeredModifiers  = new();
 
         /// <inheritdoc cref="RegisterInfo"/>
-        public static void RegisterInfoExtractor<T, TResult>(object key, Func<T, TResult> extractor) => RegisterInfo(key, extractor, registeredExtractors);
+        public static void RegisterInfoExtractor<TResult>(object key, Func<object, TResult> extractor) => RegisterInfo(key, extractor, registeredExtractors);
 
         /// <inheritdoc cref="RegisterInfo"/>
         public static void RegisterInfoModifier<T>(object key, Func<T, T> modifier) => RegisterInfo(key, modifier, registeredModifiers);
 
-        /// <param name="key_s">can also be a collection or a tuple</param>
-        private static void RegisterInfo<T, TResult>(object key_s, Func<T, TResult> func, Dictionary<object, Dictionary<Type, object>> registers) {
-            if (key_s is IEnumerable enumerable and not string) {
-                foreach (object k in enumerable)
-                    Register(k);
-            }
-            else if (key_s is ITuple tuple) {
-                tuple.ForEach(Register);
-            }
-            else
-                Register(key_s);
+        /// <param name="key">can also be a collection or a tuple</param>
+        private static void RegisterInfo<T, TResult>(object key, Func<T, TResult> func, Dictionary<object, Dictionary<Type, object>> registers) {
+            foreach (object k in key.Enumerate()) {
+                if (k == null)
+                    continue;
 
-            return;
-
-            void Register(object key) {
-                if (key == null)
-                    return;
-
-                if (!registers.TryGetValue(key, out Dictionary<Type, object> keyed)) {
+                if (!registers.TryGetValue(k, out Dictionary<Type, object> keyed)) {
                     keyed = new();
-                    registers.Add(key, keyed);
+                    registers.Add(k, keyed);
                 }
 
                 if (!keyed.TryGetValue(typeof(TResult), out object funcs)) {
@@ -52,42 +40,46 @@ namespace DevelopmentTools {
             }
         }
 
-        public static void ExtractAndModifyInfo<T>(object key, ref string input, ref List<T> output, bool add = true) {
+        public static void ExtractAndModifyInfo<T, TResult>(object key, ref T input, ref List<TResult> output, bool add = true) {
             ExtractInfo(key, input, ref output, add);
             ModifyInfo(key, ref input);
         }
 
-        public static void ExtractInfo<T>(object key, object input, ref List<T> output, bool add = true) {
+        public static void ExtractInfo<TResult>(object key, object input, ref List<TResult> output, bool add = true) {
             if (add)
-                output.AddRange(ExtractInfo<T>(key, input));
+                output.AddRange(ExtractInfo<TResult>(key, input));
             else
-                output = ExtractInfo<T>(key, input).ToList();
+                output = ExtractInfo<TResult>(key, input).ToList();
         }
 
         [Pure]
-        public static IEnumerable<T> ExtractInfo<T>(object key, object input) {
-            if (!registeredModifiers.TryGetValue(key, out Dictionary<Type, object> keyedExtractors))
-                yield break;
+        public static IEnumerable<TResult> ExtractInfo<TResult>(object key, object input) {
+            foreach (object k in key.Enumerate()) {
+                if (!registeredExtractors.TryGetValue(k, out Dictionary<Type, object> keyedExtractors))
+                    continue;
 
-            if (!keyedExtractors.TryGetValue(typeof(T), out object extractors))
-                yield break;
+                if (!keyedExtractors.TryGetValue(typeof(TResult), out object extractors))
+                    continue;
 
-            foreach (Func<object, T> extractor in (List<Func<object, T>>) extractors)
-                yield return extractor.SafeInvoke(input);
+                foreach (Func<object, TResult> extractor in (List<Func<object, TResult>>) extractors)
+                    yield return extractor.SafeInvoke(input);
+            }
         }
 
         public static void ModifyInfo<T>(object key, ref T input) => input = ModifyInfo(key, input);
 
         [Pure]
         public static T ModifyInfo<T>(object key, T input) {
-            if (!registeredModifiers.TryGetValue(key, out Dictionary<Type, object> keyedModifiers))
-                return input;
+            foreach (object k in key.Enumerate()) {
+                if (!registeredModifiers.TryGetValue(k, out Dictionary<Type, object> keyedModifiers))
+                    continue;
 
-            if (!keyedModifiers.TryGetValue(typeof(T), out object modifiers))
-                return input;
+                if (!keyedModifiers.TryGetValue(typeof(T), out object modifiers))
+                    continue;
 
-            foreach (Func<object, T> modifier in (List<Func<object, T>>) modifiers)
-                input = modifier.SafeInvoke(input);
+                foreach (Func<T, T> modifier in (List<Func<T, T>>) modifiers)
+                    input = modifier.SafeInvoke(input);
+            }
 
             return input;
         }
