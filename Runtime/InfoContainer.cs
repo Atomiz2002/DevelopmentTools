@@ -19,7 +19,7 @@ namespace DevelopmentTools {
             }
 
             if (!typedExtractors.TryGetValue(typeof(TResult), out object extractors)) {
-                extractors = new();
+                extractors = new List<Func<T, TResult>>();
                 typedExtractors.Add(typeof(TResult), extractors);
             }
 
@@ -33,7 +33,7 @@ namespace DevelopmentTools {
             }
 
             if (!typedModifiers.TryGetValue(typeof(T), out object modifiers)) {
-                modifiers = new();
+                modifiers = new List<Func<T, T>>();
                 typedModifiers.Add(typeof(T), modifiers);
             }
 
