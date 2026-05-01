@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using DevelopmentEssentials.Extensions.CS;
-using DevelopmentEssentials.Extensions.Unity;
 using JetBrains.Annotations;
 
 namespace DevelopmentTools {
@@ -20,13 +20,14 @@ namespace DevelopmentTools {
         /// <inheritdoc cref="RegisterInfo"/>
         public static void RegisterInfoModifier<T>(object key, Func<T, T> modifier) => RegisterInfo(key, modifier, registeredModifiers);
 
-        /// <param name="key_s">can also be a collection</param>
+        /// <param name="key_s">can also be a collection or a tuple</param>
         private static void RegisterInfo<T, TResult>(object key_s, Func<T, TResult> func, Dictionary<object, Dictionary<Type, object>> registers) {
             if (key_s is IEnumerable enumerable and not string) {
-                object[] collection = enumerable.Cast<object>().ToArray();
-
-                foreach (object k in collection)
+                foreach (object k in enumerable)
                     Register(k);
+            }
+            else if (key_s is ITuple tuple) {
+                tuple.ForEach(Register);
             }
             else
                 Register(key_s);
@@ -34,6 +35,9 @@ namespace DevelopmentTools {
             return;
 
             void Register(object key) {
+                if (key == null)
+                    return;
+
                 if (!registers.TryGetValue(key, out Dictionary<Type, object> keyed)) {
                     keyed = new();
                     registers.Add(key, keyed);
