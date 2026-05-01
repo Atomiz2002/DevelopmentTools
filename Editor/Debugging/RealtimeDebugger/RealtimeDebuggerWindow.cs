@@ -10,6 +10,7 @@ using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector.Editor.ValueResolvers;
 using Sirenix.Serialization;
 using Sirenix.Utilities;
+using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,17 +19,24 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
 
     public class RealtimeDebuggerWindow : EditorWindow {
 
-        private const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        private const  BindingFlags Flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        private static bool         autoOpenedWindowOnce;
 
         [OdinSerialize]
-        private Dictionary<MonoBehaviour, PropertyTree> cachedProperties = new();
+        private Dictionary<object, PropertyTree> cachedProperties = new();
 
-        private static          Vector2                         scrollPosition;
-        private static readonly Dictionary<GameObject, bool>    gameObjectFoldouts = new();
-        private static readonly Dictionary<MonoBehaviour, bool> behavioursFoldouts = new();
+        private static          Vector2                  scrollPosition;
+        private static readonly Dictionary<object, bool> gameObjectFoldouts         = new();
+        private static readonly Dictionary<object, bool> behavioursFoldouts         = new();
+        private static readonly Dictionary<object, bool> behavioursPrivatesFoldouts = new();
 
         [MenuItem(EngineSettings.MenuGroupPath + "Realtime Debugger")]
-        public static void TryShowWindow() => EngineSettings.TryShowWindow(GetWindow<RealtimeDebuggerWindow>(), "Realtime Debugger");
+        public static void TryShowWindow() {
+            // TSHEditorSettings.TryShowWindow(GetWindow<RealtimeDebuggerWindow>(), "Realtime Debugger");
+            GetWindow<RealtimeDebuggerWindow>().name = "Realtime Debugger";
+        }
+
+        public static void CacheProperty(object obj) => GetWindow<RealtimeDebuggerWindow>().cachedProperties.TryAdd(obj, PropertyTree.Create(obj));
 
         private void OnEnable() {
             SceneManager.sceneLoaded -= CachePropertiesOnSceneLoad;
@@ -39,7 +47,14 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
             SceneManager.sceneLoaded -= CachePropertiesOnSceneLoad;
         }
 
-        private void CachePropertiesOnSceneLoad(Scene scene, LoadSceneMode loadSceneMode) => CacheProperties();
+        private void CachePropertiesOnSceneLoad(Scene scene, LoadSceneMode loadSceneMode) {
+            CacheProperties();
+
+            if (autoOpenedWindowOnce || !cachedProperties.Any()) return;
+
+            TryShowWindow();
+            autoOpenedWindowOnce = true;
+        }
 
         protected void OnInspectorUpdate() => Repaint();
 
@@ -56,58 +71,64 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
 
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
-            foreach ((MonoBehaviour behaviour, PropertyTree propertyTree) in cachedProperties.Reverse()) {
-                if (!behaviour)
+            foreach ((object obj, PropertyTree propertyTree) in cachedProperties.Where(kvp => kvp.Key != null)) {
+                Object o           = obj as Object;
+                bool   isDestroyed = obj is Object && !o;
+
+                if (!o && obj == null)
                     continue;
 
-                behaviour.GetType().TryGet(out RealtimeDebugAttribute rootAttribute);
+                obj.GetType().TryGet(out RealtimeDebugAttribute rootAttribute);
 
                 if (FailedDebugCondition(rootAttribute, propertyTree.RootProperty))
                     continue;
 
                 Dictionary<InspectorProperty, RealtimeDebugAttribute> properties = new();
 
-                foreach (InspectorProperty property in propertyTree.EnumerateTree(false, true).Skip(1)) {
-                    RealtimeDebugAttribute propAttribute = property.Attributes.GetAttribute<RealtimeDebugAttribute>();
+                if (rootAttribute == null) {
+                    foreach (InspectorProperty property in propertyTree.EnumerateTree()) {
+                        RealtimeDebugAttribute propAttribute = property.Attributes.GetAttribute<RealtimeDebugAttribute>();
 
-                    if (propAttribute == null)
+                        if (propAttribute == null)
+                            continue;
+
+                        if (FailedDebugCondition(propAttribute, property))
+                            continue;
+
+                        properties.Add(property, propAttribute);
+                    }
+
+                    if (!properties.Any())
                         continue;
-
-                    if (FailedDebugCondition(propAttribute, property))
-                        continue;
-
-                    properties.Add(property, propAttribute);
                 }
-
-                if (!properties.Any())
-                    continue; // dont draw if no properties meet their condition
-
-                GameObject gameObject = behaviour.gameObject;
+                else {
+                    properties.Add(propertyTree.RootProperty, rootAttribute);
+                }
 
                 EditorGUILayout.BeginVertical(GUI.skin.box);
                 EditorGUILayout.BeginHorizontal();
 
-                gameObjectFoldouts.TryAdd(gameObject, true);
-                gameObjectFoldouts[gameObject] = EditorGUILayout.Foldout(gameObjectFoldouts[gameObject], gameObject.name, true, gameObjectNameStyle);
+                gameObjectFoldouts.TryAdd(obj, true);
+                gameObjectFoldouts[obj] = EditorGUILayout.Foldout(gameObjectFoldouts[obj], o ? o.name : obj.GetHashCode().SafeString(), true, gameObjectNameStyle);
 
-                if (GUILayout.Button("Select", GUILayout.ExpandWidth(false))) gameObject.SelectAndPing();
-                if (GUILayout.Button("Ping", GUILayout.ExpandWidth(false))) gameObject.Ping();
+                if (o && GUILayout.Button("Select", GUILayout.ExpandWidth(false))) o.SelectAndPing();
+                if (o && GUILayout.Button("Ping", GUILayout.ExpandWidth(false))) o.Ping();
 
                 EditorGUILayout.EndHorizontal();
 
-                if (gameObjectFoldouts[gameObject]) {
+                if (gameObjectFoldouts[obj]) {
                     EditorGUILayout.BeginVertical(GUI.skin.box);
                     EditorGUILayout.BeginHorizontal();
 
-                    behavioursFoldouts.TryAdd(behaviour, true);
-                    behavioursFoldouts[behaviour] = EditorGUILayout.Foldout(behavioursFoldouts[behaviour], behaviour.GetType().Name, true, behaviourNameStyle);
+                    behavioursFoldouts.TryAdd(obj, true);
+                    behavioursFoldouts[obj] = EditorGUILayout.Foldout(behavioursFoldouts[obj], obj.GetType().Name, true, behaviourNameStyle);
 
                     if (GUILayout.Button("Open Script", GUILayout.ExpandWidth(false)))
-                        OpenScript(behaviour);
+                        OpenScript(obj);
 
                     EditorGUILayout.EndHorizontal();
 
-                    if (behavioursFoldouts[behaviour]) {
+                    if (behavioursFoldouts[obj] && !isDestroyed) {
                         propertyTree.UpdateTree();
 
                         propertyTree.BeginDraw(true);
@@ -128,9 +149,10 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
                             // }
 
                             // bool ugh = false;
-                            if (rootAttribute is { AsString: true } || propAttribute.AsString)
+                            if (rootAttribute is { AsString: true } || propAttribute.AsString) {
                                 foreach (InspectorProperty child in property.Children) {
                                     string str = child.ValueEntry.WeakSmartValue.SafeString();
+                                    InfoContainer.ModifyInfo(typeof(RealtimeDebuggerWindow), ref str);
                                     EditorGUILayout.LabelField(str, new GUIStyle(EditorStyles.label) { richText = true, wordWrap = true });
 
                                     // if (!ugh) {
@@ -138,17 +160,48 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
                                     //     EditorGUILayout.EndHorizontal();
                                     // }
                                 }
-                            else
+                            }
+                            else {
                                 property.Draw();
+                            }
 
                             // if (ugh)
                             //     EditorGUILayout.BeginHorizontal();
 
-                            if (GUILayout.Button(">_", GUILayout.ExpandWidth(false))) OpenScript(behaviour, property.Name);
+                            if (GUILayout.Button(">_", GUILayout.ExpandWidth(false)))
+                                OpenScript(obj, property.Name);
+
                             EditorGUILayout.EndHorizontal();
                         }
 
                         propertyTree.EndDraw();
+
+                        if (rootAttribute != null) {
+                            behavioursPrivatesFoldouts.TryAdd(obj, false);
+                            behavioursPrivatesFoldouts[obj] = EditorGUILayout.BeginFoldoutHeaderGroup(behavioursPrivatesFoldouts[obj], "Private/Hidden");
+
+                            if (behavioursPrivatesFoldouts[obj]) {
+                                foreach (FieldInfo field in obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+                                             .Where(f => !properties.Keys.Any(p => p.IsTreeRoot ? p.Tree.EnumerateTree().Any(tp => tp.Name == f.Name) : p.Name == f.Name))) {
+                                    if (o) {
+                                        SerializedObject so = new(o);
+                                        so.Update();
+                                        SerializedProperty prop = so.FindProperty(field.Name);
+                                        if (prop != null)
+                                            EditorGUILayout.PropertyField(prop);
+                                        else
+                                            EditorGUILayout.LabelField(field.Name, field.GetValue(o).EnsureString());
+
+                                        so.ApplyModifiedProperties();
+                                    }
+                                    else {
+                                        EditorGUILayout.LabelField(field.Name, field.GetValue(obj).EnsureString());
+                                    }
+                                }
+                            }
+
+                            EditorGUILayout.EndFoldoutHeaderGroup();
+                        }
                     }
 
                     EditorGUILayout.EndVertical();
@@ -187,6 +240,8 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
                     labelResolver.DrawError();
             }
 
+            InfoContainer.ModifyInfo(typeof(RealtimeDebuggerWindow), ref attribute.Label);
+
             if (!attribute.Label.IsNullOrEmpty()) {
                 EditorGUILayout.LabelField(attribute.Label,
                     new GUIStyle(EditorStyles.boldLabel) {
@@ -194,15 +249,16 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
                         alignment = TextAnchor.MiddleCenter
                     });
 
+                SirenixEditorGUI.HorizontalLineSeparator(InfoContainer.ExtractInfo<Color>(typeof(RealtimeDebuggerWindow), attribute.Label).FirstOrDefault());
                 GUILayout.Space(4);
             }
         }
 
         private void CacheProperties() {
-            cachedProperties = cachedProperties.ExistingKeys();
+            cachedProperties = cachedProperties.NonNullKeys();
 
             foreach (MonoBehaviour behaviour in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)) {
-                bool         debugBehaviour = behaviour.GetType().IsDefined<RealtimeDebugAttribute>();
+                bool         debugBehaviour = behaviour.GetType().IsDefined<RealtimeDebugAttribute>(true);
                 MemberInfo[] members        = behaviour.GetType().GetMembers(Flags);
 
                 if (!debugBehaviour && !members.Any(m => m.TryGet(out RealtimeDebugAttribute _)))
@@ -210,11 +266,21 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
 
                 cachedProperties.TryAdd(behaviour, PropertyTree.Create(behaviour));
             }
+
+            cachedProperties = cachedProperties.Reverse().ToDictionary();
         }
 
-        private static void OpenScript(MonoBehaviour script, string target = null) {
-            MonoScript monoScript         = MonoScript.FromMonoBehaviour(script);
-            string     targetMatchPattern = @$"{target ?? monoScript.name}(?!\w)";
+        // todo can return incorrect line
+        private static void OpenScript(object obj, string target = null) {
+            MonoScript monoScript;
+
+            switch (obj) {
+                case MonoBehaviour mb:    monoScript = MonoScript.FromMonoBehaviour(mb); break;
+                case ScriptableObject so: monoScript = MonoScript.FromScriptableObject(so); break;
+                default:                  return;
+            }
+
+            string targetMatchPattern = @$"{target ?? monoScript.name}(?!\w)";
 
             string[] lines      = monoScript.text.Split('\n');
             int      targetLine = lines.IndexOf(lines.First(line => Regex.IsMatch(line, targetMatchPattern))) + 1;

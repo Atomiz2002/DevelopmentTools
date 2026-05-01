@@ -17,7 +17,9 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
     [CreateAssetMenu(fileName = "Debug Fields", menuName = "Development Tools/Debug Fields")]
     public class DebugFields : SerializedScriptableObject {
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !SIMULATE_BUILD
+
+        private static bool autoOpenedWindowOnce;
 
         [ListDrawerSettings(IsReadOnly = true, DefaultExpandedState = true, ShowFoldout = false, ShowItemCount = false)]
         public List<DebugFieldsValues> debugFields = new();
@@ -31,10 +33,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
                 if (instance)
                     return instance;
 
-                instance = AssetDatabase.FindAssets($"t:{nameof(DebugFields)}")
-                    .FirstOrDefault()?
-                    .GUIDToPath()
-                    .LoadAsset<DebugFields>();
+                instance = typeof(DebugFields).FindAssets<DebugFields>().FirstOrDefault();
 
                 if (instance)
                     return instance;
@@ -55,10 +54,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
         }
 
         [MenuItem(EngineSettings.MenuGroupPath + "Debug Fields")]
-        public static void Show() {
-            if (!EngineSettings.TryFocusWindow(Instance.name))
-                EditorUtility.OpenPropertyEditor(instance);
-        }
+        public static void TryShowWindow() => EngineSettings.TryShowWindow(Instance);
 
         private void OnPlayModeStateChanged(PlayModeStateChange state) {
             switch (state) {
@@ -75,7 +71,6 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
         private byte                    clearConfirm;
         private CancellationTokenSource clearConfirmCancellationTokenSource;
 
-        [DisableInEditorMode]
         [Button("@clearConfirm == 0 ? \"Clear\" : \"<color=#ff0000>Are you sure?</color>\"")]
         [GUIColor("@clearConfirm == 0 ? GUI.color : Color.red")]
         private void Clear() {
@@ -89,7 +84,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
                     await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: clearConfirmCancellationTokenSource.Token);
                     clearConfirm = 0;
                 }
-                catch (OperationCanceledException) {}
+                catch {}
             });
 
             if (clearConfirm < 2)
@@ -101,6 +96,11 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
         }
 
         public static void AddDebugField(string name, string value, Texture2D icon = null, StackTrace stackTrace = null) {
+            if (!autoOpenedWindowOnce) {
+                TryShowWindow();
+                autoOpenedWindowOnce = true;
+            }
+
             DebugFieldsValues debugField = Instance.debugFields.Find(fieldValue => fieldValue.FieldName == name);
 
             if (debugField == null)

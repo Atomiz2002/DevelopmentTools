@@ -23,7 +23,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
         public DebugFieldsValues(string fieldName) => FieldName = fieldName;
 
         public void AddValue(string value, Texture2D icon, StackTrace stackTrace) {
-            if (DebugFields.Count > 0 && DebugFields[0].RawValue == value && DebugFields[0].Icon == icon)
+            if (DebugFields.Count > 0 && DebugFields[0].RawValue == value && DebugFields[0].Thumbnail == icon)
                 DebugFields[0].Repeat();
             else
                 DebugFields.Insert(0, new(FieldName, value, icon, stackTrace));

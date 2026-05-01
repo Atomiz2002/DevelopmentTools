@@ -25,7 +25,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
         public static T DebugField<T>(this T t, object fieldName, Texture2D icon = null) {
 #if UNITY_EDITOR && !SIMULATE_BUILD
-            DebugFields.AddDebugField(fieldName.SafeString(), t.EnsureString("\n"), icon);
+            DebugFields.AddDebugField(fieldName.SafeString(), t.EnsureString(separator: "\n"), icon);
 #endif
             return t;
         }
@@ -33,10 +33,10 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
         public static T DebugField<T, T2>(this T t, object fieldName, [NotNull] Func<T, T2> func, Texture2D icon = null) {
 #if UNITY_EDITOR && !SIMULATE_BUILD
             try {
-                DebugFields.AddDebugField(fieldName.SafeString(), func(t)?.EnsureString("\n"), icon, new(2, true));
+                DebugFields.AddDebugField(fieldName.SafeString(), func(t)?.EnsureString(separator: "\n"), icon, new(2, true));
             }
             catch (Exception) {
-                DebugFields.AddDebugField($"{fieldName.SafeString()} (Error)", t?.EnsureString("\n"), icon);
+                DebugFields.AddDebugField($"{fieldName.SafeString()} (Error)", t?.EnsureString(separator: "\n"), icon);
             }
 #endif
             return t;

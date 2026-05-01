@@ -1,8 +1,9 @@
-﻿#if UNITY_EDITOR && DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
@@ -40,41 +41,66 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
         [HideLabel]
         [PreviewTexture2D]
         [SerializeField]
+        [ShowIf(nameof(Thumbnail))]
+        public Texture2D Thumbnail;
+
+        [HorizontalGroup("_")]
+        [HideLabel]
+        [PreviewTexture2D]
+        [SerializeField]
+        [ShowIf(nameof(Icon))]
         public Texture2D Icon;
 
         [HorizontalGroup("_")]
         [HideLabel]
         [DisplayAsString(EnableRichText = true, FontSize = 14, Overflow = false)]
         [SerializeField]
+        [HideIf(nameof(Icon))]
         private string DisplayValue;
 
         [HorizontalGroup("_", Width = 15)]
         [HideLabel]
         [DisplayAsString(EnableRichText = true, FontSize = 14)]
         [SerializeField]
+        [HideIf(nameof(Icon))]
         private int Repetitions = 1;
 
         private string filePath;
         private int    lineNumber;
         private int    columnNumber;
 
-        public DebugFieldValue(string name, string value, Texture2D icon = null, StackTrace stackTrace = null) {
+        public DebugFieldValue(string name, string value, Texture2D texture = null, StackTrace stackTrace = null) {
             RawName  = name;
             RawValue = value;
-            Icon     = icon;
 
-            DisplayValue = value.Bold().Colored(Color.White);
-            Time         = $"{DateTime.Now:mm:ss.fff}";
+            if (value.IsNullOrWhiteSpace())
+                Icon = texture;
+            else {
+                Thumbnail = texture;
 
-            StackFrame stackFrame = (stackTrace ?? new StackTrace(4, true)).GetFrame(0);
+                InfoContainer.ModifyInfo(typeof(DebugFieldValue), ref value);
+                DisplayValue = value.Bold().Colored(Color.White);
+            }
+
+            Time = $"{DateTime.Now:mm:ss.fff}";
+
+            StackFrame stackFrame = (stackTrace ?? new StackTrace(4, true)).GetFrames()?.SkipWhile(f => f.SafeString().Contains(nameof(ActionExtensions.SafeInvoke))).ElementAt(0);
             filePath     = stackFrame?.GetFileName();
             lineNumber   = stackFrame?.GetFileLineNumber() ?? 0;
             columnNumber = stackFrame?.GetFileColumnNumber() ?? 0;
+
+            TryUseQuantumIcon();
         }
 
         public void Repeat() {
             Repetitions++;
             TimeRepeat = $"{DateTime.Now:mm:ss.fff}";
+            TryUseQuantumIcon();
+        }
+
+        private void TryUseQuantumIcon() {
+            if (!Thumbnail)
+                Thumbnail = InfoContainer.ExtractInfo<Texture2D>(typeof(DebugFieldValue), (RawValue + RawName).Unformatted()).FirstOrDefault();
         }
 
         [HorizontalGroup("_", Width = 22)]

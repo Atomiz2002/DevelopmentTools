@@ -21,9 +21,6 @@ namespace DevelopmentTools {
     public sealed class DebugEntry {
 
 #if UNITY_EDITOR && !SIMULATE_BUILD && ENABLE_LOGS
-        private static readonly List<Func<string, string>>      registeredTextFormatters = new();
-        private static readonly List<Func<string, Texture2D[]>> registeredIconExtractors = new();
-
         [SerializeField] [HideInInspector] public bool IsEvent;
         [SerializeField] [HideInInspector] public bool Received;
         [SerializeField] [HideInInspector] public bool IsError;
@@ -141,9 +138,8 @@ namespace DevelopmentTools {
 
                 DisplayedDetails = details?.JoinSmart("\n", string.Empty).Colored(Color.White);
 
-                UpdateIcons();
-                ApplyTextFormatters(ref DisplayedCallerSignature);
-                ApplyTextFormatters(ref DisplayedDetails);
+                InfoContainer.ExtractAndModifyInfo(typeof(DebugEntry), ref DisplayedCallerSignature, ref Icons);
+                InfoContainer.ExtractAndModifyInfo(typeof(DebugEntry), ref DisplayedDetails, ref Icons);
 
 #if UNITY_EDITOR // ENABLE_LOGS is handled in DebugLogger.LogEntry
                 if (isError)
@@ -162,36 +158,19 @@ namespace DevelopmentTools {
 #endif
         }
 
-        private void ApplyTextFormatters(ref string input) {
-            foreach (Func<string, string> textFormatter in registeredTextFormatters)
-                input = textFormatter.SafeInvoke(input);
-        }
-
-        public static void RegisterTextFormatter(Func<string, string> textFormatter)      => registeredTextFormatters.Add(textFormatter);
-        public static void RegisterIconExtractor(Func<string, Texture2D[]> iconExtractor) => registeredIconExtractors.Add(iconExtractor);
-
         public void AddIcons(params Texture2D[] textures) => Icons.AddRange(textures);
-
-        private void UpdateIcons() {
-            foreach (Func<string, Texture2D[]> extractor in registeredIconExtractors)
-                Icons.AddRange(extractor.SafeInvoke(ToString()));
-
-            Icons.ClearUnityNulls().Distinctify();
-        }
 
         public void AddDetails([NotNull] string details) {
             TimeSpan delay          = TimeSpan.FromSeconds(Time.realtimeSinceStartupAsDouble) - timestamp;
             string   displayedDelay = $"+{delay:ss}s {delay.Milliseconds:000}";
 
-            ApplyTextFormatters(ref details);
+            InfoContainer.ExtractAndModifyInfo(typeof(DebugEntry), ref details, ref Icons);
 
             for (int i = 0; i < Details.Count; i++)
                 if (Details[i].details.IsNullOrEmpty()) {
                     Details[i] = (details, displayedDelay);
                     break;
                 }
-
-            UpdateIcons();
         }
 
         /// Will apply colors only if <paramref name="parametersValues"/> is not null
@@ -253,10 +232,9 @@ namespace DevelopmentTools {
 
         internal void SetReturn(object returnValue) {
             this.returnValue = CleanUp(returnValue);
-            ApplyTextFormatters(ref this.returnValue);
+            InfoContainer.ExtractAndModifyInfo(typeof(DebugEntry), ref this.returnValue, ref Icons);
 
             DisplayedCallerSignature += $" {returnValueFormatting(this.returnValue)}";
-            UpdateIcons();
         }
 
         private string CleanUp(object type) {
