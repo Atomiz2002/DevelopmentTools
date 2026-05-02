@@ -12,7 +12,7 @@ using Sirenix.Utilities;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
 
     [CreateAssetMenu(fileName = "Debug Fields", menuName = "Development Tools/Debug Fields")]
     public class DebugFields : SerializedScriptableObject {

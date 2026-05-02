@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 #endif
 
-namespace DevelopmentTools.Editor.Extensions {
+namespace DevelopmentTools.DevelopmentTools.Editor.Extensions {
 
     public static class TextureExtensions {
 

@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
-using DevelopmentTools.Editor.Toolbar_Injections;
+using DevelopmentTools.DevelopmentTools.Editor.Toolbar_Injections;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.ShortcutManagement;
@@ -13,7 +13,7 @@ using UnityEditor.AddressableAssets.Settings;
 using Sirenix.Utilities.Editor;
 #endif
 
-namespace DevelopmentTools.Editor.Settings {
+namespace DevelopmentTools.DevelopmentTools.Editor.Settings {
 
     public class BuildSettings : EditorWindow {
 

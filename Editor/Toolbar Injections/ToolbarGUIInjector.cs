@@ -13,7 +13,7 @@ using PopupWindow = UnityEditor.PopupWindow;
 using Sirenix.Utilities.Editor;
 #endif
 
-namespace DevelopmentTools.Editor.Toolbar_Injections {
+namespace DevelopmentTools.DevelopmentTools.Editor.Toolbar_Injections {
 
     [InitializeOnLoad]
     public static class ToolbarGUIInjector {

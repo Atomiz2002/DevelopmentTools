@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.Editor.Toolbar_Injections;
+using DevelopmentTools.DevelopmentTools.Editor.Toolbar_Injections;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
@@ -19,7 +19,7 @@ using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 #endif
 
-namespace DevelopmentTools.Editor.Settings {
+namespace DevelopmentTools.DevelopmentTools.Editor.Settings {
 
     public static class EngineSettings {
 

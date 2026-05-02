@@ -1,4 +1,4 @@
-﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -13,7 +13,7 @@ using UnityEditor;
 using UnityEngine;
 using Color = System.Drawing.Color;
 
-namespace DevelopmentTools.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
 
     [Serializable]
     [InlineProperty]

@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace DevelopmentTools.Editor.AttributeDrawers {
+namespace DevelopmentTools.DevelopmentTools.Editor.AttributeDrawers {
 
     public class DropZoneAttributeDrawer<T> : OdinAttributeDrawer<DropZoneAttribute, T> {
 

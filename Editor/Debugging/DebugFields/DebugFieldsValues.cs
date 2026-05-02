@@ -5,7 +5,7 @@ using System.Diagnostics;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
 
     [Serializable]
     public class DebugFieldsValues {

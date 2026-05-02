@@ -3,7 +3,7 @@ using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Extensions.DropZone {
+namespace DevelopmentTools.DevelopmentTools.Editor.Extensions.DropZone {
 
     [AttributeUsage(AttributeTargets.Field)]
     [DontApplyToListElements]

@@ -1,12 +1,12 @@
-﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR && !SIMULATE_BUILD
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DevelopmentEssentials.Editor.Extensions.Unity;
-using DevelopmentTools.Editor.Debugging.StateDebugger.IndexedList;
-using DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling;
-using DevelopmentTools.Editor.Extensions;
+using DevelopmentTools.DevelopmentTools.Editor.Debugging.StateDebugger.IndexedList;
+using DevelopmentTools.DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling;
+using DevelopmentTools.DevelopmentTools.Editor.Extensions;
 using DevelopmentTools.Settings;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Serialization;
@@ -14,7 +14,7 @@ using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Debugging.StateDebugger {
+namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.StateDebugger {
 
     public class StateDebuggerWindow : EditorWindow {
 

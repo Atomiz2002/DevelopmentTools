@@ -1,9 +1,9 @@
-﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR && !SIMULATE_BUILD && ENABLE_LOGS
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD && ENABLE_LOGS
 using System.Linq;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.Editor.AttributeDrawers;
+using DevelopmentTools.DevelopmentTools.Editor.AttributeDrawers;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
@@ -11,7 +11,7 @@ using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Debugging {
+namespace DevelopmentTools.DevelopmentTools.Editor.Debugging {
 
     public class DebugEntryDrawer : OdinDrawer {
 

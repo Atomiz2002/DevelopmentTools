@@ -1,8 +1,8 @@
-﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR && !SIMULATE_BUILD
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System;
 using Sirenix.OdinInspector;
 
-namespace DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling {
+namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling {
 
     [DontApplyToListElements]
 // [AttributeUsage(AttributeTargets.All, Inherited = false)]

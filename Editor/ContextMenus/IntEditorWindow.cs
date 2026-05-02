@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.ContextMenus {
+namespace DevelopmentTools.DevelopmentTools.Editor.ContextMenus {
 
     public abstract class IntEditorWindow : EditorWindow {
 

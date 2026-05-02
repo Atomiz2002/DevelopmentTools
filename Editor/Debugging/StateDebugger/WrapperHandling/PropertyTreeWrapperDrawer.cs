@@ -1,10 +1,10 @@
-﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR && !SIMULATE_BUILD
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using DevelopmentEssentials.Extensions.Unity;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling {
+namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling {
 
     public class PropertyTreeWrapperDrawer : OdinAttributeDrawer<PropertyTreeWrapperAttribute> {
 

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 #endif
 
-namespace DevelopmentTools.Editor.Extensions {
+namespace DevelopmentTools.DevelopmentTools.Editor.Extensions {
 
     public static class JsonExtensions {
 

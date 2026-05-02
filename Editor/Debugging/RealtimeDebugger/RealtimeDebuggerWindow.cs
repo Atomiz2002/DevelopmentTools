@@ -1,4 +1,4 @@
-﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,7 +15,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
+namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.RealtimeDebugger {
 
     public class RealtimeDebuggerWindow : EditorWindow {
 

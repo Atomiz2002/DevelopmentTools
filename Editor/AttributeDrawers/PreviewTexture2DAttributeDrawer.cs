@@ -1,4 +1,4 @@
-﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR && !SIMULATE_BUILD
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.ODIN_INSPECTOR;
@@ -7,7 +7,7 @@ using Sirenix.Utilities.Editor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace DevelopmentTools.Editor.AttributeDrawers {
+namespace DevelopmentTools.DevelopmentTools.Editor.AttributeDrawers {
 
     public class PreviewTexture2DAttributeDrawer<T> : OdinAttributeDrawer<PreviewTexture2DAttribute, T> where T : Object {
 

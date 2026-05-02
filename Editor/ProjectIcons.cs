@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace DevelopmentTools.Editor {
+namespace DevelopmentTools.DevelopmentTools.Editor {
 
     public class ProjectIcons {
 

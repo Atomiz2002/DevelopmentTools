@@ -8,7 +8,7 @@ using DevelopmentEssentials.Extensions.Unity;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Debugging.VisualDebugging {
+namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.VisualDebugging {
 
     public static class VisualDebuggerExtensions {
 

@@ -1,9 +1,9 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
-using DevelopmentTools.Editor.AttributeDrawers;
+using DevelopmentTools.DevelopmentTools.Editor.AttributeDrawers;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Extensions.Odin {
+namespace DevelopmentTools.DevelopmentTools.Editor.Extensions.Odin {
 
     public class TextureDrawer : OdinValueDrawer<Texture2D> {
 

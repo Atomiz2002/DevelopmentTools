@@ -3,7 +3,7 @@ using DevelopmentTools.Settings;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor {
+namespace DevelopmentTools.DevelopmentTools.Editor {
 
     public class AllCursorsPreview : EditorWindow {
 

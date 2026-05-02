@@ -1,9 +1,9 @@
-﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR && !SIMULATE_BUILD
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using JetBrains.Annotations;
 
-namespace DevelopmentTools.Editor.Debugging.StateDebugger {
+namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.StateDebugger {
 
     public static class DebugStateExtensions {
 

@@ -6,7 +6,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 #endif
 
-namespace DevelopmentTools.Editor.Settings {
+namespace DevelopmentTools.DevelopmentTools.Editor.Settings {
 
     [CreateAssetMenu(fileName = "Engine Settings Preset", menuName = "Development Tools/Engine Settings Preset")]
     public class EngineSettingsPreset : ScriptableObject, ICopyable {

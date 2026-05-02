@@ -5,7 +5,7 @@ using UnityEditor.Build;
 using Sirenix.Utilities;
 #endif
 
-namespace DevelopmentTools.Editor.Extensions {
+namespace DevelopmentTools.DevelopmentTools.Editor.Extensions {
 
     public static class GeneralExtensions {
 

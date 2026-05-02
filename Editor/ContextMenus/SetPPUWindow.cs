@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEditor;
 
-namespace DevelopmentTools.Editor.ContextMenus {
+namespace DevelopmentTools.DevelopmentTools.Editor.ContextMenus {
 
     public class SetPPUWindow : IntEditorWindow {
 

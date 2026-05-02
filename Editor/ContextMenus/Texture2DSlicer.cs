@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEditor.U2D.Sprites;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.ContextMenus {
+namespace DevelopmentTools.DevelopmentTools.Editor.ContextMenus {
 
     public static class Texture2DSlicer {
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentTools.Editor.Extensions;
+using DevelopmentTools.DevelopmentTools.Editor.Extensions;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Events;
@@ -16,7 +16,7 @@ using Object = UnityEngine.Object;
 using UnityEngine.AddressableAssets;
 #endif
 
-namespace DevelopmentTools.Editor {
+namespace DevelopmentTools.DevelopmentTools.Editor {
 
     public static class EditorHelper {
 

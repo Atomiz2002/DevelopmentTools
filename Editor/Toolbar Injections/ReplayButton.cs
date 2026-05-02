@@ -1,16 +1,16 @@
-﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR && !SIMULATE_BUILD
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System;
 using Cysharp.Threading.Tasks;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.Editor.Settings;
+using DevelopmentTools.DevelopmentTools.Editor.Settings;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEditor.ShortcutManagement;
 using UnityEngine;
 
-namespace DevelopmentTools.Editor.Toolbar_Injections {
+namespace DevelopmentTools.DevelopmentTools.Editor.Toolbar_Injections {
 
     public static class ReplayButton {
 
