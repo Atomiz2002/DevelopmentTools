@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR && DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && UNITY_EDITOR
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
