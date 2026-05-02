@@ -51,13 +51,13 @@ namespace DevelopmentTools.Editor.AttributeDrawers {
         public static void PreviewSpriteRenderer(MenuCommand menuCommand) => PreviewTexture2DWindow.Create(((SpriteRenderer) menuCommand.context).sprite.texture);
 
         [MenuItem("CONTEXT/Image/Preview Sprite", true)]
-        public static bool PreviewImageValidate(MenuCommand menuCommand) => menuCommand.context.As(out Image i) && i;
+        public static bool PreviewImageValidate(MenuCommand menuCommand) => menuCommand.context.Is(out Image i) && i;
 
         [MenuItem("CONTEXT/RawImage/Preview Sprite", true)]
-        public static bool PreviewRawImageValidate(MenuCommand menuCommand) => menuCommand.context.As(out RawImage ri) && ri;
+        public static bool PreviewRawImageValidate(MenuCommand menuCommand) => menuCommand.context.Is(out RawImage ri) && ri;
 
         [MenuItem("CONTEXT/SpriteRenderer/Preview Sprite", true)]
-        public static bool PreviewSpriteRendererValidate(MenuCommand menuCommand) => menuCommand.context.As(out SpriteRenderer sr) && sr.sprite;
+        public static bool PreviewSpriteRendererValidate(MenuCommand menuCommand) => menuCommand.context.Is(out SpriteRenderer sr) && sr.sprite;
 
     }
 
