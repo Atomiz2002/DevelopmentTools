@@ -1,6 +1,6 @@
 ﻿using DevelopmentEssentials.Editor.DependencyManagement;
 using UnityEditor;
-using static AsmdefDependencies;
+using static DevelopmentEssentials.Editor.DependencyManagement.AsmdefDependencies;
 
 namespace DevelopmentTools.Editor {
 

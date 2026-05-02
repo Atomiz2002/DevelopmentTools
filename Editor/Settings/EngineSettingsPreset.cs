@@ -1,4 +1,5 @@
-﻿using DevelopmentEssentials.Editor.Extensions.Unity;
+﻿using DevelopmentEssentials;
+using DevelopmentEssentials.Editor.Extensions.Unity;
 using UnityEditor;
 using UnityEngine;
 #if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
