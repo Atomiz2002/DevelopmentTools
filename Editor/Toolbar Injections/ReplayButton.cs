@@ -1,6 +1,5 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System;
-using Cysharp.Threading.Tasks;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.DevelopmentTools.Editor.Settings;
@@ -9,6 +8,11 @@ using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEditor.ShortcutManagement;
 using UnityEngine;
+#if DEVELOPMENT_TOOLS_EDITOR_UNI_TASK
+using Cysharp.Threading.Tasks;
+#else
+using System.Threading.Tasks;
+#endif
 
 namespace DevelopmentTools.DevelopmentTools.Editor.Toolbar_Injections {
 
@@ -35,8 +39,13 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Toolbar_Injections {
         [Shortcut("Replay", KeyCode.F4)]
         private static async void Replay() {
             try {
+                const int delayMs = 100;
                 EditorApplication.ExitPlaymode();
-                await UniTask.Delay(100);
+#if DEVELOPMENT_TOOLS_EDITOR_UNI_TASK
+                await UniTask.Delay(delayMs);
+#else
+                await Task.Delay(delayMs);
+#endif
                 AssetDatabase.Refresh();
                 EditorApplication.EnterPlaymode();
             }

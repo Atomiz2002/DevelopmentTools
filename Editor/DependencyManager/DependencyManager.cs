@@ -9,11 +9,11 @@ namespace DevelopmentTools.Editor {
         static DependencyManager() {
             AsmdefsDependencies.Add(new AsmdefDependencies("DevelopmentTools.asmdef", "DEVELOPMENT_TOOLS_RUNTIME_")
                 .SetHardDependencies(
-                    new("DevelopmentEssentials"))
+                    new("DEVELOPMENT_ESSENTIALS", "DevelopmentEssentials"))
                 .SetSoftDependencies(
                     new("NEWTONSOFT_JSON",
                         "Newtonsoft.Json.dll"),
-                    new AsmdefDependencies.SoftAsmdefDependency("ODIN_INSPECTOR",
+                    new AsmdefDependencies.AsmdefDependency("ODIN_INSPECTOR",
                         "Sirenix.OdinInspector.Attributes.dll",
                         "Sirenix.OdinInspector.Editor.dll",
                         "Sirenix.Serialization.dll",
@@ -22,13 +22,16 @@ namespace DevelopmentTools.Editor {
 
             AsmdefsDependencies.Add(new AsmdefDependencies("DevelopmentTools.Editor.asmdef", "DEVELOPMENT_TOOLS_EDITOR_")
                 .SetHardDependencies(
-                    new("DevelopmentEssentials"),
-                    new("DevelopmentEssentials.Editor"),
-                    new("DevelopmentTools"),
-                    new("UniTask"))
+                    new("DEVELOPMENT_ESSENTIALS",
+                        "DevelopmentEssentials",
+                        "DevelopmentEssentials.Editor"),
+                    new AsmdefDependencies.AsmdefDependency("DEVELOPMENT_TOOLS",
+                        "DevelopmentTools"))
                 .SetSoftDependencies(
                     new("COMPONENT_NAMES",
                         "ComponentNames"),
+                    new("UNI_TASK",
+                        "UniTask"),
                     new("UNITY_2D_SPRITE",
                         "Unity.2D.Sprite.Editor"),
                     new("UNITY_ADDRESSABLES",

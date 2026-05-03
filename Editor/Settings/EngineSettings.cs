@@ -209,12 +209,6 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Settings {
                 }
             }
 
-            // [MenuItem("Test/Test")]
-            // public static async void Test() {
-            //     await UniTask.Delay(TimeSpan.FromSeconds(2));
-            //     await UniTask.Void(FocusProcess);
-            // }
-
         }
 
         [CanBeNull]

@@ -4,13 +4,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentTools.Settings;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEditor;
 using UnityEngine;
+#if DEVELOPMENT_TOOLS_EDITOR_UNI_TASK
+using Cysharp.Threading.Tasks;
+#else
+using System.Threading.Tasks;
+#endif
 
 namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
 
@@ -79,6 +83,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
             clearConfirmCancellationTokenSource?.Cancel();
             clearConfirmCancellationTokenSource = new();
 
+#if DEVELOPMENT_TOOLS_EDITOR_UNI_TASK
             UniTask.Void(async () => {
                 try {
                     await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: clearConfirmCancellationTokenSource.Token);
@@ -86,6 +91,15 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
                 }
                 catch {}
             });
+#else
+            Task.Run(async () => {
+                try {
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken: clearConfirmCancellationTokenSource.Token);
+                    clearConfirm = 0;
+                }
+                catch {}
+            });
+#endif
 
             if (clearConfirm < 2)
                 return;
