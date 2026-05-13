@@ -228,7 +228,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
                     if (isPinned)
                         SirenixEditorGUI.SDFIconButton(pinRect, SdfIconType.PinFill, historyElementPinned);
 
-                    GUI.DrawTexture(iconRect, element.GetIcon());
+                    element.GlobalId().GetIcon().Draw(iconRect, ScaleMode.ScaleToFit);
                     GUI.Label(labelRect, element.name, style);
                 }
 
@@ -254,10 +254,10 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
             if (selectedIndex < 0)
                 return;
 
-            Object   selectedElement      = elements[selectedIndex];
-            bool     isPinned             = pinned.Contains(selectedElement);
-            GUIStyle selectedElementStyle = isPinned ? pinnedElementSelected : historyElementSelected;
-            Texture  selectedElementIcon  = selectedElement.GetIcon();
+            Object           selectedElement      = elements[selectedIndex];
+            bool             isPinned             = pinned.Contains(selectedElement);
+            GUIStyle         selectedElementStyle = isPinned ? pinnedElementSelected : historyElementSelected;
+            IHaveIconPreview selectedElementIcon  = selectedElement.GlobalId().GetIcon();
             // float    selectedElementIconAspect = selectedElementIcon ? (float) selectedElementIcon.width / selectedElementIcon.height : 1;
 
             float selectedElementRectY = selectedIndex * elementHeight;
@@ -289,7 +289,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
 
             GUI.Label(labelRect, selectedElement.name, selectedElementStyle);
 
-            if (selectedElementIcon) {
+            if (selectedElementIcon.Icon) {
                 SirenixEditorGUI.DrawRoundRect(
                     iconRect,
                     (EditorHelper.BackgroundColor() * (Mathf.PingPong((float) EditorApplication.timeSinceStartup / 3, 0.4f) + 0.5f)).A(1),
@@ -297,7 +297,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
                     selectedElementStyle.hover.textColor,
                     2);
 
-                GUI.DrawTexture(iconRect.Expand(-2), selectedElementIcon, ScaleMode.ScaleToFit);
+                selectedElementIcon.Draw(iconRect.Expand(-2), ScaleMode.ScaleToFit);
             }
 
             if (Event.current.isMouse) {

@@ -1,6 +1,5 @@
 ﻿#if UNITY_EDITOR && !SIMULATE_BUILD
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
@@ -17,8 +16,6 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
 
         // todo editor setting to enable/disable for play mode
 
-        private static readonly Dictionary<int, Color> iconsColors = new();
-
         static HierarchyOverhaul() => EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
 
         private static void OnHierarchyGUI(int instanceID, Rect selectionRect) {
@@ -32,31 +29,29 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
                 bool selected = Selection.instanceIDs.Contains(instanceID);
                 bool active   = EditorWindow.focusedWindow && EditorWindow.focusedWindow.GetType().Name == "SceneHierarchyWindow";
 
-                (Texture texture, Color color) icon = (instanceID.GetIcon(), Color.white);
-                iconsColors.TryGetValue(instanceID, out icon.color);
+                IHaveIconPreview icon = instanceID.GetIcon();
 
                 if (selected && active) {
                     if (go.TryGetComponent(out SpriteRenderer renderer)) {
                         if (renderer.sprite && renderer.sprite.texture)
-                            icon = (renderer.sprite.n()?.texture.n() ?? Texture2D.whiteTexture, renderer.color);
+                            icon = new IconPreview(renderer.sprite.n()?.texture.n() ?? Texture2D.whiteTexture, renderer.color);
                     }
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
                     else if (go.TryGetComponent(out Image image)) {
-                        icon = (image.sprite.n()?.texture.n() ?? Texture2D.whiteTexture, image.color);
+                        icon = new IconPreview(image.sprite.n()?.texture.n() ?? Texture2D.whiteTexture, image.color);
                     }
                     else if (go.TryGetComponent(out RawImage rawImage)) {
-                        icon = (rawImage.texture.n() ?? Texture2D.whiteTexture, rawImage.color);
+                        icon = new IconPreview(rawImage.texture.n() ?? Texture2D.whiteTexture, rawImage.color);
                     }
 #endif
 
-                    icon.texture.Trim(true);
-                    icon.texture.filterMode = FilterMode.Point;
+                    icon.Icon.Trim(true);
+                    icon.Icon.filterMode = FilterMode.Point;
 
-                    instanceID.SetIcon(icon.texture);
-                    iconsColors[instanceID] = icon.color;
+                    instanceID.SetIcon(icon);
                 }
 
-                if (!icon.texture)
+                if (!icon.Icon)
                     return;
 
                 Rect iconRect = new(selectionRect.x, selectionRect.y, 16, 16);
@@ -70,11 +65,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
 
                 // TODO gray (tmpro content) next to GO name
 
-                EditorHelper.DrawColoredTexture(iconRect, EditorHelper.BackgroundColor(selected, active));
-                Color guiColor = GUI.color;
-                GUI.color = icon.color;
-                GUI.DrawTexture(iconRect, icon.texture, ScaleMode.ScaleToFit);
-                GUI.color = guiColor;
+                icon.Draw(iconRect, ScaleMode.ScaleToFit, selected, active);
             }
             catch (Exception e) {
                 e.LogEx();

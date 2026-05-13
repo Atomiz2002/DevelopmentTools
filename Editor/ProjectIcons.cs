@@ -19,20 +19,20 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
                 bool selected = Selection.assetGUIDs.Contains(guid);
                 bool active   = EditorWindow.focusedWindow.n()?.GetType().Name == "ProjectBrowser";
 
-                Object  asset = guid.LoadAssetByGUID();
-                Texture icon  = guid.GetIcon();
+                Object           asset = guid.LoadAssetByGUID();
+                IHaveIconPreview icon  = guid.GetIcon();
 
-                if (asset is IHaveProjectViewIcon iHaveIcon)
-                    icon = iHaveIcon.Icon;
+                if (asset is IHaveIconPreview iHaveIcon)
+                    icon = iHaveIcon;
                 // else if (guid.LoadAssetByGUID<Texture2D>()) // better sliced previews but HELLA slow. draws the first sprite on all sub-assets. potential solution if possible is highly inefficient
                 //     icon = guid.LoadAssetByGUID<Sprite>().ToTexture();
 
-                if (!icon)
+                if (!icon.Icon)
                     return;
 
                 if (selected && active) {
-                    icon.Trim(true);
-                    icon.filterMode = FilterMode.Point;
+                    icon.Icon.Trim(true);
+                    icon.Icon.filterMode = FilterMode.Point;
 
                     guid.SetIcon(icon);
                 }
@@ -42,16 +42,11 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
                 if (iconRect.height > 16)
                     iconRect.width = iconRect.height *= 0.8f;
 
-                DrawProjectIcon(iconRect, icon, selected, active);
+                icon.Draw(iconRect, ScaleMode.StretchToFill, selected, active);
             }
             catch (Exception e) {
                 e.LogEx();
             }
-        }
-
-        private static void DrawProjectIcon(Rect rect, Texture icon, bool selected, bool active) {
-            EditorHelper.DrawColoredTexture(rect, EditorHelper.BackgroundColor(selected, active));
-            GUI.DrawTexture(rect, icon, ScaleMode.StretchToFill);
         }
 
     }

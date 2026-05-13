@@ -291,52 +291,53 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
             GUI.color = prevColor;
         }
 
-        private static readonly Dictionary<GlobalObjectId, Texture> cachedIcons = new();
-
         #region Get/Set Icon
 
-        public static void SetIcon(this int id, Texture icon) => GlobalObjectId.GetGlobalObjectIdSlow(id).SetIcon(icon);
+        private static readonly Dictionary<GlobalObjectId, IHaveIconPreview> cachedIcons = new();
 
-        public static void SetIcon(this GUID guid, Texture icon) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).SetIcon(icon);
+        public static GlobalObjectId GlobalId(this Object obj) => GlobalObjectId.GetGlobalObjectIdSlow(obj);
 
-        public static void SetIcon(this GlobalObjectId id, Texture icon) {
+        public static void SetIcon(this int id, IHaveIconPreview iconPreview) => GlobalObjectId.GetGlobalObjectIdSlow(id).SetIcon(iconPreview);
+
+        public static void SetIcon(this GUID guid, IHaveIconPreview iconPreview) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).SetIcon(iconPreview);
+
+        public static void SetIcon(this GlobalObjectId id, IHaveIconPreview iconPreview) {
             if (id.ToString() == "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0")
                 return;
 
-            cachedIcons[id] = icon;
+            cachedIcons[id] = iconPreview;
         }
 
-        public static void SetIcon(this string id, Texture icon) {
+        public static void SetIcon(this string id, IHaveIconPreview iconPreview) {
             if (id.IsNullOrEmpty())
                 return;
 
             if (GlobalObjectId.TryParse(id, out GlobalObjectId objId)) {
-                objId.SetIcon(icon);
+                objId.SetIcon(iconPreview);
                 return;
             }
 
             if (int.TryParse(id, out int instanceId))
-                instanceId.SetIcon(icon);
+                instanceId.SetIcon(iconPreview);
 
             if (GUID.TryParse(id, out GUID guid))
-                guid.SetIcon(icon);
+                guid.SetIcon(iconPreview);
         }
 
-        public static Texture GetIcon(this int id) => GlobalObjectId.GetGlobalObjectIdSlow(id).GetIcon();
+        public static IHaveIconPreview GetIcon(this int id) => GlobalObjectId.GetGlobalObjectIdSlow(id).GetIcon();
 
-        public static Texture GetIcon(this GUID guid) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).GetIcon();
+        public static IHaveIconPreview GetIcon(this GUID guid) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).GetIcon();
 
-        public static Texture GetIcon(this GlobalObjectId id) {
+        public static IHaveIconPreview GetIcon(this GlobalObjectId id) {
             if (id.ToString() == "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0")
-                return null;
+                return new IconPreview(null, Color.clear);
 
             return cachedIcons[id];
         }
 
-        [CanBeNull]
-        public static Texture GetIcon(this string id) {
+        public static IHaveIconPreview GetIcon(this string id) {
             if (id.IsNullOrEmpty())
-                return null;
+                return new IconPreview(null, Color.clear);
 
             if (GlobalObjectId.TryParse(id, out GlobalObjectId objId))
                 return objId.GetIcon();
@@ -347,7 +348,15 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
             if (GUID.TryParse(id, out GUID guid))
                 return guid.GetIcon();
 
-            return null;
+            return new IconPreview(null, Color.clear);
+        }
+
+        public static void Draw(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
+            DrawColoredTexture(rect, BackgroundColor(selectedBackground, activeSelection));
+            Color guiColor = GUI.color;
+            GUI.color = icon.Color;
+            GUI.DrawTexture(rect, icon.Icon, scaleMode);
+            GUI.color = guiColor;
         }
 
         // public static void SetIcon(this Object asset, Texture icon) =>
