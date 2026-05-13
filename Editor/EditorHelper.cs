@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.DevelopmentTools.Editor.Extensions;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Events;
@@ -289,17 +291,76 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
             GUI.color = prevColor;
         }
 
-        public static readonly Dictionary<string, Texture> cachedIcons = new();
+        private static readonly Dictionary<GlobalObjectId, Texture> cachedIcons = new();
 
-        public static void SetIcon(this Object asset, Texture icon) =>
-            cachedIcons[GlobalObjectId.GetGlobalObjectIdSlow(asset).ToString()] = icon;
+        #region Get/Set Icon
 
-        public static Texture GetIcon(this Object asset) {
-            if (cachedIcons.TryGetValue(GlobalObjectId.GetGlobalObjectIdSlow(asset).ToString(), out Texture icon))
-                return icon;
+        public static void SetIcon(this int id, Texture icon) => GlobalObjectId.GetGlobalObjectIdSlow(id).SetIcon(icon);
 
-            return EditorGUIUtility.ObjectContent(asset, asset.n()?.GetType())?.image;
+        public static void SetIcon(this GUID guid, Texture icon) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).SetIcon(icon);
+
+        public static void SetIcon(this GlobalObjectId id, Texture icon) {
+            if (id.ToString() == "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0")
+                return;
+
+            cachedIcons[id] = icon;
         }
+
+        public static void SetIcon(this string id, Texture icon) {
+            if (id.IsNullOrEmpty())
+                return;
+
+            if (GlobalObjectId.TryParse(id, out GlobalObjectId objId)) {
+                objId.SetIcon(icon);
+                return;
+            }
+
+            if (int.TryParse(id, out int instanceId))
+                instanceId.SetIcon(icon);
+
+            if (GUID.TryParse(id, out GUID guid))
+                guid.SetIcon(icon);
+        }
+
+        public static Texture GetIcon(this int id) => GlobalObjectId.GetGlobalObjectIdSlow(id).GetIcon();
+
+        public static Texture GetIcon(this GUID guid) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).GetIcon();
+
+        public static Texture GetIcon(this GlobalObjectId id) {
+            if (id.ToString() == "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0")
+                return null;
+
+            return cachedIcons[id];
+        }
+
+        [CanBeNull]
+        public static Texture GetIcon(this string id) {
+            if (id.IsNullOrEmpty())
+                return null;
+
+            if (GlobalObjectId.TryParse(id, out GlobalObjectId objId))
+                return objId.GetIcon();
+
+            if (int.TryParse(id, out int instanceId))
+                return instanceId.GetIcon();
+
+            if (GUID.TryParse(id, out GUID guid))
+                return guid.GetIcon();
+
+            return null;
+        }
+
+        // public static void SetIcon(this Object asset, Texture icon) =>
+        //     cachedIcons[GlobalObjectId.GetGlobalObjectIdSlow(asset).ToString()] = icon;
+        //
+        // public static Texture GetIcon(this Object asset) {
+        //     if (cachedIcons.TryGetValue(GlobalObjectId.GetGlobalObjectIdSlow(asset).ToString(), out Texture icon))
+        //         return icon;
+        //
+        //     return EditorGUIUtility.ObjectContent(asset, asset.n()?.GetType())?.image;
+        // }
+
+        #endregion
 
         public static bool IsConsoleFocused() => EditorWindow.focusedWindow.n()?.GetType().Name == "ConsoleWindow";
 
