@@ -5,6 +5,9 @@ using UnityEngine;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 #endif
+#if UNITY_EDITOR && !SIMULATE_BUILD
+using UnityEditor;
+#endif
 
 namespace DevelopmentTools.DevelopmentTools.Editor.Extensions {
 
@@ -82,6 +85,30 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Extensions {
         [Pure]
         public static string ToJson<T>(this T obj, bool prettyPrint = false) => JsonUtility.ToJson(obj, prettyPrint);
 
+#endif
+
+#if UNITY_EDITOR && !SIMULATE_BUILD
+        /// <summary>
+        /// Deep clones values from one Unity Object to another using Editor serialization.
+        /// </summary>
+        public static void CopyValues(Object source, Object destination) {
+            if (source == null || destination == null) return;
+            string json = EditorJsonUtility.ToJson(source);
+            EditorJsonUtility.FromJsonOverwrite(json, destination);
+        }
+
+        /// <summary>
+        /// Creates an identical string representation of a Unity Object,
+        /// including private/internal fields not seen by JsonUtility.
+        /// </summary>
+        public static string ToEditorJson(this Object obj, bool prettyPrint = false) =>
+            EditorJsonUtility.ToJson(obj, prettyPrint);
+
+        /// <summary>
+        /// Overwrites a Unity Object using Editor-fidelity JSON.
+        /// </summary>
+        public static void FromEditorJson(this Object obj, string json) =>
+            EditorJsonUtility.FromJsonOverwrite(json, obj);
 #endif
 
         /// <inheritdoc cref="FromJson"/>

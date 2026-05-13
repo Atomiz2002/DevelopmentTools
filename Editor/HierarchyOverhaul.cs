@@ -9,21 +9,21 @@ using UnityEngine.UI;
 namespace DevelopmentTools.DevelopmentTools.Editor {
 
     [InitializeOnLoad]
-    public static class HierarchyIcons {
+    public static class HierarchyOverhaul {
 
         // todo editor setting to enable/disable for play mode
 
         internal static Texture bgTex;
         // private static readonly Dictionary<Color, Texture> colorCodes = new();
 
-        static HierarchyIcons() => EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
+        static HierarchyOverhaul() => EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
 
         private static void OnHierarchyGUI(int instanceID, Rect selectionRect) {
             try {
                 // if (Application.isPlaying)
                 //     return;
 
-                if (EditorUtility.InstanceIDToObject(instanceID) is not GameObject go)
+                if (!EditorUtility.InstanceIDToObject(instanceID).Is(out GameObject go))
                     return;
 
                 Rect iconRect = new(selectionRect.x, selectionRect.y, 16, 16);
@@ -34,6 +34,8 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
                 //     colorCode = color.ToTexture();
 
                 // GUI.DrawTexture(colorCodeRect, colorCode, ScaleMode.StretchToFill);
+
+                // TODO gray (tmpro content) next to GO name
 
                 Texture icon = null;
 
@@ -51,6 +53,8 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
 
                 icon.Trim(true);
                 icon.filterMode = FilterMode.Point;
+
+                go.SetIcon(icon);
 
                 if (!bgTex)
                     bgTex = new Color(.22f, .22f, .22f, 1f).ToTexture();

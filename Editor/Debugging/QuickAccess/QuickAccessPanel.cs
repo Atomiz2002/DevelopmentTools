@@ -4,6 +4,7 @@ using System.Linq;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
+using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Settings;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -18,7 +19,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
     public class QuickAccessPanel : EditorWindow {
 
         private static          List<Object> pinned           = new();
-        private static          List<Object> history          = new();
+        private static          List<Object> history          = new(); // todo store groups of selected objects
         private static          List<Object> elements         = new();
         private static readonly List<Object> queuedForRemoval = new();
 
@@ -53,13 +54,15 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
 
             Load();
             Selection.selectionChanged += () => {
-                if (!Selection.activeObject)
+                Object selected = Selection.activeObject.n() ?? Selection.objects.FirstOrDefault();
+
+                if (!selected)
                     return;
 
-                if (history.Contains(Selection.activeObject))
-                    history.Remove(Selection.activeObject);
+                if (history.Contains(selected))
+                    history.Remove(selected);
 
-                history.Insert(0, Selection.activeObject);
+                history.Insert(0, selected);
 
                 history = history.Distinct().ToList();
                 Save();
@@ -185,7 +188,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
             // if (!pinned.Any())
             //     DrawDropZoneUI(windowRect);
 
-            window?.Repaint();
+            window.n()?.Repaint();
         }
 
         private static void DrawElements() {
@@ -251,22 +254,22 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
             if (selectedIndex < 0)
                 return;
 
-            Object   selectedElement           = elements[selectedIndex];
-            bool     isPinned                  = pinned.Contains(selectedElement);
-            GUIStyle selectedElementStyle      = isPinned ? pinnedElementSelected : historyElementSelected;
-            Texture  selectedElementIcon       = selectedElement.GetIcon();
-            float    selectedElementIconAspect = selectedElementIcon ? (float) selectedElementIcon.width / selectedElementIcon.height : 1;
+            Object   selectedElement      = elements[selectedIndex];
+            bool     isPinned             = pinned.Contains(selectedElement);
+            GUIStyle selectedElementStyle = isPinned ? pinnedElementSelected : historyElementSelected;
+            Texture  selectedElementIcon  = selectedElement.GetIcon();
+            // float    selectedElementIconAspect = selectedElementIcon ? (float) selectedElementIcon.width / selectedElementIcon.height : 1;
 
             float selectedElementRectY = selectedIndex * elementHeight;
 
             elementRect.y = pinRect.y = iconRect.y = labelRect.y = selectedElementRectY;
 
-            elementRect    =  elementRect.Expand(0, elementExpandByOnHover);
-            iconRect       =  iconRect.Expand(elementIconExpandByOnHover).AddX(labelRect.width - elementIconExpandByOnHover);
-            iconRect.width =  iconRect.height * selectedElementIconAspect;
-            iconRect.x     -= iconRect.width - iconRect.height;
-            iconRect.y     =  Mathf.Min(Mathf.Max(iconRect.y, 0), container.yMax - iconRect.height);
-            labelRect      =  labelRect.Expand(0, elementLabelExpandByOnHover).SubXMin(elementHeight);
+            elementRect = elementRect.Expand(0, elementExpandByOnHover);
+            iconRect    = iconRect.Expand(elementIconExpandByOnHover).AddX(labelRect.width - elementIconExpandByOnHover);
+            // iconRect.width =  iconRect.height * selectedElementIconAspect;
+            iconRect.x -= iconRect.width - iconRect.height;
+            iconRect.y =  Mathf.Min(Mathf.Max(iconRect.y, 0), container.yMax - iconRect.height);
+            labelRect  =  labelRect.Expand(0, elementLabelExpandByOnHover).SubXMin(elementHeight);
 
             SirenixEditorGUI.DrawRoundRect(
                 elementRect,
@@ -294,7 +297,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
                     selectedElementStyle.hover.textColor,
                     2);
 
-                GUI.DrawTexture(iconRect.Expand(-2), selectedElementIcon, ScaleMode.ScaleAndCrop);
+                GUI.DrawTexture(iconRect.Expand(-2), selectedElementIcon, ScaleMode.ScaleToFit);
             }
 
             if (Event.current.isMouse) {
@@ -325,23 +328,33 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
         }
 
         private static void Load() {
-            pinned  = EditorPrefs.GetString(nameof(pinned)).Split(";").Select(AssetDatabaseExtensions.LoadAssetByGUID<Object>).Existing().ToList();
-            history = EditorPrefs.GetString(nameof(history)).Split(";").Select(AssetDatabaseExtensions.LoadAssetByGUID<Object>).Existing().ToList();
-
-            pinned  = pinned.Distinct().Existing().ToList();
-            history = history.Distinct().Existing().ToList();
-
+            pinned   = DeserializeList(EditorPrefs.GetString(nameof(pinned)));
+            history  = DeserializeList(EditorPrefs.GetString(nameof(history)));
             elements = pinned.Concat(history).ToList();
         }
 
         private static void Save() {
-            pinned  = pinned.Distinct().Existing().ToList();
-            history = history.Distinct().Existing().ToList();
-
-            EditorPrefs.SetString(nameof(pinned), pinned.Select(o => o.GetAssetGUID()).JoinSmart(";"));
-            EditorPrefs.SetString(nameof(history), history.Select(o => o.GetAssetGUID()).JoinSmart(";"));
-
+            EditorPrefs.SetString(nameof(pinned), SerializeList(pinned));
+            EditorPrefs.SetString(nameof(history), SerializeList(history));
             elements = pinned.Concat(history).ToList();
+        }
+
+        private const string LIST_SEPARATOR = ";";
+
+        private static string SerializeList(List<Object> list) =>
+            list.Existing().Select(o => GlobalObjectId.GetGlobalObjectIdSlow(o).ToString()).Join(LIST_SEPARATOR);
+
+        private static List<Object> DeserializeList(string data) {
+            if (data.IsNullOrEmpty())
+                return new();
+
+            return data.Split(LIST_SEPARATOR)
+                .Select(idStr => GlobalObjectId.TryParse(idStr, out GlobalObjectId id)
+                    ? GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id)
+                    : null)
+                .Existing()
+                .Distinct()
+                .ToList();
         }
 
         private static void Pin(Object element) {

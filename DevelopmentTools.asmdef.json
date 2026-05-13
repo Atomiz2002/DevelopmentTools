@@ -1,0 +1,28 @@
+﻿{
+  "hardAsmdefDependencies": [
+    {
+      "define": "DEVELOPMENT_TOOLS_RUNTIME_DEVELOPMENT_ESSENTIALS",
+      "dependencies": [
+        "DevelopmentEssentials"
+      ]
+    }
+  ],
+  "softAsmdefDependencies": [
+    {
+      "define": "DEVELOPMENT_TOOLS_RUNTIME_NEWTONSOFT_JSON",
+      "dependencies": [
+        "Newtonsoft.Json.dll"
+      ]
+    },
+    {
+      "define": "DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR",
+      "dependencies": [
+        "Sirenix.OdinInspector.Attributes.dll",
+        "Sirenix.OdinInspector.Editor.dll",
+        "Sirenix.Serialization.dll",
+        "Sirenix.Utilities.dll",
+        "Sirenix.Utilities.Editor.dll"
+      ]
+    }
+  ]
+}

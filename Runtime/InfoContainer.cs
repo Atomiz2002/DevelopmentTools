@@ -60,7 +60,7 @@ namespace DevelopmentTools {
                     continue;
 
                 foreach (Func<object, TResult> extractor in (List<Func<object, TResult>>) extractors)
-                    yield return extractor.SafeInvoke(input);
+                    yield return extractor.InvokeSafe(input);
             }
         }
 
@@ -76,7 +76,7 @@ namespace DevelopmentTools {
                     continue;
 
                 foreach (Func<T, T> modifier in (List<Func<T, T>>) modifiers)
-                    input = modifier.SafeInvoke(input);
+                    input = modifier.InvokeSafe(input);
             }
 
             return input;

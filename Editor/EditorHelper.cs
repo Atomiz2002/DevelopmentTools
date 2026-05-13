@@ -292,10 +292,10 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
         public static readonly Dictionary<string, Texture> cachedIcons = new();
 
         public static void SetIcon(this Object asset, Texture icon) =>
-            cachedIcons[AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(asset)).ToString()] = icon;
+            cachedIcons[GlobalObjectId.GetGlobalObjectIdSlow(asset).ToString()] = icon;
 
         public static Texture GetIcon(this Object asset) {
-            if (cachedIcons.TryGetValue(AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(asset)).ToString(), out Texture icon))
+            if (cachedIcons.TryGetValue(GlobalObjectId.GetGlobalObjectIdSlow(asset).ToString(), out Texture icon))
                 return icon;
 
             return EditorGUIUtility.ObjectContent(asset, asset.n()?.GetType())?.image;

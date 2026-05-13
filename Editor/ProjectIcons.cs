@@ -31,15 +31,18 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
                 if (!icon)
                     return;
 
+                icon.Trim(true);
                 icon.filterMode = FilterMode.Point;
+
+                asset.SetIcon(icon);
 
                 Rect iconRect = new(selectionRect.x, selectionRect.y, selectionRect.height, selectionRect.height);
 
                 if (iconRect.height > 16)
                     iconRect.width = iconRect.height *= 0.8f;
 
-                GUI.DrawTexture(iconRect, HierarchyIcons.bgTex, ScaleMode.StretchToFill);
-                GUI.DrawTexture(iconRect, icon.Trimmed(true) /*.Underlay(new(.22f, .22f, .22f, 1f))*/, ScaleMode.ScaleToFit);
+                GUI.DrawTexture(iconRect, HierarchyOverhaul.bgTex, ScaleMode.StretchToFill);
+                GUI.DrawTexture(iconRect, icon /*.Underlay(new(.22f, .22f, .22f, 1f))*/, ScaleMode.ScaleToFit);
             }
             catch (Exception e) {
                 e.LogEx();
