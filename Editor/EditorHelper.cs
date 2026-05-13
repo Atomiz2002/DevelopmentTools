@@ -297,17 +297,6 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
 
         public static GlobalObjectId GlobalId(this Object obj) => GlobalObjectId.GetGlobalObjectIdSlow(obj);
 
-        public static void SetIcon(this int id, IHaveIconPreview iconPreview) => GlobalObjectId.GetGlobalObjectIdSlow(id).SetIcon(iconPreview);
-
-        public static void SetIcon(this GUID guid, IHaveIconPreview iconPreview) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).SetIcon(iconPreview);
-
-        public static void SetIcon(this GlobalObjectId id, IHaveIconPreview iconPreview) {
-            if (id.ToString() == "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0")
-                return;
-
-            cachedIcons[id] = iconPreview;
-        }
-
         public static void SetIcon(this string id, IHaveIconPreview iconPreview) {
             if (id.IsNullOrEmpty())
                 return;
@@ -324,20 +313,20 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
                 guid.SetIcon(iconPreview);
         }
 
-        public static IHaveIconPreview GetIcon(this int id) => GlobalObjectId.GetGlobalObjectIdSlow(id).GetIcon();
+        public static void SetIcon(this int id, IHaveIconPreview iconPreview) => GlobalObjectId.GetGlobalObjectIdSlow(id).SetIcon(iconPreview);
 
-        public static IHaveIconPreview GetIcon(this GUID guid) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).GetIcon();
+        public static void SetIcon(this GUID guid, IHaveIconPreview iconPreview) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).SetIcon(iconPreview);
 
-        public static IHaveIconPreview GetIcon(this GlobalObjectId id) {
+        public static void SetIcon(this GlobalObjectId id, IHaveIconPreview iconPreview) {
             if (id.ToString() == "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0")
-                return new IconPreview(null, Color.clear);
+                return;
 
-            return cachedIcons[id];
+            cachedIcons[id] = iconPreview;
         }
 
         public static IHaveIconPreview GetIcon(this string id) {
             if (id.IsNullOrEmpty())
-                return new IconPreview(null, Color.clear);
+                return IconPreview.Empty;
 
             if (GlobalObjectId.TryParse(id, out GlobalObjectId objId))
                 return objId.GetIcon();
@@ -348,7 +337,23 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
             if (GUID.TryParse(id, out GUID guid))
                 return guid.GetIcon();
 
-            return new IconPreview(null, Color.clear);
+            return IconPreview.Empty;
+        }
+
+        public static IHaveIconPreview GetIcon(this int id) => GlobalObjectId.GetGlobalObjectIdSlow(id).GetIcon();
+
+        public static IHaveIconPreview GetIcon(this GUID guid) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).GetIcon();
+
+        public static IHaveIconPreview GetIcon(this GlobalObjectId id) {
+            if (id.ToString() == "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0")
+                return IconPreview.Empty;
+
+            if (!cachedIcons.TryGetValue(id, out IHaveIconPreview icon)) {
+                Object obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id);
+                return cachedIcons[id] = new IconPreview(EditorGUIUtility.ObjectContent(obj, obj.n()?.GetType())?.image);
+            }
+
+            return icon;
         }
 
         public static void Draw(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
@@ -358,16 +363,6 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
             GUI.DrawTexture(rect, icon.Icon, scaleMode);
             GUI.color = guiColor;
         }
-
-        // public static void SetIcon(this Object asset, Texture icon) =>
-        //     cachedIcons[GlobalObjectId.GetGlobalObjectIdSlow(asset).ToString()] = icon;
-        //
-        // public static Texture GetIcon(this Object asset) {
-        //     if (cachedIcons.TryGetValue(GlobalObjectId.GetGlobalObjectIdSlow(asset).ToString(), out Texture icon))
-        //         return icon;
-        //
-        //     return EditorGUIUtility.ObjectContent(asset, asset.n()?.GetType())?.image;
-        // }
 
         #endregion
 
