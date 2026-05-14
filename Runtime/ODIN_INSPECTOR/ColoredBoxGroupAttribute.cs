@@ -2,9 +2,11 @@
 using System;
 using DevelopmentEssentials.Extensions.CS;
 using Sirenix.OdinInspector;
+using UnityEngine;
+#if UNITY_EDITOR && !SIMULATE_BUILD
 using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector.Editor.ValueResolvers;
-using UnityEngine;
+#endif
 
 namespace DevelopmentTools.ODIN_INSPECTOR {
 

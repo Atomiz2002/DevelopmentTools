@@ -1,16 +1,16 @@
 ﻿#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
 using System;
 using Sirenix.OdinInspector;
+using Color = UnityEngine.Color;
+#if UNITY_EDITOR && !SIMULATE_BUILD
 using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector.Editor.ValueResolvers;
-using Color = UnityEngine.Color;
+#endif
 
 namespace DevelopmentTools.ODIN_INSPECTOR {
 
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class PreviewTexture2DAttribute : PreviewFieldAttribute {
-
-#if UNITY_EDITOR && !SIMULATE_BUILD
 
         public Color  OutlineColor = Color.black;
         public string OutlineColorGetter;
@@ -46,6 +46,8 @@ namespace DevelopmentTools.ODIN_INSPECTOR {
             BackgroundColorGetter = backgroundColorGetter;
             DrawIfNull            = drawIfNull;
         }
+
+#if UNITY_EDITOR && !SIMULATE_BUILD
 
         public void Resolve(InspectorProperty property) {
             if (OutlineColorGetter != null)
