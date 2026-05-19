@@ -2,16 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
-using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentTools.Settings;
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using UnityEditor;
 using UnityEngine;
 #if DEVELOPMENT_TOOLS_EDITOR_UNI_TASK
 using Cysharp.Threading.Tasks;
+
 #else
 using System.Threading.Tasks;
 #endif
@@ -32,24 +30,9 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
 
         private static DebugFields instance;
 
-        private static DebugFields Instance {
-            get {
-                if (instance)
-                    return instance;
-
-                instance = typeof(DebugFields).FindAssets<DebugFields>().FirstOrDefault();
-
-                if (instance)
-                    return instance;
-
-                instance      = CreateInstance<DebugFields>();
-                instance.name = $"{nameof(DebugFields).ToTitleCase()} (Unsaved)";
-                return instance;
-            }
-        }
-
         private void OnEnable() {
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            instance                               =  this;
         }
 
         private void OnDisable() {
@@ -58,12 +41,12 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
         }
 
         [MenuItem(EngineSettings.MenuGroupPath + "Debug Fields")]
-        public static void TryShowWindow() => EngineSettings.TryShowWindow(Instance);
+        public static void TryShowWindow() => EngineSettings.TryShowWindow(instance);
 
         private void OnPlayModeStateChanged(PlayModeStateChange state) {
             switch (state) {
                 case PlayModeStateChange.EnteredPlayMode:
-                    Instance.debugFields.Clear();
+                    instance.debugFields.Clear();
                     break;
 
                 case PlayModeStateChange.ExitingPlayMode:
@@ -106,7 +89,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
 
             clearConfirmCancellationTokenSource.Cancel();
             clearConfirm = 0;
-            Instance.debugFields.Clear();
+            instance.debugFields.Clear();
         }
 
         public static void AddDebugField(string name, string value, Texture2D icon = null, StackTrace stackTrace = null) {
@@ -115,10 +98,10 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
                 autoOpenedWindowOnce = true;
             }
 
-            DebugFieldsValues debugField = Instance.debugFields.Find(fieldValue => fieldValue.FieldName == name);
+            DebugFieldsValues debugField = instance.debugFields.Find(fieldValue => fieldValue.FieldName == name);
 
             if (debugField == null)
-                Instance.debugFields.Add(debugField = new(name));
+                instance.debugFields.Add(debugField = new(name));
 
             debugField.AddValue(value, icon, stackTrace);
         }

@@ -31,8 +31,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
                     return;
 
                 if (selected && active) {
-                    icon.Icon.Trim(true);
-                    icon.Icon.filterMode = FilterMode.Point;
+                    icon.Icon.SetFilter(FilterMode.Point).Trim(true);
 
                     guid.SetIcon(icon);
                 }

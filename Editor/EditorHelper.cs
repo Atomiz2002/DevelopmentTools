@@ -348,12 +348,13 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
             if (id.ToString() == "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0")
                 return IconPreview.Empty;
 
-            if (!cachedIcons.TryGetValue(id, out IHaveIconPreview icon)) {
-                Object obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id);
-                return cachedIcons[id] = new IconPreview(EditorGUIUtility.ObjectContent(obj, obj.n()?.GetType())?.image);
-            }
-
-            return icon;
+            // if (!cachedIcons.TryGetValue(id, out IHaveIconPreview icon)) {
+            //     Object obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id);
+            //     return cachedIcons[id] = new IconPreview(AssetPreview.GetAssetPreview(obj).Trimmed(true, BackgroundColor()).SetFilter(FilterMode.Point));
+            // }
+            //
+            // return icon;
+            return cachedIcons.TryGetValue(id, out IHaveIconPreview icon) ? icon : new IconPreview(null);
         }
 
         public static void Draw(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {

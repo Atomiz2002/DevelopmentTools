@@ -4,8 +4,8 @@ namespace DevelopmentTools.DevelopmentTools {
 
     public struct IconPreview : IHaveIconPreview {
 
-        public Texture Icon  { get; }
-        public Color   Color { get; }
+        public Texture Icon  { get; set; }
+        public Color   Color { get; set; }
 
         public static readonly IconPreview Empty = new(null, Color.clear);
 

@@ -31,22 +31,21 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
 
                 IHaveIconPreview icon = instanceID.GetIcon();
 
-                if (selected && active) {
+                if (selected && active || !icon.Icon) {
                     if (go.TryGetComponent(out SpriteRenderer renderer)) {
                         if (renderer.sprite && renderer.sprite.texture)
-                            icon = new IconPreview(renderer.sprite.n()?.texture.n() ?? Texture2D.whiteTexture, renderer.color);
+                            icon = new IconPreview(renderer.sprite.n()?.ToTexture2D().n() ?? Texture2D.whiteTexture, renderer.color);
                     }
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
                     else if (go.TryGetComponent(out Image image)) {
-                        icon = new IconPreview(image.sprite.n()?.texture.n() ?? Texture2D.whiteTexture, image.color);
+                        icon = new IconPreview(image.sprite.n()?.ToTexture2D().n() ?? Texture2D.whiteTexture, image.color);
                     }
                     else if (go.TryGetComponent(out RawImage rawImage)) {
                         icon = new IconPreview(rawImage.texture.n() ?? Texture2D.whiteTexture, rawImage.color);
                     }
 #endif
 
-                    icon.Icon.Trim(true);
-                    icon.Icon.filterMode = FilterMode.Point;
+                    icon.Icon.SetFilter(FilterMode.Point).Trim(true, EditorHelper.BackgroundColor());
 
                     instanceID.SetIcon(icon);
                 }

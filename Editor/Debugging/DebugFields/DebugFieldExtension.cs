@@ -1,6 +1,7 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 using System;
 using DevelopmentEssentials.Extensions.CS;
+using DevelopmentEssentials.Extensions.Unity;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -14,6 +15,13 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
             DebugFields.AddDebugField(fieldName.SafeString(), string.Empty, sprite.texture);
 #endif
             return sprite;
+        }
+
+        public static Texture DebugField(this Texture texture, object fieldName) {
+#if UNITY_EDITOR && !SIMULATE_BUILD
+            DebugFields.AddDebugField(fieldName.SafeString(), string.Empty, texture.Read());
+#endif
+            return texture;
         }
 
         public static Texture2D DebugField(this Texture2D texture, object fieldName) {
