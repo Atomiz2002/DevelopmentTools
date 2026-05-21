@@ -2,7 +2,7 @@
 using System;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.DevelopmentTools.Editor.Settings;
+using DevelopmentTools.Editor.Settings;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
@@ -10,11 +10,12 @@ using UnityEditor.ShortcutManagement;
 using UnityEngine;
 #if DEVELOPMENT_TOOLS_EDITOR_UNI_TASK
 using Cysharp.Threading.Tasks;
+
 #else
 using System.Threading.Tasks;
 #endif
 
-namespace DevelopmentTools.DevelopmentTools.Editor.Toolbar_Injections {
+namespace DevelopmentTools.Editor.Toolbar_Injections {
 
     public static class ReplayButton {
 

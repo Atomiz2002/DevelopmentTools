@@ -9,7 +9,7 @@ using Newtonsoft.Json.Serialization;
 using UnityEditor;
 #endif
 
-namespace DevelopmentTools.DevelopmentTools.Editor.Extensions {
+namespace DevelopmentTools.Editor.Extensions {
 
     public static class JsonExtensions {
 

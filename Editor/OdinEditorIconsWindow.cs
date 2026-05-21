@@ -2,7 +2,7 @@
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 
-namespace DevelopmentTools.DevelopmentTools.Editor {
+namespace DevelopmentTools.Editor {
 
     public class OdinIconsViewer : EditorWindow {
 

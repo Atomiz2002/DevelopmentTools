@@ -7,7 +7,7 @@ using Sirenix.Utilities.Editor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace DevelopmentTools.DevelopmentTools.Editor.AttributeDrawers {
+namespace DevelopmentTools.Editor.AttributeDrawers {
 
     public class PreviewTexture2DAttributeDrawer<T> : OdinAttributeDrawer<PreviewTexture2DAttribute, T> where T : Object {
 

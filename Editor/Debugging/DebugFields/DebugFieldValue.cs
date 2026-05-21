@@ -13,7 +13,7 @@ using UnityEditor;
 using UnityEngine;
 using Color = System.Drawing.Color;
 
-namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.DebugFields {
+namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
     [Serializable]
     [InlineProperty]

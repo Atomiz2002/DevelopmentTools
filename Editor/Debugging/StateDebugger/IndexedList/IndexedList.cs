@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.StateDebugger.IndexedList {
+namespace DevelopmentTools.Editor.Debugging.StateDebugger.IndexedList {
 
     public class IndexedList<T> : List<T> {
 

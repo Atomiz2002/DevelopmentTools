@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
-using DevelopmentTools.DevelopmentTools.Editor.Toolbar_Injections;
+using DevelopmentTools.Editor.Toolbar_Injections;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
@@ -19,7 +19,7 @@ using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 #endif
 
-namespace DevelopmentTools.DevelopmentTools.Editor.Settings {
+namespace DevelopmentTools.Editor.Settings {
 
     public static class EngineSettings {
 
@@ -32,7 +32,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Settings {
 
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider() =>
-            new("Atomiz/Engine Settings", SettingsScope.Project) {
+            new(DevelopmentTools.Settings.EngineSettings.MenuGroupPath + "Engine Settings", SettingsScope.Project) {
                 guiHandler = _ => DrawEngineSettingsGUI()
             };
 

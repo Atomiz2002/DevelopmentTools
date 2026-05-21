@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
-using DevelopmentTools.DevelopmentTools.Editor.Toolbar_Injections;
+using DevelopmentTools.Editor.Toolbar_Injections;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.ShortcutManagement;
@@ -13,7 +13,7 @@ using UnityEditor.AddressableAssets.Settings;
 using Sirenix.Utilities.Editor;
 #endif
 
-namespace DevelopmentTools.DevelopmentTools.Editor.Settings {
+namespace DevelopmentTools.Editor.Settings {
 
     public class BuildSettings : EditorWindow {
 
@@ -27,12 +27,12 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Settings {
 
         [MenuItem(MenuGroupPath + "Build Settings", false, -10000)]
         public static void ShowWindow() {
-            SettingsService.OpenProjectSettings("Atomiz/Build Settings");
+            SettingsService.OpenProjectSettings(MenuGroupPath + "Build Settings");
         }
 
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider() =>
-            new("Atomiz/Build Settings", SettingsScope.Project) { guiHandler = _ => DrawGUI() };
+            new(MenuGroupPath + "Build Settings", SettingsScope.Project) { guiHandler = _ => DrawGUI() };
 
         private void OnGUI() {
             DrawGUI();

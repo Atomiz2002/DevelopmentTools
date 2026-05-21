@@ -12,7 +12,7 @@ using DevelopmentTools.Settings;
 using UnityEditor;
 using UnityEngine;
 
-namespace DevelopmentTools.DevelopmentTools.Editor.ContextMenus {
+namespace DevelopmentTools.Editor.ContextMenus {
 
     public static class ContextMenuUtils {
 

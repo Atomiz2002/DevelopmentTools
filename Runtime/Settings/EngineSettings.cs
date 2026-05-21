@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
 using System;
-using DevelopmentEssentials.Extensions.Unity;
+using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
@@ -10,7 +10,7 @@ namespace DevelopmentTools.Settings {
 
     public static class EngineSettings {
 
-        public const string MenuGroupPath   = "Window/Atomiz/";
+        public const string MenuGroupPath   = "Window/Development Tools/";
         public const string ENABLE_LOGS     = "ENABLE_LOGS";
         public const string ONLY_EXCEPTIONS = "ONLY_EXCEPTIONS";
 

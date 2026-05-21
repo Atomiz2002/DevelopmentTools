@@ -4,7 +4,7 @@ using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEngine;
 
-namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling {
+namespace DevelopmentTools.Editor.Debugging.StateDebugger.WrapperHandling {
 
     public class PropertyTreeWrapperDrawer : OdinAttributeDrawer<PropertyTreeWrapperAttribute> {
 

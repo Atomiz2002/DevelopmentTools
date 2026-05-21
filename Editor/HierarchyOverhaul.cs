@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR && !SIMULATE_BUILD
 using System;
 using System.Linq;
+using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using UnityEditor;
@@ -9,7 +10,7 @@ using UnityEngine;
 using UnityEngine.UI;
 #endif
 
-namespace DevelopmentTools.DevelopmentTools.Editor {
+namespace DevelopmentTools.Editor {
 
     [InitializeOnLoad]
     public static class HierarchyOverhaul {
@@ -23,31 +24,31 @@ namespace DevelopmentTools.DevelopmentTools.Editor {
                 // if (Application.isPlaying)
                 //     return;
 
-                if (!EditorUtility.InstanceIDToObject(instanceID).Is(out GameObject go))
+                if (EditorUtility.InstanceIDToObject(instanceID).IsNot(out GameObject go))
                     return;
 
                 bool selected = Selection.instanceIDs.Contains(instanceID);
                 bool active   = EditorWindow.focusedWindow && EditorWindow.focusedWindow.GetType().Name == "SceneHierarchyWindow";
 
-                IHaveIconPreview icon = instanceID.GetIcon();
+                IHaveIconPreview icon = go.GetIcon();
 
                 if (selected && active || !icon.Icon) {
                     if (go.TryGetComponent(out SpriteRenderer renderer)) {
-                        if (renderer.sprite && renderer.sprite.texture)
-                            icon = new IconPreview(renderer.sprite.n()?.ToTexture2D().n() ?? Texture2D.whiteTexture, renderer.color);
+                        icon = new IconPreview(renderer.sprite.n()?.ToTexture2D(), renderer.color);
                     }
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
                     else if (go.TryGetComponent(out Image image)) {
-                        icon = new IconPreview(image.sprite.n()?.ToTexture2D().n() ?? Texture2D.whiteTexture, image.color);
+                        icon = new IconPreview(image.sprite.n()?.ToTexture2D(), image.color);
                     }
                     else if (go.TryGetComponent(out RawImage rawImage)) {
-                        icon = new IconPreview(rawImage.texture.n() ?? Texture2D.whiteTexture, rawImage.color);
+                        icon = new IconPreview(rawImage.texture, rawImage.color);
                     }
 #endif
 
-                    icon.Icon.SetFilter(FilterMode.Point).Trim(true, EditorHelper.BackgroundColor());
+                    if (!icon.Icon)
+                        icon.Icon.SetFilter(FilterMode.Point).Trim(true, EditorHelper.BackgroundColor());
 
-                    instanceID.SetIcon(icon);
+                    go.SetIcon(icon);
                 }
 
                 if (!icon.Icon)

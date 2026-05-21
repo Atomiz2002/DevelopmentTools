@@ -1,10 +1,9 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System.Collections.Generic;
 using System.Linq;
-using DevelopmentEssentials.Editor.Extensions.Unity;
+using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Settings;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -14,7 +13,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using Color = System.Drawing.Color;
 
-namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
+namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
     public class QuickAccessPanel : EditorWindow {
 
@@ -228,7 +227,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
                     if (isPinned)
                         SirenixEditorGUI.SDFIconButton(pinRect, SdfIconType.PinFill, historyElementPinned);
 
-                    element.GlobalId().GetIcon().Draw(iconRect, ScaleMode.ScaleToFit);
+                    element.GetIcon().Draw(iconRect, ScaleMode.ScaleToFit);
                     GUI.Label(labelRect, element.name, style);
                 }
 
@@ -257,7 +256,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.QuickAccess {
             Object           selectedElement      = elements[selectedIndex];
             bool             isPinned             = pinned.Contains(selectedElement);
             GUIStyle         selectedElementStyle = isPinned ? pinnedElementSelected : historyElementSelected;
-            IHaveIconPreview selectedElementIcon  = selectedElement.GlobalId().GetIcon();
+            IHaveIconPreview selectedElementIcon  = selectedElement.GetIcon();
             // float    selectedElementIconAspect = selectedElementIcon ? (float) selectedElementIcon.width / selectedElementIcon.height : 1;
 
             float selectedElementRectY = selectedIndex * elementHeight;

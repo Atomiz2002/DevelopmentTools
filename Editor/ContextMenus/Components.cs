@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentTools.DevelopmentTools.Editor.Extensions;
+using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
+using DevelopmentTools.Editor.Extensions;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 using ComponentNames;
 #endif
 
-namespace DevelopmentTools.DevelopmentTools.Editor.ContextMenus {
+namespace DevelopmentTools.Editor.ContextMenus {
 
     public static class Components {
 

@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR && !SIMULATE_BUILD
-namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.StateDebugger.IndexedList {
+namespace DevelopmentTools.Editor.Debugging.StateDebugger.IndexedList {
 
     public enum IndexedListBehaviour {
 

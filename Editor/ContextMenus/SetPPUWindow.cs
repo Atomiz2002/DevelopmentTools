@@ -1,7 +1,8 @@
 ﻿using System;
+using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
 using UnityEditor;
 
-namespace DevelopmentTools.DevelopmentTools.Editor.ContextMenus {
+namespace DevelopmentTools.Editor.ContextMenus {
 
     public class SetPPUWindow : IntEditorWindow {
 
@@ -19,7 +20,7 @@ namespace DevelopmentTools.DevelopmentTools.Editor.ContextMenus {
             ppu =>
                 ContextMenuUtils.BulkEdit(ContextMenuUtils.GetSelectedGUIDsRecursively("t:Texture2D"),
                     guid => {
-                        if (AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(guid)) is not TextureImporter importer)
+                        if (AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(guid)).IsNot(out TextureImporter importer))
                             return;
 
                         importer.spritePixelsPerUnit = ppu;

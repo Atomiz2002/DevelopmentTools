@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;

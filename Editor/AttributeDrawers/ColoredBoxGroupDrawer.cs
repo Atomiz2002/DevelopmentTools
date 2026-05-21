@@ -6,7 +6,7 @@ using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 using UnityEngine;
 
-namespace DevelopmentTools.DevelopmentTools.Editor.AttributeDrawers {
+namespace DevelopmentTools.Editor.AttributeDrawers {
 
     public class ColoredBoxGroupDrawer : OdinGroupDrawer<ColoredBoxGroupAttribute> {
 

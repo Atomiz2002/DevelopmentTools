@@ -15,7 +15,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace DevelopmentTools.DevelopmentTools.Editor.Debugging.RealtimeDebugger {
+namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
 
     public class RealtimeDebuggerWindow : EditorWindow {
 
