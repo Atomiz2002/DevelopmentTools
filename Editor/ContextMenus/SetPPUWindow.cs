@@ -1,5 +1,5 @@
 ﻿using System;
-using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
+using DevelopmentEssentials.Extensions.Unity;
 using UnityEditor;
 
 namespace DevelopmentTools.Editor.ContextMenus {

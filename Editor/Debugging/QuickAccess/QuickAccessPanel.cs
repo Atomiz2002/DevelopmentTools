@@ -1,7 +1,6 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System.Collections.Generic;
 using System.Linq;
-using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.Settings;

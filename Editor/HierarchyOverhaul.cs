@@ -1,7 +1,6 @@
 ﻿#if UNITY_EDITOR && !SIMULATE_BUILD
 using System;
 using System.Linq;
-using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using UnityEditor;

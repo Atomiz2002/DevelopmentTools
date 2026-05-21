@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
+using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.Editor.Extensions;
 using UnityEditor;
 using UnityEditorInternal;

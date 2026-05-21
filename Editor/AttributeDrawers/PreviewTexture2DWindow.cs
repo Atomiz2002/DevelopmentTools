@@ -1,5 +1,5 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
-using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
+using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.ODIN_INSPECTOR;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;

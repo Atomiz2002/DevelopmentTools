@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
 using System;
-using DevelopmentEssentials.DevelopmentEssentials.Extensions.Unity;
+using DevelopmentEssentials.Extensions.Unity;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
