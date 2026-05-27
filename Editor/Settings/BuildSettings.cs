@@ -64,11 +64,8 @@ namespace DevelopmentTools.Editor.Settings {
 
         private static void GUI_Build() {
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_ADDRESSABLES
-            EditorGUI.BeginDisabledGroup(true);
             if (GUILayout.Button("Build Check (Alt + B)"))
                 RunBuildCheck();
-
-            EditorGUI.EndDisabledGroup();
 #endif
 
             GUILayout.Label("Configure Build Target", EditorStyles.boldLabel);
