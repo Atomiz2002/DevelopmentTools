@@ -8,7 +8,7 @@ using Sirenix.OdinInspector;
 
 namespace DevelopmentTools.Editor.Settings {
 
-    [CreateAssetMenu(fileName = "Engine Settings Preset", menuName = "Development Tools/Engine Settings Preset")]
+    [CreateAssetMenu(fileName = "Engine Settings Preset", menuName = "Create/Development Tools/Engine Settings Preset")]
     public class EngineSettingsPreset : ScriptableObject, ICopyable {
 
 #if UNITY_EDITOR

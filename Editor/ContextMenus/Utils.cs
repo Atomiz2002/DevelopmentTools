@@ -16,6 +16,7 @@ namespace DevelopmentTools.Editor.ContextMenus {
 
     public static class ContextMenuUtils {
 
+        /// <inheritdoc cref="EngineSettings.MenuGroupPath"/>
         public const string MenuGroupPath = EngineSettings.MenuGroupPath + "Helpers/";
 
         [MenuItem(MenuGroupPath + "Log StackTraces with Links ^x")]
@@ -63,10 +64,10 @@ namespace DevelopmentTools.Editor.ContextMenus {
         }
 
         private static string CleanUpStackTraces() {
-            const string pattern = @".*[:\.].*\(.*\)";
-            return string.Join("\n",
-                Regex.Split(GUIUtility.systemCopyBuffer, @"\r?\n")
-                    .Where(line => !Regex.IsMatch(line.Trim(), pattern) && !line.IsNullOrWhiteSpace()));
+            const string pattern = @"(Rethrow as _: .*|.*[:\.].*\(.*\))";
+            return Regex.Split(GUIUtility.systemCopyBuffer, @"\r?\n")
+                .Where(line => !Regex.IsMatch(line.Trim(), pattern) && !line.IsNullOrWhiteSpace())
+                .Join("\n");
         }
 
         [MenuItem(MenuGroupPath + "Clear Console &x")]
@@ -80,7 +81,8 @@ namespace DevelopmentTools.Editor.ContextMenus {
         [Pure]
         public static List<string> GetSelectedGUIDsRecursively(string filter = "") {
             List<string> selectedGUIDs = new(Selection.assetGUIDs);
-            if (selectedGUIDs.Count == 0) return new();
+            if (selectedGUIDs.Count == 0)
+                return new();
 
             foreach (string guid in selectedGUIDs.ToArray()) {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
@@ -100,7 +102,7 @@ namespace DevelopmentTools.Editor.ContextMenus {
             AssetDatabase.StopAssetEditing();
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
 
-            if (guids[0].LoadAssetByGUID() is not DefaultAsset)
+            if (guids[0].LoadAssetByGUID().IsNot<DefaultAsset>())
                 AssetDatabase.ImportAsset(guids[0].GUIDToPath(), ImportAssetOptions.ForceUpdate);
         }
 
@@ -112,7 +114,7 @@ namespace DevelopmentTools.Editor.ContextMenus {
             AssetDatabase.StopAssetEditing();
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
 
-            if (guids[0].LoadAssetByGUID() is not DefaultAsset)
+            if (guids[0].LoadAssetByGUID().IsNot<DefaultAsset>())
                 AssetDatabase.ImportAsset(guids[0].GUIDToPath(), ImportAssetOptions.ForceUpdate);
         }
 

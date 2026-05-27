@@ -292,41 +292,11 @@ namespace DevelopmentTools.Editor {
         #region Get/Set Icon
 
         // overriden - false = using AssetPreview.GetAssetPreview(obj). true = script overrode preview
-        private static readonly Dictionary<(GlobalObjectId id, bool overriden), IHaveIconPreview> cachedIcons = new();
+        private static readonly Dictionary<GlobalObjectId, IHaveIconPreview> cachedIcons = new();
 
         public static GlobalObjectId GlobalId(this Object obj) => GlobalObjectId.GetGlobalObjectIdSlow(obj);
 
-        // public static void SetIcon(this string id, IHaveIconPreview iconPreview) {
-        //     if (id.IsNullOrEmpty())
-        //         return;
-        //
-        //     if (GlobalObjectId.TryParse(id, out GlobalObjectId objId)) {
-        //         objId.SetIcon(iconPreview);
-        //         return;
-        //     }
-        //
-        //     if (int.TryParse(id, out int instanceId))
-        //         instanceId.SetIcon(iconPreview);
-        //
-        //     if (GUID.TryParse(id, out GUID guid))
-        //         guid.SetIcon(iconPreview);
-        // }
-        //
-        // public static void SetIcon(this int id, IHaveIconPreview iconPreview) => GlobalObjectId.GetGlobalObjectIdSlow(id).SetIcon(iconPreview);
-        //
-        // public static void SetIcon(this GUID guid, IHaveIconPreview iconPreview) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).SetIcon(iconPreview);
-        //
-        // public static void SetIcon(this GlobalObjectId id, IHaveIconPreview iconPreview) {
-        //     if (id.ToString() == "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0")
-        //         return;
-        //
-        //     if (iconPreview.Icon)
-        //         cachedIcons[(id, true)] = iconPreview;
-        //     else {
-        //         iconPreview.Icon = AssetPreview.GetAssetPreview()
-        //         cachedIcons[(id, false)] = iconPreview;
-        //     }
-        // }
+        public static bool HasIcon(this Object obj) => cachedIcons.ContainsKey(obj.GlobalId());
 
         public static void SetIcon(this Object obj, IHaveIconPreview iconPreview) {
             if (!obj)
@@ -335,68 +305,24 @@ namespace DevelopmentTools.Editor {
             GlobalObjectId id = GlobalObjectId.GetGlobalObjectIdSlow(obj);
 
             if (iconPreview.Icon)
-                cachedIcons[(id, true)] = iconPreview;
+                cachedIcons[id] = iconPreview;
         }
 
-        // public static IHaveIconPreview GetIcon(this string id) {
-        //     if (id.IsNullOrEmpty())
-        //         return IconPreview.Empty;
-        //
-        //     if (GlobalObjectId.TryParse(id, out GlobalObjectId objId))
-        //         return objId.GetIcon();
-        //
-        //     if (int.TryParse(id, out int instanceId))
-        //         return instanceId.GetIcon();
-        //
-        //     if (GUID.TryParse(id, out GUID guid))
-        //         return guid.GetIcon();
-        //
-        //     return IconPreview.Empty;
-        // }
-        //
-        // public static IHaveIconPreview GetIcon(this int id) => GlobalObjectId.GetGlobalObjectIdSlow(id).GetIcon();
-        //
-        // public static IHaveIconPreview GetIcon(this GUID guid) => GlobalObjectId.GetGlobalObjectIdSlow(guid.LoadAssetByGUID()).GetIcon();
-        //
-        // public static IHaveIconPreview GetIcon(this GlobalObjectId id) {
-        //     if (id.ToString() == "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0")
-        //         return IconPreview.Empty;
-        //
-        //     // if (!cachedIcons.TryGetValue(id, out IHaveIconPreview icon)) {
-        //     //     Object obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id);
-        //     //     return cachedIcons[id] = new IconPreview(AssetPreview.GetAssetPreview(obj).Trimmed(true, BackgroundColor()).SetFilter(FilterMode.Point));
-        //     // }
-        //     //
-        //     // return icon;
-        //     return cachedIcons.TryGetValue(id, out IHaveIconPreview icon) ? icon : new IconPreview(null);
-        // }
-
-        // public static bool HasIcon(this Object obj, out IHaveIconPreview overridenIcon) => cachedIcons.TryGetValue((obj.GlobalId(), true), out overridenIcon);
-
-        public static IHaveIconPreview GetIcon(this Object obj, bool fallback = false) {
+        public static IHaveIconPreview GetIcon(this Object obj) {
             if (!obj)
                 return IconPreview.Empty;
 
             GlobalObjectId id = obj.GlobalId();
 
-            if (cachedIcons.TryGetValue((id, true), out IHaveIconPreview overridenIcon))
+            if (cachedIcons.TryGetValue(id, out IHaveIconPreview overridenIcon))
                 return overridenIcon;
 
-            // if (overridenOnly)
-            //     return IconPreview.Empty;
-            //
-            // if (cachedIcons.TryGetValue((id, false), out IHaveIconPreview defaultIcon))
-            //     return defaultIcon;
-
             // cache if slow
-            return new IconPreview(AssetPreview.GetAssetPreview(obj).n()
-                                   ?? EditorGUIUtility.GetIconForObject(obj).n()
-                                   ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image);
+            return new IconPreview(AssetPreview.GetAssetPreview(obj));
 
-            // if (!icon)
-            //     return IconPreview.Empty;
-            //
-            // return cachedIcons[(id, false)] = new IconPreview(icon.SetFilter(FilterMode.Point).Trimmed(true, BackgroundColor()));
+            // return new IconPreview(AssetPreview.GetAssetPreview(obj).n()
+            // ?? EditorGUIUtility.GetIconForObject(obj).n()
+            // ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image);
         }
 
         public static void Draw(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {

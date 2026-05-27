@@ -27,11 +27,10 @@ using System.Reflection;
 namespace DevelopmentTools {
 
     [SuppressMessage("ReSharper", "PartialTypeWithSinglePart")]
-    [CreateAssetMenu(fileName = nameof(DebugLogger), menuName = "Atomiz/" + nameof(DebugLogger))]
+    [CreateAssetMenu(fileName = nameof(DebugLogger), menuName = "Create/Development Tools/" + nameof(DebugLogger))]
 #if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
     [HideMonoScript]
     public partial class DebugLogger : SerializedScriptableObject {
-
 #else
     public class DebugLogger : ScriptableObject {
 #endif
@@ -69,13 +68,6 @@ namespace DevelopmentTools {
         [MenuItem(EngineSettings.MenuGroupPath + "Debug Logger &#e")]
         public static void TryShowWindow() => EngineSettings.TryShowWindow(I);
 
-        [ContextMenu("Fill list with test messages")]
-        private void TestSystem() {
-            Initialize();
-            LogEntry(false, null, null, SelectedGroups[0], false, false, false);
-            LogEntry(true, null, null, SelectedGroups[0], true, true, true);
-        }
-
         private void OnDisable() => EditorApplication.playModeStateChanged -= PrepareForState;
 
         [RuntimeInitializeOnLoadMethod]
@@ -94,8 +86,6 @@ namespace DevelopmentTools {
                         DisplayedEntries.Clear();
                         debugEntries.Clear();
                         pausedEntries.Clear();
-
-                        Initialize();
                         break;
 
                     case PlayModeStateChange.ExitingPlayMode:
@@ -115,7 +105,7 @@ namespace DevelopmentTools {
         public static readonly string GroupsDir      = Path.Combine(DebugLoggerDir, "Groups");
 
         private static DebugLogger i;
-        private static DebugLogger I {
+        public static DebugLogger I {
             get {
                 i = AssetDatabase.LoadAssetAtPath<DebugLogger>(AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets($"t:{nameof(DebugLogger)}").FirstOrDefault()));
                 if (i)
@@ -166,7 +156,22 @@ namespace DevelopmentTools {
 
         #endregion
 
-        protected static void LogEntry(bool isQuantum, [CanBeNull] StackTrace stackTrace, [CanBeNull] object[] parameters, string group, bool isEvent, bool isReceived, bool isError, params object[] details) {
+        private static void LogSeparator(bool isQuantum, [CanBeNull] StackTrace stackTrace, string group) {
+#if ENABLE_LOGS
+#if UNITY_EDITOR && !SIMULATE_BUILD
+            try {
+                I.AddEntry(group, DebugEntry.Separator());
+            }
+            catch (Exception e) {
+                LogException("Failed to AddSeparator", group, e, isQuantum, stackTrace);
+            }
+#else
+            $"[SEPARATOR] {(isQuantum ? "[Q] " : string.Empty)}DebugEntry in {group}:\n{stackTrace ?? new StackTrace(2, true)}".Log();
+#endif
+#endif
+        }
+
+        private static void LogEntry(bool isQuantum, [CanBeNull] StackTrace stackTrace, [CanBeNull] object[] parameters, string group, bool isEvent, bool isReceived, bool isError, params object[] details) {
 #if ENABLE_LOGS
 #if UNITY_EDITOR && !SIMULATE_BUILD
             try {
@@ -179,12 +184,10 @@ namespace DevelopmentTools {
                 I.AddEntry(group, new(key.Value, isQuantum, entryColor.ToUnityColor(), stackTrace, parameters, isEvent, isReceived, isError, details));
             }
             catch (Exception e) {
-                $"Failed to add DebugLog entry:\n{isQuantum}\n{stackTrace}\n{parameters}\n{isEvent}\n{isReceived}\n{isError}\n{details}\n{e}".LogException();
+                LogException("Failed to add DebugEntry", group, e, isQuantum, stackTrace, parameters, isEvent, isReceived, isError, details);
             }
 #else
-            (
-                $"{(isError ? "[ERROR] " : string.Empty)}{(isQuantum ? "[Q] " : string.Empty)}{(isEvent ? isReceived ? "[RECEIVED] " : "[SENT] " : string.Empty)}DebugEntry: ({(parameters is { Length: > 0 } ? string.Join(", ", parameters.Select(p => p.SafeString("null"))) : "none")}){stackTrace ?? new StackTrace(2, true)}\n" + (details is { Length: > 0 } ? string.Join(", ", details.Select(d => d.SafeString("null"))) : "none")
-            ).Log();
+            $"{(isError ? "[ERROR] " : string.Empty)}{(isQuantum ? "[Q] " : string.Empty)}{(isEvent ? isReceived ? "[RECEIVED] " : "[SENT] " : string.Empty)}DebugEntry: ({(parameters is { Length: > 0 } ? string.Join(", ", parameters.Select(p => p.SafeString("null"))) : "none")}){stackTrace ?? new StackTrace(2, true)}\n{(details is { Length: > 0 } ? string.Join(", ", details.Select(d => d.SafeString("null"))) : "none")}".Log();
 #endif
 #endif
         }
@@ -213,13 +216,13 @@ namespace DevelopmentTools {
 #if ENABLE_LOGS
 #if UNITY_EDITOR && !SIMULATE_BUILD
             try {
-                if (details.IsNullOrWhiteSpace())
+                if (details.IsNullOrWhiteSpace().LOG())
                     return;
 
-                I.GetEntryByKeyGUID(specificGroup).AddDetails(details);
+                I.GetEntryByKeyGUID(specificGroup).LOG().AddDetails(details);
             }
             catch (Exception e) {
-                $"Failed to add more details to ({key.Value}) entry:\n{details}\n\n{e}".LogException();
+                LogException("Failed to AddDetails", specificGroup, e, details);
             }
 #else
             $"[+details+] {details.SafeString("broken details")} -> {new StackTrace(2, true)}".Log();
@@ -234,7 +237,7 @@ namespace DevelopmentTools {
                 I.GetEntryByKeyGUID(specificGroup).SetReturn(returnValue);
             }
             catch (Exception e) {
-                $"Failed to set LogReturn to ({key.Value}) entry:\n{e}".LogException();
+                LogException("Failed to set LogReturn", specificGroup, e);
             }
 #else
             $"[-return-] {returnValue} -> {new StackTrace(2, true)}".Log();
@@ -242,7 +245,13 @@ namespace DevelopmentTools {
 #endif
         }
 
+        private static void LogException(string prefix, string group, Exception e, params object[] info) {
+            $"{prefix} to DebugEntry in ({group}):\n{key.Value}\n{info.Join("\n")}\n{e}\n".LogException();
+        }
+
         private static HashSet<string> symbols;
+
+        public static string GetGroupName(string nestedClassName) => nameof(DebugLogger) + "_" + nestedClassName;
 
         public static HashSet<string> GetSymbols() {
             if (symbols != null)
@@ -251,7 +260,7 @@ namespace DevelopmentTools {
             symbols = new();
 
             foreach (Type type in typeof(DebugLogger).GetNestedTypes())
-                symbols.Add(nameof(DebugLogger) + "_" + type.Name);
+                symbols.Add(GetGroupName(type.Name));
 
             return symbols;
         }
@@ -341,7 +350,6 @@ namespace DevelopmentTools {
         private static string FormatClassName(string name) =>
             name.StartsWith("<") ? ExtractBetweenBrackets(name) : name;
 #endif
-
     }
 
 }

@@ -10,9 +10,17 @@ namespace DevelopmentTools.Settings {
 
     public static class EngineSettings {
 
-        public const string MenuGroupPath   = "Window/Development Tools/";
+        /// <remarks>shortcuts: Ctrl <c>%</c>/<c>^</c>, Shift <c>#</c>, Alt <c>&amp;</c>, Key <c>_x</c> (_ if no modifiers)</remarks>
+        public const string MenuGroupPath = "Window/Development Tools/";
         public const string ENABLE_LOGS     = "ENABLE_LOGS";
         public const string ONLY_EXCEPTIONS = "ONLY_EXCEPTIONS";
+
+#if UNITY_EDITOR
+        public static void TryShowWindow(Object instance, string name = null) {
+            name ??= instance.name;
+            if (!TryFocusWindow(name))
+                EditorUtility.OpenPropertyEditor(instance);
+        }
 
         [CanBeNull]
         public static EditorWindow TryFocusWindow(string name) {
@@ -27,12 +35,7 @@ namespace DevelopmentTools.Settings {
 
             return null;
         }
-
-        public static void TryShowWindow(Object instance, string name = null) {
-            name ??= instance.name;
-            if (!TryFocusWindow(name))
-                EditorUtility.OpenPropertyEditor(instance);
-        }
+#endif
 
     }
 

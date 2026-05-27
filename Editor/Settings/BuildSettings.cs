@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
+using System.Linq;
 using DevelopmentTools.Editor.Toolbar_Injections;
 using UnityEditor;
 using UnityEditor.Build;
@@ -22,17 +23,22 @@ namespace DevelopmentTools.Editor.Settings {
         private static readonly HashSet<string> currentSymbols = new();
 
         [InitializeOnLoadMethod]
-        public static void Initialize() =>
+        public static void Initialize() {
             ToolbarGUIInjector.AddToolbarPopupButton(ToolbarGUIInjector.ToolbarSide.LeftOfPlay, "Build Settings", 100, DrawGUI, 500, 0, 100, 5);
+
+            foreach (string symbol in symbols.Concat(DebugLogger.GetSymbols()))
+                if (EditorHelper.IsSymbolDefined(symbol))
+                    currentSymbols.Add(symbol);
+        }
 
         [MenuItem(MenuGroupPath + "Build Settings", false, -10000)]
         public static void ShowWindow() {
-            SettingsService.OpenProjectSettings(MenuGroupPath + "Build Settings");
+            SettingsService.OpenProjectSettings("Development Tools/Build Settings");
         }
 
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider() =>
-            new(MenuGroupPath + "Build Settings", SettingsScope.Project) { guiHandler = _ => DrawGUI() };
+            new("Development Tools/Build Settings", SettingsScope.Project) { guiHandler = _ => DrawGUI() };
 
         private void OnGUI() {
             DrawGUI();
@@ -45,11 +51,10 @@ namespace DevelopmentTools.Editor.Settings {
 
             GUI_Version();
 
-
 #if UNITY_WEBGL
-        EditorHelper.GUILayoutLine();
+            EditorHelper.GUILayoutLine();
 
-        GUI_WebGL();
+            GUI_WebGL();
 #endif
 
             EditorHelper.GUILayoutLine();
@@ -126,15 +131,16 @@ namespace DevelopmentTools.Editor.Settings {
                     continue;
 #endif
 
-                EditorGUI.BeginDisabledGroup(!currentSymbols.Contains(ENABLE_LOGS) && symbol == ONLY_EXCEPTIONS);
+                EditorGUI.BeginDisabledGroup(symbol == ONLY_EXCEPTIONS && !currentSymbols.Contains(ENABLE_LOGS));
                 drawSymbolButton(symbol);
                 EditorGUI.EndDisabledGroup();
             }
 
 #if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+            GUILayout.Label(nameof(DebugLogger) + " Symbols", EditorStyles.boldLabel);
+
             if (EditorHelper.IsSymbolDefined(ENABLE_LOGS)) {
                 EditorHelper.GUILayoutLine();
-                GUILayout.Label("DebugLogger Symbols", EditorStyles.boldLabel);
 
                 foreach (string symbol in DebugLogger.GetSymbols())
                     drawSymbolButton(symbol);
@@ -148,6 +154,11 @@ namespace DevelopmentTools.Editor.Settings {
                 if (GUILayout.Button("Remove All"))
                     foreach (string s in DebugLogger.GetSymbols())
                         currentSymbols.Remove(s);
+            }
+            else {
+                EditorGUI.BeginDisabledGroup(true);
+                GUILayout.Button("Disabled (!" + ENABLE_LOGS + ")");
+                EditorGUI.EndDisabledGroup();
             }
 #endif
 

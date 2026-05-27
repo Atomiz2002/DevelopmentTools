@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.Editor.AttributeDrawers;
@@ -14,8 +13,10 @@ using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
-
 #if DEVELOPMENT_TOOLS_EDITOR_UNI_TASK
+using Cysharp.Threading.Tasks;
+using DevelopmentTools.Settings;
+
 #else
 using System.Threading.Tasks;
 #endif
@@ -24,9 +25,9 @@ namespace DevelopmentTools.Editor.Debugging {
 
     [CustomEditor(typeof(DebugLogger))]
     public class DebugLoggerEditor : OdinEditor {
-
-        private static List<string> groups;
-        private static int          indexToFocus = -1;
+        private static List<string>        groups;
+        private static int                 indexToFocus = -1;
+        private static IEnumerable<string> ExistingGroups => typeof(DebugLogger).GetNestedTypes().Select(t => t.Name);
 
         private DebugLogger t;
         private DebugEntry  selectedEntry;
@@ -44,10 +45,22 @@ namespace DevelopmentTools.Editor.Debugging {
         private byte                    clearConfirm;
         private CancellationTokenSource clearConfirmCancellationTokenSource;
 
+        private bool editGroupsInfo = true;
+
         protected override void OnEnable() {
             t             = (DebugLogger) target;
             selectedEntry = null;
             page          = 1;
+        }
+
+        protected override void OnHeaderGUI() {
+            if (DebugLogger.I == t) {
+                Rect rect = EditorGUILayout.GetControlRect(false);
+                EditorGUI.DrawRect(rect, Color.red);
+                EditorGUI.LabelField(rect, "● CURRENTLY ACTIVE ●".Colored(Color.white).Bold(), SirenixGUIStyles.RichTextLabelCentered);
+            }
+
+            base.OnHeaderGUI();
         }
 
         public override void OnInspectorGUI() {
@@ -55,6 +68,9 @@ namespace DevelopmentTools.Editor.Debugging {
                 DrawGroupEditor();
                 return;
             }
+
+            if (!ExistingGroups.Any())
+                SirenixEditorGUI.InfoMessageBox("0 groups detected. Edit Groups using the three dots there ↗");
 
             DrawPinnedInfo();
             DrawButtons();
@@ -76,8 +92,9 @@ namespace DevelopmentTools.Editor.Debugging {
                 indexToFocus = -1;
             }
 
-            bool enterPressed  = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
-            bool escapePressed = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape;
+            bool enterPressed     = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
+            bool escapePressed    = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape;
+            bool backspacePressed = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Backspace;
 
             // 3. Draw Fields
             for (int i = 0; i < groups.Count; i++) {
@@ -117,7 +134,13 @@ namespace DevelopmentTools.Editor.Debugging {
                         indexToFocus = nextIndex;
                     }
                 }
+                else if (backspacePressed) {
+                    if (groups[focusedIndex].IsNullOrWhiteSpace() && indexToFocus > 0)
+                        indexToFocus--;
+                }
             }
+
+            editGroupsInfo = SirenixEditorGUI.DetailedMessageBox("Must be a valid class name", "(Enter) to create new group\n(Ctrl + Enter) to generate\n(Esc) to cancel", MessageType.None, editGroupsInfo);
 
             GUILayout.BeginHorizontal();
 
@@ -349,9 +372,13 @@ namespace DevelopmentTools.Editor.Debugging {
             SirenixEditorGUI.EndToolbarBox();
         }
 
-        [MenuItem("CONTEXT/DebugLogger/Edit Groups")]
+        [MenuItem(EngineSettings.MenuGroupPath + "DebugLogger/Edit Groups ^e")]
+        [MenuItem("CONTEXT/DebugLogger/Edit Groups ^e")]
         private static void EditGroups() {
-            groups       = typeof(DebugLogger).GetNestedTypes().Select(t => t.Name).ToList();
+            if (!EngineSettings.TryFocusWindow(DebugLogger.I.name))
+                return;
+
+            groups       = ExistingGroups.ToList();
             indexToFocus = groups.Count - 1;
         }
 
@@ -369,8 +396,8 @@ namespace DevelopmentTools.Editor.Debugging {
 
             Directory.CreateDirectory(DebugLogger.GroupsDir);
 
-            foreach (string file in Directory.GetFiles(DebugLogger.GroupsDir))
-                File.Delete(file);
+            foreach (string path in Directory.GetFiles(DebugLogger.GroupsDir))
+                File.Delete(path);
 
             groups.RemoveAll(x => x.IsNullOrWhiteSpace());
 
@@ -408,13 +435,14 @@ namespace DevelopmentTools.Editor.Debugging {
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogSendEvent         (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", true,  false, false, details);\n" +
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogSendEventError    (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", true,  false, true,  details);\n" +
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEvent     (ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", true,  true,  false, details);\n" +
-                                "            [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEventError(ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", true, true, true, details);\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogReceivedEventError(ITuple parameters,       params object[] details) => LogEntry(false, null, parameters?.ToArray(), \"" + group + "\", true,  true,  true,  details);\n" +
                                 "\n" +
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogGoodDetails(params object[] details) => AddGoodDetails(\"" + group + "\", details);\n" +
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogBadDetails (params object[] details) => AddBadDetails (\"" + group + "\", details);\n" +
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogDetails    (params object[] details) => AddDetails    (\"" + group + "\", details);\n" +
                                 "            [Conditional(conditional)] [HideInCallstack] public static void LogReturn     (object returnValue)      => SetReturn     (\"" + group + "\", returnValue);\n" +
                                 "\n" +
+                                "            [Conditional(conditional)] [HideInCallstack] public static void LogSeparator() => DebugLogger.LogSeparator(false, null, \"" + group + "\");" +
                                 "        }\n" +
                                 "\n" +
                                 "    }\n" +
@@ -428,6 +456,11 @@ namespace DevelopmentTools.Editor.Debugging {
                 string scriptPath = Path.Combine(DebugLogger.GroupsDir, group + ".cs");
                 File.WriteAllText(scriptPath, script);
                 AssetDatabase.ImportAsset(scriptPath, ImportAssetOptions.ForceUpdate);
+
+                if (!ExistingGroups.Contains(group)) {
+                    EditorHelper.AddSymbol(DebugLogger.GetGroupName(group));
+                    DebugLogger.I.SelectedGroups.Add(group);
+                }
             }
 
             string asmdefRefPath = Path.Combine(DebugLogger.GroupsDir, "_developmentTools.asmref");
@@ -438,7 +471,6 @@ namespace DevelopmentTools.Editor.Debugging {
 
             groups = null;
         }
-
     }
 
 }

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
-    [CreateAssetMenu(fileName = "Debug Fields", menuName = "Development Tools/Debug Fields")]
+    [CreateAssetMenu(fileName = "Debug Fields", menuName = "Create/Development Tools/Debug Fields")]
     public class DebugFields : SerializedScriptableObject {
 
 #if UNITY_EDITOR && !SIMULATE_BUILD

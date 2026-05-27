@@ -14,7 +14,6 @@ using UnityEngine;
 namespace DevelopmentTools.Editor.Debugging {
 
     public class DebugEntryDrawer : OdinDrawer {
-
         private DebugEntry entry;
 
         private static GUIStyle        detailsTimestampStyle;
@@ -99,44 +98,16 @@ namespace DevelopmentTools.Editor.Debugging {
             #region Details StackTrace
 
             DrawDetails(entry.DisplayedDetails, string.Empty);
-            foreach ((string details, string timestamp) in entry.Details)
-                DrawDetails(details, timestamp);
 
-            // DrawDetails(entry.Details2, entry.Details2Timestamp);
-            // DrawDetails(entry.Details3, entry.Details3Timestamp);
-            // DrawDetails(entry.Details4, entry.Details4Timestamp);
-            // DrawDetails(entry.Details5, entry.Details5Timestamp);
-            // DrawDetails(entry.Details6, entry.Details6Timestamp);
-            // DrawDetails(entry.Details7, entry.Details7Timestamp);
-            // DrawDetails(entry.Details8, entry.Details8Timestamp);
-            // DrawDetails(entry.Details9, entry.Details9Timestamp);
-            // DrawDetails(entry.Details10, entry.Details10Timestamp);
-            // DrawDetails(entry.Details11, entry.Details11Timestamp);
-            // DrawDetails(entry.Details12, entry.Details12Timestamp);
-            // DrawDetails(entry.Details13, entry.Details13Timestamp);
-            // DrawDetails(entry.Details14, entry.Details14Timestamp);
-            // DrawDetails(entry.Details15, entry.Details15Timestamp);
-            // DrawDetails(entry.Details16, entry.Details16Timestamp);
-            // DrawDetails(entry.Details17, entry.Details17Timestamp);
-            // DrawDetails(entry.Details18, entry.Details18Timestamp);
-            // DrawDetails(entry.Details19, entry.Details19Timestamp);
-            // DrawDetails(entry.Details20, entry.Details20Timestamp);
-            // DrawDetails(entry.Details21, entry.Details21Timestamp);
-            // DrawDetails(entry.Details22, entry.Details22Timestamp);
-            // DrawDetails(entry.Details23, entry.Details23Timestamp);
-            // DrawDetails(entry.Details24, entry.Details24Timestamp);
-            // DrawDetails(entry.Details25, entry.Details25Timestamp);
-            // DrawDetails(entry.Details26, entry.Details26Timestamp);
-            // DrawDetails(entry.Details27, entry.Details27Timestamp);
-            // DrawDetails(entry.Details28, entry.Details28Timestamp);
-            // DrawDetails(entry.Details29, entry.Details29Timestamp);
-            // DrawDetails(entry.Details30, entry.Details30Timestamp);
+            if (entry.Details != null) // impossible but happens
+                foreach ((string details, string timestamp) in entry.Details)
+                    DrawDetails(details, timestamp);
 
             if (entry.showStackTrace) {
                 ColoredBoxGroupDrawer.BeginColoredBox(Color.black);
                 GUILayout.Label(entry.DisplayedStackTrace, SirenixGUIStyles.RichTextLabel);
                 ColoredBoxGroupDrawer.EndBox();
-                GUILayout.Label(entry.guid.ToString().Size(15), SirenixGUIStyles.RichTextLabel);
+                GUILayout.Label(entry.guid.ToString(), SirenixGUIStyles.LeftAlignedGreyMiniLabel);
             }
 
             #endregion
@@ -242,7 +213,7 @@ namespace DevelopmentTools.Editor.Debugging {
             entry.IsSeparator
                 ? entry.color
                 : entry.IsError
-                    ? Color.red.A(.15f)
+                    ? Color.red.A(.3f)
                     : GUI.color;
 
         private static Color GroupColor(DebugEntry entry) =>
@@ -251,7 +222,6 @@ namespace DevelopmentTools.Editor.Debugging {
                 : entry.color == Color.clear
                     ? GUI.color
                     : entry.color;
-
     }
 
 }

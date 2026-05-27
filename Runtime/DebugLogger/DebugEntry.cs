@@ -19,7 +19,6 @@ namespace DevelopmentTools {
 
     [Serializable]
     public sealed class DebugEntry {
-
 #if UNITY_EDITOR && !SIMULATE_BUILD && ENABLE_LOGS
         [SerializeField] [HideInInspector] public bool IsEvent;
         [SerializeField] [HideInInspector] public bool Received;
@@ -39,45 +38,11 @@ namespace DevelopmentTools {
         public List<Texture2D>                          Icons   = new();
         public List<(string details, string timestamp)> Details = new();
 
-        #region More Details
-
-        // public string Details2,  Details2Timestamp;
-        // public string Details3,  Details3Timestamp;
-        // public string Details4,  Details4Timestamp;
-        // public string Details5,  Details5Timestamp;
-        // public string Details6,  Details6Timestamp;
-        // public string Details7,  Details7Timestamp;
-        // public string Details8,  Details8Timestamp;
-        // public string Details9,  Details9Timestamp;
-        // public string Details10, Details10Timestamp;
-        // public string Details11, Details11Timestamp;
-        // public string Details12, Details12Timestamp;
-        // public string Details13, Details13Timestamp;
-        // public string Details14, Details14Timestamp;
-        // public string Details15, Details15Timestamp;
-        // public string Details16, Details16Timestamp;
-        // public string Details17, Details17Timestamp;
-        // public string Details18, Details18Timestamp;
-        // public string Details19, Details19Timestamp;
-        // public string Details20, Details20Timestamp;
-        // public string Details21, Details21Timestamp;
-        // public string Details22, Details22Timestamp;
-        // public string Details23, Details23Timestamp;
-        // public string Details24, Details24Timestamp;
-        // public string Details25, Details25Timestamp;
-        // public string Details26, Details26Timestamp;
-        // public string Details27, Details27Timestamp;
-        // public string Details28, Details28Timestamp;
-        // public string Details29, Details29Timestamp;
-        // public string Details30, Details30Timestamp;
-
-        #endregion
-
         public string DisplayedStackTrace;
 
         public StackFrame[] stackFrames;
 
-        [SerializeField] [HideInInspector] public bool   showStackTrace;
+        [SerializeField] [HideInInspector] public bool   showStackTrace = true;
         [SerializeField] [HideInInspector] public string filePath;
         [SerializeField] [HideInInspector] public int    lineNumber;
         [SerializeField] [HideInInspector] public int    columnNumber;
@@ -141,13 +106,11 @@ namespace DevelopmentTools {
                 InfoContainer.ExtractAndModifyInfo(typeof(DebugEntry), ref DisplayedCallerSignature, ref Icons);
                 InfoContainer.ExtractAndModifyInfo(typeof(DebugEntry), ref DisplayedDetails, ref Icons);
 
-#if UNITY_EDITOR // ENABLE_LOGS is handled in DebugLogger.LogEntry
                 if (isError)
                     if (DisplayedDetails.IsNullOrWhiteSpace())
                         $"{DisplayedCallerSignature}\n{stackTrace}".LogErr();
                     else
                         $"{DisplayedDetails}\n{DisplayedCallerSignature}\n{stackTrace}".LogErr();
-#endif
             }
             catch (Exception e) {
 #if ENABLE_LOGS
@@ -262,12 +225,12 @@ namespace DevelopmentTools {
             Details
                 .Select(d => d.details)
                 .Prepend($"{(IsError ? "[ERROR] " : string.Empty)}{(IsEvent ? Received ? "[RECEIVED] " : "[SENT] " : string.Empty)}DebugEntry: {DisplayedCallerSignature} {DisplayedDetails}")
+                .Append(guid.ToString())
                 .Where(s => !s.IsNullOrEmpty())
                 .Select(s => s.Unformatted())
                 .JoinSmart("\n");
 
 #endif
-
     }
 
 }

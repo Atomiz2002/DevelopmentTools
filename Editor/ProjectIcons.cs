@@ -18,7 +18,7 @@ namespace DevelopmentTools.Editor {
         private static void OnProjectGUI(string guid, Rect selectionRect) {
             try {
                 Object           asset = guid.LoadAssetByGUID();
-                IHaveIconPreview icon  = asset as IHaveIconPreview ?? asset.GetIcon(true);
+                IHaveIconPreview icon  = asset as IHaveIconPreview ?? asset.GetIcon();
 
                 if (!icon.Icon)
                     return;

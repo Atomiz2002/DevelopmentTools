@@ -29,9 +29,10 @@ namespace DevelopmentTools.Editor {
                 bool selected = Selection.instanceIDs.Contains(instanceID);
                 bool active   = EditorWindow.focusedWindow && EditorWindow.focusedWindow.GetType().Name == "SceneHierarchyWindow";
 
-                IHaveIconPreview icon = go.GetIcon();
+                IHaveIconPreview icon = null;
 
-                if (selected && active || !icon.Icon) {
+                if (selected && active || !go.HasIcon()) {
+
                     if (go.TryGetComponent(out SpriteRenderer renderer)) {
                         icon = new IconPreview(renderer.sprite.n()?.ToTexture2D(), renderer.color);
                     }
@@ -43,14 +44,15 @@ namespace DevelopmentTools.Editor {
                         icon = new IconPreview(rawImage.texture, rawImage.color);
                     }
 #endif
+                    else
+                        icon = new IconPreview();
 
-                    if (!icon.Icon)
-                        icon.Icon.SetFilter(FilterMode.Point).Trim(true, EditorHelper.BackgroundColor());
+                    icon.Icon.n()?.SetFilter(FilterMode.Point).Trim(true, EditorHelper.BackgroundColor());
 
                     go.SetIcon(icon);
                 }
 
-                if (!icon.Icon)
+                if (!icon?.Icon)
                     return;
 
                 Rect iconRect = new(selectionRect.x, selectionRect.y, 16, 16);

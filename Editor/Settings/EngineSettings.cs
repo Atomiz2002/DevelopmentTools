@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
+using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Editor.Toolbar_Injections;
 using JetBrains.Annotations;
@@ -30,9 +31,14 @@ namespace DevelopmentTools.Editor.Settings {
         public static void Initialize() =>
             ToolbarGUIInjector.AddToolbarPopupButton(ToolbarGUIInjector.ToolbarSide.LeftOfPlay, "Engine Settings", 115, DrawEngineSettingsGUI, 500, 0, 101);
 
+        [MenuItem(DevelopmentTools.Settings.EngineSettings.MenuGroupPath + "Build Settings", false, -10000)]
+        public static void ShowWindow() {
+            SettingsService.OpenProjectSettings("Development Tools/Build Settings");
+        }
+
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider() =>
-            new(DevelopmentTools.Settings.EngineSettings.MenuGroupPath + "Engine Settings", SettingsScope.Project) {
+            new("Development Tools/Engine Settings", SettingsScope.Project) {
                 guiHandler = _ => DrawEngineSettingsGUI()
             };
 
@@ -42,7 +48,7 @@ namespace DevelopmentTools.Editor.Settings {
             EditorGUILayout.Space();
 
             EditorGUI.BeginDisabledGroup(preset);
-            preset?.Apply();
+            preset.n()?.Apply();
 
 #if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
             SirenixEditorGUI.Title("Debug Logger", null, TextAlignment.Left, true);
@@ -213,7 +219,7 @@ namespace DevelopmentTools.Editor.Settings {
 
         [CanBeNull]
         public static EditorWindow TryFocusWindow(string name) {
-            if (Selection.activeObject?.name == name)
+            if (Selection.activeObject.n()?.name == name)
                 return EditorWindow.GetWindow(Type.GetType("UnityEditor.InspectorWindow,UnityEditor"));
 
             foreach (EditorWindow window in Resources.FindObjectsOfTypeAll<EditorWindow>())
