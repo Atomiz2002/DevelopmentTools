@@ -216,10 +216,10 @@ namespace DevelopmentTools {
 #if ENABLE_LOGS
 #if UNITY_EDITOR && !SIMULATE_BUILD
             try {
-                if (details.IsNullOrWhiteSpace().LOG())
+                if (details.IsNullOrWhiteSpace())
                     return;
 
-                I.GetEntryByKeyGUID(specificGroup).LOG().AddDetails(details);
+                I.GetEntryByKeyGUID(specificGroup).AddDetails(details);
             }
             catch (Exception e) {
                 LogException("Failed to AddDetails", specificGroup, e, details);
@@ -246,7 +246,13 @@ namespace DevelopmentTools {
         }
 
         private static void LogException(string prefix, string group, Exception e, params object[] info) {
+#if ENABLE_LOGS
+#if UNITY_EDITOR && !SIMULATE_BUILD
             $"{prefix} to DebugEntry in ({group}):\n{key.Value}\n{info.Join("\n")}\n{e}\n".LogException();
+#else
+            $"{prefix} to DebugEntry in ({group}):\n{info.Join("\n")}\n{e}\n".LogException();
+#endif
+#endif
         }
 
         private static HashSet<string> symbols;

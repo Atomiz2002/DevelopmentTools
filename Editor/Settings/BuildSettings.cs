@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DevelopmentTools.Editor.Toolbar_Injections;
 using UnityEditor;
@@ -90,12 +89,16 @@ namespace DevelopmentTools.Editor.Settings {
                 stretchWidth = true
             });
 
-            if (GUILayout.Button("Increment Version: Patch")) {
-                IncrementVersionPatch();
+            if (GUILayout.Button("Increment Version: Major X.0.0")) {
+                IncrementVersionMajor();
             }
 
-            if (GUILayout.Button("Increment Version: Minor")) {
+            if (GUILayout.Button("Increment Version: Minor 0.X.0")) {
                 IncrementVersionMinor();
+            }
+
+            if (GUILayout.Button("Increment Version: Patch 0.0.X")) {
+                IncrementVersionPatch();
             }
         }
 
@@ -195,8 +198,8 @@ namespace DevelopmentTools.Editor.Settings {
             }
         }
 
-        public static void IncrementVersionPatch() {
-            string newVersion = IncrementVersion(2);
+        private static void IncrementVersionMajor() {
+            string newVersion = IncrementVersion(0);
             if (newVersion == null)
                 return;
 
@@ -205,6 +208,14 @@ namespace DevelopmentTools.Editor.Settings {
 
         private static void IncrementVersionMinor() {
             string newVersion = IncrementVersion(1);
+            if (newVersion == null)
+                return;
+
+            SetNewVersion(newVersion);
+        }
+
+        public static void IncrementVersionPatch() {
+            string newVersion = IncrementVersion(2);
             if (newVersion == null)
                 return;
 
@@ -233,12 +244,18 @@ namespace DevelopmentTools.Editor.Settings {
             int minor = int.Parse(parts[1]);
             int patch = int.Parse(parts[2]);
 
-            if (incrementPart == 0)
+            if (incrementPart == 0) {
                 major++;
-            else if (incrementPart == 1)
+                minor = 0;
+                patch = 0;
+            }
+            else if (incrementPart == 1) {
                 minor++;
-            else if (incrementPart == 2)
+                patch = 0;
+            }
+            else if (incrementPart == 2) {
                 patch++;
+            }
 
             string newVersion = $"{major}.{minor}.{patch}";
 
@@ -328,4 +345,3 @@ namespace DevelopmentTools.Editor.Settings {
     }
 
 }
-#endif

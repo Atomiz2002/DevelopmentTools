@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 using DevelopmentEssentials.Extensions.CS;
 using UnityEditor;
 using UnityEngine;
@@ -38,4 +37,3 @@ namespace DevelopmentTools.Editor {
     }
 
 }
-#endif

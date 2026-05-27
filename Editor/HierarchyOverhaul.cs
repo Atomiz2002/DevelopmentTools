@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR && !SIMULATE_BUILD
+﻿#if !SIMULATE_BUILD
 using System;
 using System.Linq;
 using DevelopmentEssentials.Extensions.Unity;
@@ -13,7 +13,6 @@ namespace DevelopmentTools.Editor {
 
     [InitializeOnLoad]
     public static class HierarchyOverhaul {
-
         // todo editor setting to enable/disable for play mode
 
         static HierarchyOverhaul() => EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
@@ -72,7 +71,6 @@ namespace DevelopmentTools.Editor {
                 e.LogEx();
             }
         }
-
     }
 
 }

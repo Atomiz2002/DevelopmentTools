@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR && !SIMULATE_BUILD
+﻿#if !SIMULATE_BUILD
 using System;
 using System.Linq;
 using DevelopmentEssentials.Editor.Extensions.Unity;
@@ -12,7 +12,6 @@ namespace DevelopmentTools.Editor {
 
     [InitializeOnLoad]
     public class ProjectIcons {
-
         static ProjectIcons() => EditorApplication.projectWindowItemOnGUI += OnProjectGUI;
 
         private static void OnProjectGUI(string guid, Rect selectionRect) {
@@ -43,7 +42,6 @@ namespace DevelopmentTools.Editor {
                 e.LogEx();
             }
         }
-
     }
 
 }
