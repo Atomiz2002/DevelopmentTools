@@ -67,7 +67,7 @@ namespace DevelopmentTools.Editor {
 
                 // TODO gray (tmpro content) next to GO name
 
-                // icon.Draw(iconRect, ScaleMode.ScaleToFit, selected, active);
+                icon.Draw(iconRect, ScaleMode.ScaleToFit, selected, active);
             }
             catch (Exception e) {
                 e.LogEx();
