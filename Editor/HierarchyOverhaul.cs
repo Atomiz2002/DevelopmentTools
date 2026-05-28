@@ -32,7 +32,7 @@ namespace DevelopmentTools.Editor {
                 IHaveIconPreview icon = go.GetIcon();
 
                 if (Selection.instanceIDs.Length <= 3) {
-                    if (selected && active || !go.HasIcon()) {
+                    if (selected && active || !icon.Icon) {
                         if (go.TryGetComponent(out SpriteRenderer renderer)) {
                             icon = new IconPreview(renderer.sprite.n()?.ToTexture2D(), renderer.color);
                         }
@@ -53,7 +53,7 @@ namespace DevelopmentTools.Editor {
                     }
                 }
 
-                if (!icon?.Icon)
+                if (!icon.Icon)
                     return;
 
                 Rect iconRect = new(selectionRect.x, selectionRect.y, 16, 16);
