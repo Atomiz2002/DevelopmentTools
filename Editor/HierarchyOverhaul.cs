@@ -28,10 +28,9 @@ namespace DevelopmentTools.Editor {
                 bool selected = Selection.instanceIDs.Contains(instanceID);
                 bool active   = EditorWindow.focusedWindow && EditorWindow.focusedWindow.GetType().Name == "SceneHierarchyWindow";
 
-                IHaveIconPreview icon = null;
+                IHaveIconPreview icon = go.GetIcon();
 
                 if (selected && active || !go.HasIcon()) {
-
                     if (go.TryGetComponent(out SpriteRenderer renderer)) {
                         icon = new IconPreview(renderer.sprite.n()?.ToTexture2D(), renderer.color);
                     }
