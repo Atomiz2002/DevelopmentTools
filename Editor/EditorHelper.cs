@@ -315,19 +315,8 @@ namespace DevelopmentTools.Editor {
             if (cachedIcons.TryGetValue(id, out IHaveIconPreview overridenIcon))
                 return overridenIcon;
 
-            int  instanceID = obj.GetInstanceID();
-            bool isLoading  = AssetPreview.IsLoadingAssetPreview(instanceID);
-
-// Force cache generation in the background, but don't use it yet if it isn't ready
-            Texture2D preview = isLoading ? null : AssetPreview.GetAssetPreview(obj);
-
-            Texture2D finalTex = preview.n()
-                                 ?? EditorGUIUtility.GetIconForObject(obj).n()
-                                 ?? (Texture2D) EditorGUIUtility.ObjectContent(obj, obj.GetType()).image;
-
-            return new IconPreview(finalTex);
             return new IconPreview(AssetPreview.GetAssetPreview(obj).n()
-                                   ?? EditorGUIUtility.GetIconForObject(obj).n()
+                                   // ?? EditorGUIUtility.GetIconForObject(obj).n()
                                    ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image.n());
         }
 
