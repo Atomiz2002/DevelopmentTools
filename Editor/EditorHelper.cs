@@ -315,10 +315,19 @@ namespace DevelopmentTools.Editor {
             if (cachedIcons.TryGetValue(id, out IHaveIconPreview overridenIcon))
                 return overridenIcon;
 
-            return IconPreview.Empty;
-            // return new IconPreview(AssetPreview.GetAssetPreview(obj).n()
-            //                        ?? EditorGUIUtility.GetIconForObject(obj).n()
-            //                        ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image.n());
+            Texture2D preview = AssetPreview.GetAssetPreview(obj);
+
+            if (AssetPreview.IsLoadingAssetPreview(obj.GetInstanceID())) {
+                // Force the editor window to redraw next frame to catch the loaded texture
+                EditorWindow.focusedWindow.n()?.Repaint();
+            }
+
+            // Fall back to lower-quality defaults ONLY if it's not loading and completely failed
+            Texture2D finalTex = preview.n()
+                                 ?? EditorGUIUtility.GetIconForObject(obj).n()
+                                 ?? (Texture2D) EditorGUIUtility.ObjectContent(obj, obj.GetType()).image;
+
+            return new IconPreview(finalTex);
         }
 
         public static void Draw(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
