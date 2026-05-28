@@ -25,10 +25,12 @@ namespace DevelopmentTools.Editor {
                 bool selected = Selection.assetGUIDs.Contains(guid);
                 bool active   = EditorWindow.focusedWindow.n()?.GetType().Name == "ProjectBrowser";
 
-                if (selected && active) {
-                    icon.Icon.SetFilter(FilterMode.Point).Trim(true);
+                if (Selection.instanceIDs.Length <= 3) {
+                    if (selected && active) {
+                        icon.Icon.SetFilter(FilterMode.Point).Trim(true);
 
-                    asset.SetIcon(icon);
+                        asset.SetIcon(icon);
+                    }
                 }
 
                 Rect iconRect = new(selectionRect.x, selectionRect.y, selectionRect.height, selectionRect.height);

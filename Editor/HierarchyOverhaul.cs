@@ -4,6 +4,7 @@ using System.Linq;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using UnityEditor;
+using UnityEditor.PackageManager;
 using UnityEngine;
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
 using UnityEngine.UI;
@@ -30,24 +31,26 @@ namespace DevelopmentTools.Editor {
 
                 IHaveIconPreview icon = go.GetIcon();
 
-                if (selected && active || !go.HasIcon()) {
-                    if (go.TryGetComponent(out SpriteRenderer renderer)) {
-                        icon = new IconPreview(renderer.sprite.n()?.ToTexture2D(), renderer.color);
-                    }
+                if (Selection.instanceIDs.Length <= 3) {
+                    if (selected && active || !go.HasIcon()) {
+                        if (go.TryGetComponent(out SpriteRenderer renderer)) {
+                            icon = new IconPreview(renderer.sprite.n()?.ToTexture2D(), renderer.color);
+                        }
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
-                    else if (go.TryGetComponent(out Image image)) {
-                        icon = new IconPreview(image.sprite.n()?.ToTexture2D(), image.color);
-                    }
-                    else if (go.TryGetComponent(out RawImage rawImage)) {
-                        icon = new IconPreview(rawImage.texture, rawImage.color);
-                    }
+                        else if (go.TryGetComponent(out Image image)) {
+                            icon = new IconPreview(image.sprite.n()?.ToTexture2D(), image.color);
+                        }
+                        else if (go.TryGetComponent(out RawImage rawImage)) {
+                            icon = new IconPreview(rawImage.texture, rawImage.color);
+                        }
 #endif
-                    else
-                        icon = new IconPreview();
+                        else
+                            icon = new IconPreview();
 
-                    icon.Icon.n()?.SetFilter(FilterMode.Point).Trim(true, EditorHelper.BackgroundColor());
+                        icon.Icon.n()?.SetFilter(FilterMode.Point).Trim(true, EditorHelper.BackgroundColor());
 
-                    go.SetIcon(icon);
+                        go.SetIcon(icon);
+                    }
                 }
 
                 if (!icon?.Icon)
