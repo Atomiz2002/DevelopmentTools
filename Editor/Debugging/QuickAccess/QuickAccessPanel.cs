@@ -15,7 +15,6 @@ using Color = System.Drawing.Color;
 namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
     public class QuickAccessPanel : EditorWindow {
-
         private static          List<Object> pinned           = new();
         private static          List<Object> history          = new(); // todo store groups of selected objects
         private static          List<Object> elements         = new();
@@ -207,6 +206,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             iconRect.width  =  elementHeight;
             labelRect.width -= (elementHeight + 2) * 2;
 
+            pinRect.x   += 3;
             iconRect.x  += iconRect.width + 2;
             labelRect.x += (elementHeight + 2) * 2;
 
@@ -370,7 +370,6 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
         // [MenuItem("CONTEXT/QuickAccessPanel/Copy")]
         // private static void Copy() {}
-
     }
 
 }

@@ -18,7 +18,6 @@ using UnityEngine.AddressableAssets;
 namespace DevelopmentTools.Editor {
 
     public static class EditorHelper {
-
         public static void StartRecordingChange() {
             EditorGUI.BeginChangeCheck();
         }
@@ -316,12 +315,9 @@ namespace DevelopmentTools.Editor {
             if (cachedIcons.TryGetValue(id, out IHaveIconPreview overridenIcon))
                 return overridenIcon;
 
-            // cache if slow
-            return new IconPreview(AssetPreview.GetAssetPreview(obj));
-
-            // return new IconPreview(AssetPreview.GetAssetPreview(obj).n()
-            // ?? EditorGUIUtility.GetIconForObject(obj).n()
-            // ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image);
+            return new IconPreview(AssetPreview.GetAssetPreview(obj).n()
+                                   ?? EditorGUIUtility.GetIconForObject(obj).n()
+                                   ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image.n());
         }
 
         public static void Draw(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
@@ -357,7 +353,6 @@ namespace DevelopmentTools.Editor {
         }
 
 #endif
-
     }
 
 }
