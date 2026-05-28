@@ -294,7 +294,7 @@ namespace DevelopmentTools.Editor {
 
         public static GlobalObjectId GlobalId(this Object obj) => GlobalObjectId.GetGlobalObjectIdSlow(obj);
 
-        public static bool HasIcon(this Object obj) => cachedIcons.ContainsKey(obj.GlobalId());
+        // public static bool HasIcon(this Object obj) => cachedIcons.ContainsKey(obj.GlobalId());
 
         public static void SetIcon(this Object obj, IHaveIconPreview iconPreview) {
             if (!obj)
@@ -315,9 +315,12 @@ namespace DevelopmentTools.Editor {
             if (cachedIcons.TryGetValue(id, out IHaveIconPreview overridenIcon))
                 return overridenIcon;
 
-            return new IconPreview(/*AssetPreview.GetAssetPreview(obj).n()
-                                   ??*/ EditorGUIUtility.GetIconForObject(obj).n()
-                                   ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image.n());
+            IconPreview iconPreview = new(AssetPreview.GetAssetPreview(obj).n()
+                                          ?? EditorGUIUtility.GetIconForObject(obj).n()
+                                          ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image.n());
+
+            obj.SetIcon(iconPreview);
+            return iconPreview;
         }
 
         public static void Draw(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
