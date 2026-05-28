@@ -315,9 +315,9 @@ namespace DevelopmentTools.Editor {
             if (cachedIcons.TryGetValue(id, out IHaveIconPreview overridenIcon))
                 return overridenIcon;
 
-            return new IconPreview(AssetPreview.GetAssetPreview(obj).n()
-                                   ?? EditorGUIUtility.GetIconForObject(obj).n());
-            // ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image.n());
+            return new IconPreview(/*AssetPreview.GetAssetPreview(obj).n()
+                                   ??*/ EditorGUIUtility.GetIconForObject(obj).n()
+                                   ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image.n());
         }
 
         public static void Draw(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
