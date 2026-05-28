@@ -21,7 +21,7 @@ namespace DevelopmentTools.Editor {
         private static void OnHierarchyGUI(int instanceID, Rect selectionRect) {
             try {
                 // if (Application.isPlaying)
-                return;
+                //     return;
 
                 if (EditorUtility.InstanceIDToObject(instanceID).IsNot(out GameObject go))
                     return;
@@ -67,7 +67,7 @@ namespace DevelopmentTools.Editor {
 
                 // TODO gray (tmpro content) next to GO name
 
-                icon.Draw(iconRect, ScaleMode.ScaleToFit, selected, active);
+                // icon.Draw(iconRect, ScaleMode.ScaleToFit, selected, active);
             }
             catch (Exception e) {
                 e.LogEx();
