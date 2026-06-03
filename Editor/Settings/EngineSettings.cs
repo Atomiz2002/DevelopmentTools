@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Editor.Toolbar_Injections;
 using JetBrains.Annotations;
 using UnityEditor;
@@ -31,9 +30,9 @@ namespace DevelopmentTools.Editor.Settings {
         public static void Initialize() =>
             ToolbarGUIInjector.AddToolbarPopupButton(ToolbarGUIInjector.ToolbarSide.LeftOfPlay, "Engine Settings", 115, DrawEngineSettingsGUI, 500, 0, 101);
 
-        [MenuItem(DevelopmentTools.Settings.EngineSettings.MenuGroupPath + "Build Settings", false, -10000)]
+        [MenuItem(DevelopmentTools.Settings.EngineSettings.MenuGroupPath + "Engine Settings", false, -10000)]
         public static void ShowWindow() {
-            SettingsService.OpenProjectSettings("Development Tools/Build Settings");
+            SettingsService.OpenProjectSettings("Development Tools/Engine Settings");
         }
 
         [SettingsProvider]

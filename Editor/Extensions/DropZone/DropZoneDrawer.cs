@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace DevelopmentTools.Editor.Extensions.DropZone {
 
-    public class DropZoneDrawer<T> : OdinAttributeDrawer<DropZoneAttribute, T> {
+    public class DropZoneDrawer<T> : OdinAttributeDrawer<DropZoneAttribute, T> where T : Object {
 
         private const float DropZoneHeight = 50f;
         private const float Spacing        = 5f;

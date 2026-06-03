@@ -1,10 +1,10 @@
 ﻿#if !SIMULATE_BUILD
 using System;
 using System.Linq;
+using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
+using DevelopmentTools.Editor.Debugging.DebugFields;
 using UnityEditor;
-using UnityEditor.PackageManager;
 using UnityEngine;
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
 using UnityEngine.UI;
@@ -14,46 +14,48 @@ namespace DevelopmentTools.Editor {
 
     [InitializeOnLoad]
     public static class HierarchyOverhaul {
+
         // todo editor setting to enable/disable for play mode
 
         static HierarchyOverhaul() => EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
 
         private static void OnHierarchyGUI(int instanceID, Rect selectionRect) {
             try {
-                // if (Application.isPlaying)
-                //     return;
-
                 if (EditorUtility.InstanceIDToObject(instanceID).IsNot(out GameObject go))
                     return;
 
                 bool selected = Selection.instanceIDs.Contains(instanceID);
                 bool active   = EditorWindow.focusedWindow && EditorWindow.focusedWindow.GetType().Name == "SceneHierarchyWindow";
 
-                IHaveIconPreview icon = go.GetIcon();
+                Texture icon  = go.GetIcon();
+                Color   color = Color.clear;
 
                 if (Selection.instanceIDs.Length <= 3) {
-                    if (selected && active || !icon.Icon) {
+                    if (selected && active || !icon) {
                         if (go.TryGetComponent(out SpriteRenderer renderer)) {
-                            icon = new IconPreview(renderer.sprite.n()?.ToTexture2D(), renderer.color);
+                            icon  = renderer.sprite.n()?.ToTexture2D();
+                            color = renderer.color;
                         }
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
                         else if (go.TryGetComponent(out Image image)) {
-                            icon = new IconPreview(image.sprite.n()?.ToTexture2D(), image.color);
+                            icon  = image.sprite.n()?.ToTexture2D();
+                            color = image.color;
                         }
                         else if (go.TryGetComponent(out RawImage rawImage)) {
-                            icon = new IconPreview(rawImage.texture, rawImage.color);
+                            icon  = rawImage.texture.Read();
+                            color = rawImage.color;
                         }
 #endif
                         else
-                            icon = new IconPreview();
+                            icon = null;
 
-                        icon.Icon.n()?.SetFilter(FilterMode.Point).Trim(true, EditorHelper.BackgroundColor());
-
-                        go.SetIcon(icon);
+                        if (icon != null) {
+                            go.SetIcon(icon.SetFilter(FilterMode.Point).Trimmed(true));
+                        }
                     }
                 }
 
-                if (!icon.Icon)
+                if (!icon)
                     return;
 
                 Rect iconRect = new(selectionRect.x, selectionRect.y, 16, 16);
@@ -67,12 +69,13 @@ namespace DevelopmentTools.Editor {
 
                 // TODO gray (tmpro content) next to GO name
 
-                icon.Draw(iconRect, ScaleMode.ScaleToFit, selected, active);
+                icon.DrawIcon(iconRect, ScaleMode.ScaleToFit, selected, active);
             }
             catch (Exception e) {
                 e.LogEx();
             }
         }
+
     }
 
 }

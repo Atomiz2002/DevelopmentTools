@@ -1,4 +1,5 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DevelopmentEssentials.Extensions.CS;
@@ -15,10 +16,11 @@ using Color = System.Drawing.Color;
 namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
     public class QuickAccessPanel : EditorWindow {
-        private static          List<Object> pinned           = new();
-        private static          List<Object> history          = new(); // todo store groups of selected objects
-        private static          List<Object> elements         = new();
-        private static readonly List<Object> queuedForRemoval = new();
+
+        private static          List<GlobalObjectId>                pinned           = new();
+        private static          List<GlobalObjectId>                history          = new(); // todo store groups of selected objects
+        private static readonly List<(GlobalObjectId id, Object o)> elements         = new();
+        private static readonly List<GlobalObjectId>                queuedForRemoval = new();
 
         private static Vector2 scroll;
         private static bool    stayOpen;
@@ -56,10 +58,10 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
                 if (!selected)
                     return;
 
-                if (history.Contains(selected))
-                    history.Remove(selected);
+                if (history.Contains(selected.GlobalId(out GlobalObjectId id)))
+                    history.Remove(id);
 
-                history.Insert(0, selected);
+                history.Insert(0, id);
 
                 history = history.Distinct().ToList();
                 Save();
@@ -74,7 +76,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
             InitializeStyles();
 
-            selectedIndex = (history.Count > 1 && Selection.activeObject == history[0] ? 1 : 0) + pinned.Count;
+            selectedIndex = (history.Count > 1 && Selection.activeObject.GlobalId().Equals(history[0]) ? 1 : 0) + pinned.Count;
             scroll        = Vector2.zero;
         }
 
@@ -176,6 +178,9 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
             // DrawCopyPaste(); // not fully working yet
 
+            if (!elements.Any())
+                return;
+
             scroll = EditorGUILayout.BeginScrollView(scroll);
 
             DrawElements();
@@ -192,7 +197,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             Rect container   = EditorGUILayout.GetControlRect(false, elements.Count * elementHeight); // reserves the space
             Rect elementRect = container;
 
-            elementRect.height = pinned.Count * elementHeight;
+            elementRect.height = pinned.Count(x => elements.Contains1(x)) * elementHeight;
 
             SirenixEditorGUI.DrawRoundRect(elementRect, UnityEngine.Color.black.A(.2f), 4, Color.Gold.ToUnityColor().A(.4f), 1);
 
@@ -211,29 +216,93 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             labelRect.x += (elementHeight + 2) * 2;
 
             for (int i = 0; i < elements.Count; i++) {
-                Object element = elements[i];
-                bool   hovered = Event.current.type != EventType.Layout && elementRect.Contains(Event.current.mousePosition);
+                (GlobalObjectId id, Object element) = elements[i];
+                bool hovered = Event.current.type != EventType.Layout && elementRect.Contains(Event.current.mousePosition);
 
-                if (hovered || selectedIndex == i) {
-                    selectedIndex = i; // we draw it at the end over all others at the end, to avoid visual overlaps due to its size
-                }
-                else {
-                    bool isPinned = pinned.Contains(element);
-                    GUIStyle style = isPinned
-                        ? historyElementPinned
-                        : historyElement;
+                if (hovered)
+                    selectedIndex = i;
 
-                    if (isPinned)
-                        SirenixEditorGUI.SDFIconButton(pinRect, SdfIconType.PinFill, historyElementPinned);
+                bool isPinned = pinned.Contains(id);
+                GUIStyle style = isPinned
+                    ? historyElementPinned
+                    : historyElement;
 
-                    element.GetIcon().Draw(iconRect, ScaleMode.ScaleToFit);
-                    GUI.Label(labelRect, element.name, style);
-                }
+                GUIHelper.PushColor((isPinned ? Color.Gold.ToUnityColor() : GUI.color).A(.5f));
+                GUI.DrawTexture(pinRect.AlignCenterXY(16), EditorGUIUtility.IconContent(EditorUtility.IsPersistent(element) ? "Project" : "UnityEditor.SceneHierarchyWindow").image);
+                GUIHelper.PopColor();
+
+                element.GetIcon().DrawIcon(iconRect.AlignCenterXY(16), ScaleMode.ScaleToFit);
+                GUI.Label(labelRect, element.name, style);
 
                 elementRect.y = pinRect.y = iconRect.y = labelRect.y += elementHeight;
             }
 
             DrawSelectedElement(container, elementRect, pinRect, iconRect, labelRect);
+        }
+
+        private static void DrawSelectedElement(Rect container, Rect elementRect, Rect pinRect, Rect iconRect, Rect labelRect) {
+            if (selectedIndex < 0)
+                return;
+
+            (GlobalObjectId id, Object selectedElement) = elements[selectedIndex];
+            bool     isPinned             = pinned.Contains(id);
+            GUIStyle selectedElementStyle = isPinned ? pinnedElementSelected : historyElementSelected;
+            Texture  selectedElementIcon  = selectedElement.GetIcon();
+            // float    selectedElementIconAspect = selectedElementIcon ? (float) selectedElementIcon.width / selectedElementIcon.height : 1;
+
+            float selectedElementRectY = selectedIndex * elementHeight;
+
+            elementRect.y = pinRect.y = iconRect.y = labelRect.y = selectedElementRectY;
+
+            elementRect = elementRect.Expand(0, elementExpandByOnHover);
+            iconRect    = iconRect.Expand(elementIconExpandByOnHover).AddX(labelRect.width - elementIconExpandByOnHover);
+            // iconRect.width =  iconRect.height * selectedElementIconAspect;
+            iconRect.x -= iconRect.width - iconRect.height;
+            iconRect.y =  Mathf.Min(Mathf.Max(iconRect.y, 0), Mathf.Max(iconRect.height, container.yMax) - iconRect.height);
+            labelRect  =  labelRect.Expand(0, elementLabelExpandByOnHover).SubXMin(elementHeight);
+
+            SirenixEditorGUI.DrawRoundRect(
+                elementRect,
+                EditorHelper.BackgroundColor(),
+                4,
+                selectedElementStyle.hover.textColor,
+                2);
+
+            if (isPinned) {
+                SdfIconType icon = pinRect.Contains(Event.current.mousePosition) ? SdfIconType.PinAngleFill : SdfIconType.PinFill;
+                if (SirenixEditorGUI.SDFIconButton(pinRect, icon, GUI.skin.label))
+                    Unpin(id);
+            }
+            else {
+                SdfIconType icon = pinRect.Contains(Event.current.mousePosition) ? SdfIconType.PinAngle : SdfIconType.Pin;
+                if (SirenixEditorGUI.SDFIconButton(pinRect, icon, GUI.skin.label))
+                    Pin(id);
+            }
+
+            GUI.Label(labelRect, selectedElement.name, selectedElementStyle);
+
+            if (selectedElementIcon) {
+                SirenixEditorGUI.DrawRoundRect(
+                    iconRect,
+                    (EditorHelper.BackgroundColor() * (Mathf.PingPong((float) EditorApplication.timeSinceStartup / 3, 0.4f) + 0.5f)).A(1),
+                    4,
+                    selectedElementStyle.hover.textColor,
+                    2);
+
+                selectedElementIcon.DrawIcon(iconRect.Expand(-2), ScaleMode.ScaleToFit);
+            }
+
+            if (Event.current.isMouse) {
+                if (Event.current.OnLeftClick(elementRect)) {
+                    selectedElement.SelectAndPing();
+                }
+                else if (Event.current.OnContextClick(elementRect)) {
+                    if (isPinned)
+                        Unpin(id);
+                    else
+                        Pin(id);
+                }
+            }
         }
 
         private static void DrawDropZoneUI(Rect windowRect) {
@@ -248,69 +317,6 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             GUILayout.EndHorizontal();
         }
 
-        private static void DrawSelectedElement(Rect container, Rect elementRect, Rect pinRect, Rect iconRect, Rect labelRect) {
-            if (selectedIndex < 0)
-                return;
-
-            Object           selectedElement      = elements[selectedIndex];
-            bool             isPinned             = pinned.Contains(selectedElement);
-            GUIStyle         selectedElementStyle = isPinned ? pinnedElementSelected : historyElementSelected;
-            IHaveIconPreview selectedElementIcon  = selectedElement.GetIcon();
-            // float    selectedElementIconAspect = selectedElementIcon ? (float) selectedElementIcon.width / selectedElementIcon.height : 1;
-
-            float selectedElementRectY = selectedIndex * elementHeight;
-
-            elementRect.y = pinRect.y = iconRect.y = labelRect.y = selectedElementRectY;
-
-            elementRect = elementRect.Expand(0, elementExpandByOnHover);
-            iconRect    = iconRect.Expand(elementIconExpandByOnHover).AddX(labelRect.width - elementIconExpandByOnHover);
-            // iconRect.width =  iconRect.height * selectedElementIconAspect;
-            iconRect.x -= iconRect.width - iconRect.height;
-            iconRect.y =  Mathf.Min(Mathf.Max(iconRect.y, 0), container.yMax - iconRect.height);
-            labelRect  =  labelRect.Expand(0, elementLabelExpandByOnHover).SubXMin(elementHeight);
-
-            SirenixEditorGUI.DrawRoundRect(
-                elementRect,
-                EditorHelper.BackgroundColor(),
-                4,
-                selectedElementStyle.hover.textColor,
-                2);
-
-            if (isPinned) {
-                if (SirenixEditorGUI.SDFIconButton(pinRect, SdfIconType.PinFill, GUI.skin.label))
-                    Unpin(selectedElement);
-            }
-            else {
-                if (SirenixEditorGUI.SDFIconButton(pinRect, SdfIconType.Pin, GUI.skin.label))
-                    Pin(selectedElement);
-            }
-
-            GUI.Label(labelRect, selectedElement.name, selectedElementStyle);
-
-            if (selectedElementIcon.Icon) {
-                SirenixEditorGUI.DrawRoundRect(
-                    iconRect,
-                    (EditorHelper.BackgroundColor() * (Mathf.PingPong((float) EditorApplication.timeSinceStartup / 3, 0.4f) + 0.5f)).A(1),
-                    4,
-                    selectedElementStyle.hover.textColor,
-                    2);
-
-                selectedElementIcon.Draw(iconRect.Expand(-2), ScaleMode.ScaleToFit);
-            }
-
-            if (Event.current.isMouse) {
-                if (Event.current.OnLeftClick(elementRect)) {
-                    selectedElement.SelectAndPing();
-                }
-                else if (Event.current.OnContextClick(elementRect)) {
-                    if (isPinned)
-                        Unpin(selectedElement);
-                    else
-                        Pin(selectedElement);
-                }
-            }
-        }
-
         public new void Close() {
             base.Close();
 
@@ -320,56 +326,60 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             Save();
 
             if (selectedIndex >= 0)
-                elements[selectedIndex].SelectAndPing();
+                elements[selectedIndex].o.SelectAndPing();
 
             EditorUtility.FocusProjectWindow();
         }
 
         private static void Load() {
-            pinned   = DeserializeList(EditorPrefs.GetString(nameof(pinned)));
-            history  = DeserializeList(EditorPrefs.GetString(nameof(history)));
-            elements = pinned.Concat(history).ToList();
+            pinned  = DeserializeList(EditorPrefs.GetString(nameof(pinned)));
+            history = DeserializeList(EditorPrefs.GetString(nameof(history)));
+            FillElements();
         }
 
         private static void Save() {
             EditorPrefs.SetString(nameof(pinned), SerializeList(pinned));
             EditorPrefs.SetString(nameof(history), SerializeList(history));
-            elements = pinned.Concat(history).ToList();
+            FillElements();
+        }
+
+        private static void FillElements() {
+            elements.Clear();
+            foreach (GlobalObjectId id in pinned.Concat(history))
+                if (GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id).Out(out Object o))
+                    elements.Add(id, o);
         }
 
         private const string LIST_SEPARATOR = ";";
 
-        private static string SerializeList(List<Object> list) =>
-            list.Existing().Select(o => GlobalObjectId.GetGlobalObjectIdSlow(o).ToString()).Join(LIST_SEPARATOR);
+        private static string SerializeList(List<GlobalObjectId> list) => list.Join(LIST_SEPARATOR);
 
-        private static List<Object> DeserializeList(string data) {
+        private static List<GlobalObjectId> DeserializeList(string data) {
             if (data.IsNullOrEmpty())
                 return new();
 
             return data.Split(LIST_SEPARATOR)
-                .Select(idStr => GlobalObjectId.TryParse(idStr, out GlobalObjectId id)
-                    ? GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id)
-                    : null)
-                .Existing()
+                .Select(idStr => GlobalObjectId.TryParse(idStr, out GlobalObjectId id) ? id : default)
                 .Distinct()
                 .ToList();
         }
 
-        private static void Pin(Object element) {
-            if (pinned.Contains(element))
+        private static void Pin(GlobalObjectId id) {
+            if (pinned.Contains(id))
                 return;
 
-            pinned.Add(element);
+            pinned.Add(id);
             Save();
         }
 
-        private static void Unpin(Object element) {
-            pinned.Remove(element);
+        private static void Unpin(GlobalObjectId id) {
+            pinned.Remove(id);
             Save();
         }
 
         // [MenuItem("CONTEXT/QuickAccessPanel/Copy")]
         // private static void Copy() {}
+
     }
 
 }

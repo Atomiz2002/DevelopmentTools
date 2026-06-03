@@ -69,7 +69,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
         private int    lineNumber;
         private int    columnNumber;
 
-        public DebugFieldValue(string name, string value, Texture2D texture = null, StackTrace stackTrace = null) {
+        public DebugFieldValue(string name, string value, Texture2D texture = null, StackTrace stackTrace = null, string startAtInFilePath = null) {
             RawName  = name;
             RawValue = value;
 
@@ -85,7 +85,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
             Time = $"{DateTime.Now:mm:ss.fff}";
 
             StackFrame stackFrame = (stackTrace ?? new StackTrace(4, true)).GetFrames()?.SkipWhile(f => f.SafeString().Contains(nameof(ActionExtensions.SafeInvoke))).ElementAt(0);
-            filePath     = stackFrame?.GetFileName();
+            filePath     = stackFrame?.GetFileName().StartAt(startAtInFilePath);
             lineNumber   = stackFrame?.GetFileLineNumber() ?? 0;
             columnNumber = stackFrame?.GetFileColumnNumber() ?? 0;
 
@@ -105,14 +105,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
         [HorizontalGroup("_", Width = 22)]
         [Button(SdfIconType.EyeFill, ButtonHeight = 22)]
-        private void OpenCaller() {
-            if (filePath.Contains("Assets"))
-                AssetDatabase.OpenAsset(filePath.StartAt("Assets").LoadAsset(), lineNumber, columnNumber);
-            else {
-                string quantumProjectPath = Path.Join(new DirectoryInfo(Application.dataPath).Parent!.Parent!.SafeString(), filePath.StartAt("quantum_code"));
-                Process.Start(EditorPrefs.GetString("kScriptsDefaultApp"), $"--line {lineNumber} --column {columnNumber - 1} \"{quantumProjectPath}\"");
-            }
-        }
+        private void OpenCaller() => filePath.OpenAsset(lineNumber, columnNumber);
 
     }
 

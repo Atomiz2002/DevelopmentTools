@@ -17,6 +17,9 @@ namespace DevelopmentTools.Settings {
 
 #if UNITY_EDITOR
         public static void TryShowWindow(Object instance, string name = null) {
+            if (!instance)
+                return;
+
             name ??= instance.name;
             if (!TryFocusWindow(name))
                 EditorUtility.OpenPropertyEditor(instance);

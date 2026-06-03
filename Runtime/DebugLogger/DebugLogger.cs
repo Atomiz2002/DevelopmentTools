@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Settings;
 using JetBrains.Annotations;
 using Sirenix.OdinInspector;

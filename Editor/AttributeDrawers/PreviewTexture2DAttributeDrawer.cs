@@ -1,24 +1,27 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
+using DevelopmentEssentials.Extensions.CS;
+using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.ODIN_INSPECTOR;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace DevelopmentTools.Editor.AttributeDrawers {
 
-    public class PreviewTexture2DAttributeDrawer<T> : OdinAttributeDrawer<PreviewTexture2DAttribute, T> where T : Object {
+    public class PreviewTexture2DAttributeDrawer<T> : OdinAttributeDrawer<PreviewTexture2DAttribute, T>, IDefinesGenericMenuItems where T : Object {
 
         protected override void DrawPropertyLayout(GUIContent label) {
             if (!ValueEntry.SmartValue && !Attribute.DrawIfNull) return;
 
-            switch (ValueEntry.SmartValue) {
-                case Texture texture: DrawTexturePreview(texture); break;
-                case Sprite sprite:   DrawTexturePreview(sprite ? sprite.texture : null); break;
-                default:              CallNextDrawer(label); break;
-            }
+            if (ValueEntry.SmartValue.Is(out Texture texture))
+                DrawTexturePreview(texture);
+            else if (ValueEntry.SmartValue.Is(out Sprite sprite))
+                DrawTexturePreview(sprite ? sprite.texture : null);
+            else
+                CallNextDrawer(label);
         }
 
         private void DrawTexturePreview(Texture texture) {
@@ -39,7 +42,19 @@ namespace DevelopmentTools.Editor.AttributeDrawers {
 
             float aspectRatio = (float) texture.width / texture.height;
             float rectHeight  = height > 0 ? height : texture.height;
-            Rect  textureRect = GUILayoutUtility.GetAspectRect(aspectRatio, GUILayout.Height(rectHeight), GUILayout.ExpandHeight(expandHeight));
+
+            // stable across Layout and Repaint
+            Rect totalRect = GUILayoutUtility.GetRect(0, rectHeight, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(expandHeight));
+
+            Rect  textureRect = totalRect;
+            float targetWidth = totalRect.height * aspectRatio;
+
+            if (targetWidth > totalRect.width) {
+                textureRect.height = totalRect.width / aspectRatio;
+            }
+            else {
+                textureRect.width = targetWidth;
+            }
 
             Rect outlineRect = new() {
                 x      = textureRect.x - thickness,
@@ -53,6 +68,10 @@ namespace DevelopmentTools.Editor.AttributeDrawers {
             GUI.DrawTexture(outlineRect, texture, ScaleMode.ScaleToFit);
 
             PreviewTexture2DWindow.DrawZoomableGUI(outlineRect, texture);
+        }
+
+        public void PopulateGenericMenu(InspectorProperty property, GenericMenu genericMenu) {
+            genericMenu.AddItem(new("Copy to clipboard"), false, () => ValueEntry.SmartValue.CopyObjToClipboard());
         }
 
     }

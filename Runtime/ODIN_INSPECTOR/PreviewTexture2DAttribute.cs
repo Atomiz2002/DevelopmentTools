@@ -21,8 +21,9 @@ namespace DevelopmentTools.ODIN_INSPECTOR {
         public Color  BackgroundColor;
         public string BackgroundColorGetter;
 
-        public bool DrawIfNull   = true;
-        public bool ExpandHeight = true;
+        public bool   DrawIfNull   = true;
+        public bool   ExpandHeight = true;
+        public string ExpandHeightGetter;
 
         public PreviewTexture2DAttribute() {}
 
@@ -58,6 +59,9 @@ namespace DevelopmentTools.ODIN_INSPECTOR {
 
             if (BackgroundColorGetter != null)
                 BackgroundColor = ValueResolver.Get<Color>(property, BackgroundColorGetter.Replace("@", string.Empty)).GetValue();
+
+            // if (ExpandHeightGetter != null)
+            // ExpandHeight = ValueResolver.Get<bool>(property, ExpandHeightGetter.Replace("@", string.Empty)).GetValue();
         }
 
 #endif

@@ -3,50 +3,76 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using DevelopmentEssentials.Extensions.CS;
+using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.Settings;
+using JetBrains.Annotations;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using UnityEditor;
 using UnityEngine;
 #if DEVELOPMENT_TOOLS_EDITOR_UNI_TASK
 using Cysharp.Threading.Tasks;
-
+using Sirenix.OdinInspector.Editor;
 #else
 using System.Threading.Tasks;
 #endif
 
 namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
-    [CreateAssetMenu(fileName = "Debug Fields", menuName = "Create/Development Tools/Debug Fields")]
-    public class DebugFields : SerializedScriptableObject {
+    public class DebugFields : OdinEditorWindow {
 
 #if UNITY_EDITOR && !SIMULATE_BUILD
 
         private static bool autoOpenedWindowOnce;
 
-        [ListDrawerSettings(IsReadOnly = true, DefaultExpandedState = true, ShowFoldout = false, ShowItemCount = false)]
+        [ListDrawerSettings(IsReadOnly = true, DefaultExpandedState = true, ShowFoldout = false, ShowItemCount = false, DraggableItems = false)]
         public List<DebugFieldsValues> debugFields = new();
 
         private IDisposable eventDebugField;
 
         private static DebugFields instance;
 
-        private void OnEnable() {
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-            instance                               =  this;
+        private static DebugFields Instance {
+            get {
+                if (instance)
+                    return instance;
+
+                if (autoOpenedWindowOnce)
+                    return new();
+
+                autoOpenedWindowOnce = true;
+                return instance = GetWindow(true);
+            }
         }
 
-        private void OnDisable() {
+        private static DebugFields GetWindow(bool focus) => GetWindow<DebugFields>(nameof(DebugFields).ToTitleCase(), focus);
+
+        protected override void OnEnable() {
+            base.OnEnable();
+
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        }
+
+        protected override void OnDisable() {
+            base.OnDisable();
+
             eventDebugField?.Dispose();
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
         }
 
-        [MenuItem(EngineSettings.MenuGroupPath + "Debug Fields")]
-        public static void TryShowWindow() => EngineSettings.TryShowWindow(instance);
+        protected override void OnImGUI() {
+            base.OnImGUI();
+            Repaint();
+        }
+
+        [MenuItem(EngineSettings.MenuGroupPath + "Debug Fields #&d")]
+        public static void TryShowWindow() => GetWindow(true);
 
         private void OnPlayModeStateChanged(PlayModeStateChange state) {
             switch (state) {
                 case PlayModeStateChange.EnteredPlayMode:
-                    instance.debugFields.Clear();
+                    Instance.debugFields.Clear();
                     break;
 
                 case PlayModeStateChange.ExitingPlayMode:
@@ -58,6 +84,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
         private byte                    clearConfirm;
         private CancellationTokenSource clearConfirmCancellationTokenSource;
 
+        [PropertyOrder(float.MinValue)]
         [Button("@clearConfirm == 0 ? \"Clear\" : \"<color=#ff0000>Are you sure?</color>\"")]
         [GUIColor("@clearConfirm == 0 ? GUI.color : Color.red")]
         private void Clear() {
@@ -89,19 +116,16 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
             clearConfirmCancellationTokenSource.Cancel();
             clearConfirm = 0;
-            instance.debugFields.Clear();
+            Instance.debugFields.Clear();
         }
 
-        public static void AddDebugField(string name, string value, Texture2D icon = null, StackTrace stackTrace = null) {
-            if (!autoOpenedWindowOnce) {
-                TryShowWindow();
-                autoOpenedWindowOnce = true;
-            }
+        public static void AddDebugField([CanBeNull] string name, string value, Texture2D icon = null, StackTrace stackTrace = null) {
+            name ??= stackTrace.SafeString(new StackTrace(2, true).ToString());
 
-            DebugFieldsValues debugField = instance.debugFields.Find(fieldValue => fieldValue.FieldName == name);
+            DebugFieldsValues debugField = Instance.debugFields.Find(fieldValue => fieldValue.FieldName == name);
 
             if (debugField == null)
-                instance.debugFields.Add(debugField = new(name));
+                Instance.debugFields.Add(debugField = new(name));
 
             debugField.AddValue(value, icon, stackTrace);
         }

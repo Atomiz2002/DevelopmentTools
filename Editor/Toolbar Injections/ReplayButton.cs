@@ -1,7 +1,6 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Editor.Settings;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;

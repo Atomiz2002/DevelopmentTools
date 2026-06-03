@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using DevelopmentEssentials.Editor.Extensions.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Settings;
 using UnityEditor;
 using UnityEngine;

@@ -2,7 +2,6 @@
 using System.Linq;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using DevelopmentTools.Editor.AttributeDrawers;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;

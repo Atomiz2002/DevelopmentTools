@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
+using DevelopmentTools.Editor.Debugging.RealtimeDebugger;
 using DevelopmentTools.Editor.Extensions;
 using UnityEditor;
 using UnityEditor.Build;
@@ -18,173 +20,6 @@ using UnityEngine.AddressableAssets;
 namespace DevelopmentTools.Editor {
 
     public static class EditorHelper {
-        public static void StartRecordingChange() {
-            EditorGUI.BeginChangeCheck();
-        }
-
-        public static void EndRecordingComponentChange(MonoBehaviour component) {
-            EditorGUI.EndChangeCheck();
-            Undo.RecordObject(component, "Changed " + component.name);
-
-            EditorUtility.SetDirty(component);
-        }
-
-        public static void EndRecordingGameObjectChange(GameObject GO) {
-            EditorGUI.EndChangeCheck();
-            Undo.RecordObject(GO, "Changed " + GO.name);
-
-            EditorUtility.SetDirty(GO);
-        }
-
-        public static List<UnityEvent> ExtractUnityEvents(MonoBehaviour component, string propertyName) {
-            List<UnityEvent> output = new List<UnityEvent>();
-
-            UnityEvent newEvent = new UnityEvent();
-
-            SerializedObject   so             = new SerializedObject(component);
-            SerializedProperty propertyEvents = so.FindProperty(propertyName);
-
-            if (propertyEvents.isArray) {
-                for (int i = 0; i < propertyEvents.arraySize; i++) {
-                    List<UnityEvent> results = ExtractEvents(propertyEvents.GetArrayElementAtIndex(i));
-                    output = output.Concat(results).ToList();
-                }
-            }
-            else {
-                List<UnityEvent> results = ExtractEvents(propertyEvents);
-                output = output.Concat(results).ToList();
-            }
-
-            return output;
-        }
-
-        private static List<UnityEvent> ExtractEvents(SerializedProperty eventsProperty) {
-            List<UnityEvent> list = new List<UnityEvent>();
-
-            SerializedProperty persistentCalls = eventsProperty.FindPropertyRelative("m_PersistentCalls.m_Calls");
-
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
-
-            for (int i = 0; i < persistentCalls.arraySize; ++i) {
-                UnityEvent newEvent = new UnityEvent();
-
-                Object     target     = persistentCalls.GetArrayElementAtIndex(i).FindPropertyRelative("m_Target").objectReferenceValue;
-                string     methodName = persistentCalls.GetArrayElementAtIndex(i).FindPropertyRelative("m_MethodName").stringValue;
-                MethodInfo method     = null;
-
-                try {
-                    method = target.GetType().GetMethod(methodName, flags); // TODO flags?
-                }
-                catch {
-                    if (target == null)
-                        continue;
-
-                    foreach (MethodInfo info in target.GetType().GetMethods(flags).Where(x => x.Name == methodName)) {
-                        ParameterInfo[] _params = info.GetParameters();
-
-                        if (_params.Length < 2) {
-                            method = info;
-                        }
-                    }
-                }
-
-                ParameterInfo[] parameters = method.GetParameters();
-
-                if (parameters.Length > 0) {
-                    switch (parameters[0].ParameterType.Name) {
-                        case nameof(Boolean):
-                            bool              bool_value   = persistentCalls.GetArrayElementAtIndex(i).FindPropertyRelative("m_Arguments.m_BoolArgument").boolValue;
-                            UnityAction<bool> bool_execute = Delegate.CreateDelegate(typeof(UnityAction<bool>), target, methodName) as UnityAction<bool>;
-                            UnityEventTools.AddBoolPersistentListener(
-                                newEvent,
-                                bool_execute,
-                                bool_value
-                            );
-
-                            break;
-                        case nameof(Int32):
-                            int              int_value   = persistentCalls.GetArrayElementAtIndex(i).FindPropertyRelative("m_Arguments.m_IntArgument").intValue;
-                            UnityAction<int> int_execute = Delegate.CreateDelegate(typeof(UnityAction<int>), target, methodName) as UnityAction<int>;
-                            UnityEventTools.AddIntPersistentListener(
-                                newEvent,
-                                int_execute,
-                                int_value
-                            );
-
-                            break;
-                        case nameof(Single):
-                            float              float_value   = persistentCalls.GetArrayElementAtIndex(i).FindPropertyRelative("m_Arguments.m_FloatArgument").floatValue;
-                            UnityAction<float> float_execute = Delegate.CreateDelegate(typeof(UnityAction<float>), target, methodName) as UnityAction<float>;
-                            UnityEventTools.AddFloatPersistentListener(
-                                newEvent,
-                                float_execute,
-                                float_value
-                            );
-
-                            break;
-                        case nameof(String):
-                            string              str_value   = persistentCalls.GetArrayElementAtIndex(i).FindPropertyRelative("m_Arguments.m_StringArgument").stringValue;
-                            UnityAction<string> str_execute = Delegate.CreateDelegate(typeof(UnityAction<string>), target, methodName) as UnityAction<string>;
-                            UnityEventTools.AddStringPersistentListener(
-                                newEvent,
-                                str_execute,
-                                str_value
-                            );
-
-                            break;
-                        case nameof(System.Object):
-                            Object              obj_value   = persistentCalls.GetArrayElementAtIndex(i).FindPropertyRelative("m_Arguments.m_ObjectArgument").objectReferenceValue;
-                            UnityAction<Object> obj_execute = Delegate.CreateDelegate(typeof(UnityAction<Object>), target, methodName) as UnityAction<Object>;
-                            UnityEventTools.AddObjectPersistentListener(
-                                newEvent,
-                                obj_execute,
-                                obj_value
-                            );
-
-                            break;
-                        default:
-                            UnityAction void_execute = Delegate.CreateDelegate(typeof(UnityAction), target, methodName) as UnityAction;
-                            UnityEventTools.AddPersistentListener(
-                                newEvent,
-                                void_execute
-                            );
-
-                            break;
-                    }
-                }
-                // no params
-                else {
-                    bool        bool_value   = persistentCalls.GetArrayElementAtIndex(i).FindPropertyRelative("m_Arguments.m_BoolArgument").boolValue;
-                    UnityAction bool_execute = Delegate.CreateDelegate(typeof(UnityAction), target, methodName) as UnityAction;
-                    UnityEventTools.AddVoidPersistentListener(
-                        newEvent,
-                        bool_execute
-                    );
-                }
-
-                list.Add(newEvent);
-            }
-
-            return list;
-        }
-
-        public static bool UnityEventsProblemsCheck(UnityEvent[] events) {
-            if (events != null && events.Length > 0) {
-                foreach (UnityEvent unityEvent in events) {
-                    if (UnityEventsProblemsCheck(unityEvent))
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
-        public static bool UnityEventsProblemsCheck(UnityEvent unityEvent) {
-            if (unityEvent != null && unityEvent.GetPersistentEventCount() > 1)
-                return true;
-
-            return false;
-        }
 
         public static void AddSymbol(string symbol) {
             NamedBuildTarget buildTarget    = EditorUserBuildSettings.selectedBuildTargetGroup.ToNamed();
@@ -224,7 +59,7 @@ namespace DevelopmentTools.Editor {
             GUILayout.Space(10);
         }
 
-        public static void DrawDropZone<T>(Rect rect, Action<T[]> onAcceptDrag) {
+        public static void DrawDropZone<T>(Rect rect, Action<T[]> onAcceptDrag) where T : Object {
             Event evt = Event.current;
 
             if (!rect.Contains(evt.mousePosition))
@@ -235,7 +70,7 @@ namespace DevelopmentTools.Editor {
 
             DragAndDrop.visualMode = DragAndDropVisualMode.Link;
 
-            if (evt.type == EventType.DragPerform && DragAndDrop.objectReferences.All(x => x is T)) {
+            if (evt.type == EventType.DragPerform && DragAndDrop.objectReferences.All(x => x.Is<T>())) {
                 DragAndDrop.AcceptDrag();
                 onAcceptDrag.SafeInvoke(DragAndDrop.objectReferences.Cast<T>().ToArray());
             }
@@ -287,48 +122,85 @@ namespace DevelopmentTools.Editor {
             GUI.color = prevColor;
         }
 
+        public static void DrawUnityObjectHeader(this object obj, bool vertical = false) {
+            Object o = obj as Object;
+
+            if (!o)
+                return;
+
+            if (!Event.current.control)
+                return;
+
+            if (vertical)
+                EditorGUILayout.BeginVertical();
+            else
+                EditorGUILayout.BeginHorizontal(GUILayout.Width(200));
+
+            if (GUILayout.Button("Select")) o.SelectAndPing();
+            if (GUILayout.Button("Ping")) o.Ping();
+
+            if (obj.OpenScript(out Action open) && GUILayout.Button("Open Script"))
+                open.SafeInvoke();
+
+            GUILayout.FlexibleSpace();
+
+            if (vertical)
+                EditorGUILayout.EndVertical();
+            else
+                EditorGUILayout.EndHorizontal();
+        }
+
+        // todo can return incorrect line
+        private static bool OpenScript(this object obj, out Action open, string target = null) {
+            open = () => {};
+            MonoScript monoScript;
+
+            switch (obj) {
+                case MonoBehaviour mb:    monoScript = MonoScript.FromMonoBehaviour(mb); break;
+                case ScriptableObject so: monoScript = MonoScript.FromScriptableObject(so); break;
+                default:                  return false;
+            }
+
+            string targetMatchPattern = @$"{target ?? monoScript.name}(?!\w)";
+
+            string[] lines      = monoScript.text.Split('\n');
+            int      targetLine = lines.IndexOf(lines.First(line => Regex.IsMatch(line, targetMatchPattern))) + 1;
+
+            open = () => AssetDatabase.OpenAsset(monoScript, targetLine);
+            return true;
+        }
+
         #region Get/Set Icon
 
-        // overriden - false = using AssetPreview.GetAssetPreview(obj). true = script overrode preview
-        private static readonly Dictionary<GlobalObjectId, IHaveIconPreview> cachedIcons = new();
+        private static readonly Dictionary<GlobalObjectId, Texture> cachedIcons = new();
 
-        public static GlobalObjectId GlobalId(this Object obj) => GlobalObjectId.GetGlobalObjectIdSlow(obj);
+        public static GlobalObjectId GlobalId(this Object obj)                        => GlobalObjectId.GetGlobalObjectIdSlow(obj);
+        public static GlobalObjectId GlobalId(this Object obj, out GlobalObjectId id) => id = GlobalObjectId.GetGlobalObjectIdSlow(obj);
 
-        // public static bool HasIcon(this Object obj) => cachedIcons.ContainsKey(obj.GlobalId());
-
-        public static void SetIcon(this Object obj, IHaveIconPreview iconPreview) {
+        public static void SetIcon(this Object obj, Texture icon, bool overrideIfNull = false) {
             if (!obj)
                 return;
 
-            GlobalObjectId id = GlobalObjectId.GetGlobalObjectIdSlow(obj);
-
-            if (iconPreview.Icon)
-                cachedIcons[id] = iconPreview;
+            if (icon || overrideIfNull)
+                cachedIcons[obj.GlobalId()] = icon;
         }
 
-        public static IHaveIconPreview GetIcon(this Object obj) {
+        public static Texture GetIcon(this Object obj, bool fallback = true) {
             if (!obj)
-                return IconPreview.Empty;
+                return null;
 
-            GlobalObjectId id = obj.GlobalId();
+            if (cachedIcons.TryGetValue(obj.GlobalId(), out Texture icon))
+                return icon;
 
-            if (cachedIcons.TryGetValue(id, out IHaveIconPreview overridenIcon))
-                return overridenIcon;
+            if (fallback)
+                return EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image;
 
-            IconPreview iconPreview = new(AssetPreview.GetAssetPreview(obj).n()
-                                          ?? EditorGUIUtility.GetIconForObject(obj).n()
-                                          ?? EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image.n());
-
-            obj.SetIcon(iconPreview);
-            return iconPreview;
+            return null;
         }
 
-        public static void Draw(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
+        public static void DrawIcon(this Texture icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
             DrawColoredTexture(rect, BackgroundColor(selectedBackground, activeSelection));
-            Color guiColor = GUI.color;
-            GUI.color = icon.Color;
-            GUI.DrawTexture(rect, icon.Icon, scaleMode);
-            GUI.color = guiColor;
+            GUI.DrawTexture(rect, icon, scaleMode);
         }
 
         #endregion
@@ -340,15 +212,6 @@ namespace DevelopmentTools.Editor {
         public static void NotifyGameView(string notification, float duration = 1) =>
             EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.PlayModeView")).ShowNotification(new(notification), duration);
 
-#if DEVELOPMENT_TOOLS_EDITOR_UNITY_ADDRESSABLES
-
-        public static AssetReferenceGameObject GameObjectRefToAddressableRef(GameObject prefab) {
-            AssetDatabase.TryGetGUIDAndLocalFileIdentifier(prefab, out string guid, out long localID);
-            return new AssetReferenceGameObject(guid);
-        }
-
-#endif
-
 #if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 
         public static void DrawTabbedList(IEnumerable<string> tabs) {
@@ -356,6 +219,7 @@ namespace DevelopmentTools.Editor {
         }
 
 #endif
+
     }
 
 }

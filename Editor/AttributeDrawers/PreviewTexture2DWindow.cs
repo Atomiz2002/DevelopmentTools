@@ -8,16 +8,41 @@ using UnityEngine;
 
 namespace DevelopmentTools.Editor.AttributeDrawers {
 
-    public class PreviewTexture2DWindow : OdinEditorWindow {
+    public class PreviewTexture2DWindow : OdinEditorWindow, IHasCustomMenu {
+
+        private const int OutlineThickness = 8;
+
+        private bool ExpandHeight = true;
 
         [HideLabel]
-        [PreviewTexture2D]
+        [PreviewTexture2D(Height = 0, ExpandHeightGetter = nameof(ExpandHeight))]
         public Texture texture;
+
+        private bool movedToMouse;
 
         public void Show(Texture texture) {
             Show();
             titleContent = new("Preview");
             this.texture = texture;
+            minSize      = Vector2.one;
+            OriginalSize();
+        }
+
+        protected override void OnImGUI() {
+            base.OnImGUI();
+
+            if (movedToMouse)
+                return;
+
+            if (Event.current == null)
+                return;
+
+            position     = new(Event.current.mousePosition.x, Event.current.mousePosition.y, position.width, position.height);
+            movedToMouse = true;
+        }
+
+        public void OriginalSize() {
+            position = new(position.x, position.y, texture.width + OutlineThickness, texture.height + OutlineThickness);
         }
 
         public static void Create(Texture texture) => GetWindow<PreviewTexture2DWindow>().Show(texture);
@@ -40,6 +65,11 @@ namespace DevelopmentTools.Editor.AttributeDrawers {
             }
 
             mouseOverWindow.Repaint(); // for realtime cursor update
+        }
+
+        public void AddItemsToMenu(GenericMenu menu) {
+            menu.AddItem(new("Original size"), false, OriginalSize);
+            menu.AddItem(new("Expand"), ExpandHeight, () => ExpandHeight ^= true);
         }
 
     }

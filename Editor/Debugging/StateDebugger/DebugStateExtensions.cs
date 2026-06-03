@@ -1,6 +1,5 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
 using System;
-using DevelopmentEssentials.Extensions.Unity.ExtendedLogger;
 using JetBrains.Annotations;
 
 namespace DevelopmentTools.Editor.Debugging.StateDebugger {
