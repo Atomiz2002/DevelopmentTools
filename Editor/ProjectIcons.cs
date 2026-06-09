@@ -24,7 +24,7 @@ namespace DevelopmentTools.Editor {
                 Object           asset = guid.LoadAssetByGUID();
                 IHaveIconPreview icon  = asset as IHaveIconPreview;
 
-                if (asset.GetIcon() == null || !icon?.Icon)
+                if (asset.GetIcon(true) == null || !icon?.Icon)
                     return;
 
                 bool selected = Selection.assetGUIDs.Contains(guid);

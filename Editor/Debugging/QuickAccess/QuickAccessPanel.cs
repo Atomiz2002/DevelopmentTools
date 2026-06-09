@@ -227,7 +227,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
                     ? historyElementPinned
                     : historyElement;
 
-                GUIHelper.PushColor((isPinned ? Color.Gold.ToUnityColor() : GUI.color).A(.5f));
+                GUIHelper.PushColor((isPinned && i >= pinned.Count ? Color.Gold.ToUnityColor() : GUI.color).A(.5f));
                 GUI.DrawTexture(pinRect.AlignCenterXY(16), EditorGUIUtility.IconContent(EditorUtility.IsPersistent(element) ? "Project" : "UnityEditor.SceneHierarchyWindow").image);
                 GUIHelper.PopColor();
 
@@ -294,7 +294,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
             if (Event.current.isMouse) {
                 if (Event.current.OnLeftClick(elementRect)) {
-                    selectedElement.SelectAndPing();
+                    selectedElement.Ping();
                 }
                 else if (Event.current.OnContextClick(elementRect)) {
                     if (isPinned)

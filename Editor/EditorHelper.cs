@@ -180,14 +180,14 @@ namespace DevelopmentTools.Editor {
         public static GlobalObjectId GlobalId(this Object obj)                        => GlobalObjectId.GetGlobalObjectIdSlow(obj);
         public static GlobalObjectId GlobalId(this Object obj, out GlobalObjectId id) => id = GlobalObjectId.GetGlobalObjectIdSlow(obj);
 
-        public static void SetIcon(this Object obj, [CanBeNull] IHaveIconPreview icon /*, bool acceptNull = false*/) {
+        public static void SetIcon(this Object obj, [CanBeNull] IHaveIconPreview icon , bool acceptNull = false) {
             if (!obj)
                 return;
 
             if (icon != null && icon.Icon)
                 cachedIcons[obj.GlobalId()] = (icon, DateTime.Now.Ticks);
-            // else if (acceptNull) // handled in GetIcon
-            //     cachedIcons[obj.GlobalId()] = (null, DateTime.Now.Ticks);
+            else if (acceptNull)
+                cachedIcons[obj.GlobalId()] = (null, DateTime.Now.Ticks);
         }
 
         [CanBeNull]
@@ -208,13 +208,27 @@ namespace DevelopmentTools.Editor {
                 cachedIcons[id] = (null, DateTime.Now.Ticks);
             }
 
-            if (fallback)
-                return new IconPreview(EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image, Color.white);
+            if (fallback) {
+                Texture texture = EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image;
+                if (texture)
+                    return new IconPreview(texture, Color.white);
+
+                texture = EditorGUIUtility.GetIconForObject(obj);
+                if (texture)
+                    return new IconPreview(texture, Color.white);
+
+                texture = AssetPreview.GetAssetPreview(obj);
+                if (texture)
+                    return new IconPreview(texture, Color.white);
+            }
 
             return null;
         }
 
         public static void DrawIcon(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
+            if (icon == null)
+                return;
+
             DrawColoredTexture(rect, BackgroundColor(selectedBackground, activeSelection));
 
             Color c = GUI.color;

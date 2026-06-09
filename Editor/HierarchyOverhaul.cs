@@ -70,10 +70,12 @@ namespace DevelopmentTools.Editor {
                     }
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
                     else if (go.TryGetComponent(out Image image)) {
-                        icon = new IconPreview(image.sprite.n()?.ToTexture2D(), image.color);
+                        icon = new IconPreview(image.sprite.n()?.ToTexture2D() ?? Texture2D.whiteTexture, image.color);
+                        if (!icon.Icon)
+                            icon.Icon = Texture2D.whiteTexture;
                     }
                     else if (go.TryGetComponent(out RawImage rawImage)) {
-                        icon = new IconPreview(rawImage.texture.Read(), rawImage.color);
+                        icon = new IconPreview(rawImage.texture.n()?.Read() ?? Texture2D.whiteTexture, rawImage.color);
                     }
 #endif
                     // else if (has ExtractableInfo)
@@ -83,7 +85,7 @@ namespace DevelopmentTools.Editor {
                     if (icon?.Icon)
                         icon.Icon.SetFilter(FilterMode.Point);
 
-                    go.SetIcon(icon);
+                    go.SetIcon(icon, true);
                 }
             }
 
