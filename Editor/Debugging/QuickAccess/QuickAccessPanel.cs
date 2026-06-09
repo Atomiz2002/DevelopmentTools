@@ -352,7 +352,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
         private const string LIST_SEPARATOR = ";";
 
-        private static string SerializeList(List<GlobalObjectId> list) => list.Join(LIST_SEPARATOR);
+        private static string SerializeList(List<GlobalObjectId> list) => list.Take(30).Join(LIST_SEPARATOR);
 
         private static List<GlobalObjectId> DeserializeList(string data) {
             if (data.IsNullOrEmpty())
