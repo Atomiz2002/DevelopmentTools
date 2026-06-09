@@ -30,7 +30,7 @@ namespace DevelopmentTools.Editor {
                 bool selected = Selection.assetGUIDs.Contains(guid);
                 bool active   = EditorWindow.focusedWindow.n()?.GetType().Name == "ProjectBrowser";
 
-#if UNITY_6000_0_OR_NEWER && !UNITY_6000_1_OR_NEWER
+#if UNITY_6000_0 || UNITY_6000_3
                 EntityId[] selection = Selection.entityIds;
 #else
                 int[] selection = Selection.instanceIDs;
