@@ -245,9 +245,9 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
                 return;
 
             (GlobalObjectId id, Object selectedElement) = elements[selectedIndex];
-            bool     isPinned             = pinned.Contains(id);
-            GUIStyle selectedElementStyle = isPinned ? pinnedElementSelected : historyElementSelected;
-            Texture  selectedElementIcon  = selectedElement.GetIcon();
+            bool             isPinned             = pinned.Contains(id);
+            GUIStyle         selectedElementStyle = isPinned ? pinnedElementSelected : historyElementSelected;
+            IHaveIconPreview selectedElementIcon  = selectedElement.GetIcon();
             // float    selectedElementIconAspect = selectedElementIcon ? (float) selectedElementIcon.width / selectedElementIcon.height : 1;
 
             float selectedElementRectY = selectedIndex * elementHeight;
@@ -281,7 +281,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
             GUI.Label(labelRect, selectedElement.name, selectedElementStyle);
 
-            if (selectedElementIcon) {
+            if (selectedElementIcon?.Icon) {
                 SirenixEditorGUI.DrawRoundRect(
                     iconRect,
                     (EditorHelper.BackgroundColor() * (Mathf.PingPong((float) EditorApplication.timeSinceStartup / 3, 0.4f) + 0.5f)).A(1),

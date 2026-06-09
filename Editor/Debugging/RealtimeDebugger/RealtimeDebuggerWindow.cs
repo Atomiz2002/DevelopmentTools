@@ -30,10 +30,25 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
             OnEndListElementGUI = nameof(DrawCachedProperties2))]
         private List<object> cachedProperties;
 
-        private static RealtimeDebuggerWindow Instance => GetWindow<RealtimeDebuggerWindow>();
+        private static RealtimeDebuggerWindow instance;
 
-        [MenuItem(EngineSettings.MenuGroupPath + "Realtime Debugger")]
-        public static void TryShowWindow() => Instance.name = "Realtime Debugger";
+        private static RealtimeDebuggerWindow Instance {
+            get {
+                if (instance)
+                    return instance;
+
+                if (autoOpenedWindowOnce)
+                    return new();
+
+                autoOpenedWindowOnce = true;
+                return instance = GetWindow(true);
+            }
+        }
+
+        private static RealtimeDebuggerWindow GetWindow(bool focus) => GetWindow<RealtimeDebuggerWindow>(nameof(RealtimeDebuggerWindow).ToTitleCase(), focus);
+
+        [MenuItem(EngineSettings.MenuGroupPath + "Realtime Debugger #&r")]
+        public static void TryShowWindow() => GetWindow(true);
 
         public static void CacheProperty<T>(T obj, Func<T, bool> condition = null, bool openWindow = false) {
             if (!_cachedProperties.ContainsKey(obj))

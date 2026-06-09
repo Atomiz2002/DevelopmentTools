@@ -24,19 +24,25 @@ namespace DevelopmentTools.Editor {
                 Object           asset = guid.LoadAssetByGUID();
                 IHaveIconPreview icon  = asset as IHaveIconPreview;
 
-                if (!asset.GetIcon() || !icon?.Icon)
+                if (asset.GetIcon() == null || !icon?.Icon)
                     return;
 
                 bool selected = Selection.assetGUIDs.Contains(guid);
                 bool active   = EditorWindow.focusedWindow.n()?.GetType().Name == "ProjectBrowser";
 
-                if (Selection.instanceIDs.Length <= 3) {
+#if UNITY_6000_0_OR_NEWER && !UNITY_6000_1_OR_NEWER
+                EntityId[] selection = Selection.entityIds;
+#else
+                int[] selection = Selection.instanceIDs;
+#endif
+
+                if (selection.Length <= 3) {
                     if (selected && active && icon.Icon) {
-                        asset.SetIcon(icon.Icon.SetFilter(FilterMode.Point).Trimmed(true));
+                        asset.SetIcon(icon);
                     }
                 }
 
-                icon.Icon.DrawIcon(selectionRect, ScaleMode.StretchToFill, selected, active);
+                icon.DrawIcon(selectionRect, ScaleMode.StretchToFill, selected, active);
             }
             catch (Exception e) {
                 e.LogEx();

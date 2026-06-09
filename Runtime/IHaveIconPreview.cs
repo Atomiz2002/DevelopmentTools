@@ -4,7 +4,8 @@ namespace DevelopmentTools {
 
     public interface IHaveIconPreview {
 
-        public Texture2D Icon { get; set; }
+        public Texture Icon  { get; set; }
+        public Color   Color { get; set; }
 
     }
 

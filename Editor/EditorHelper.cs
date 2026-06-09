@@ -7,9 +7,12 @@ using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.Editor.Debugging.RealtimeDebugger;
 using DevelopmentTools.Editor.Extensions;
+using JetBrains.Annotations;
+using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Events;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Events;
 using Object = UnityEngine.Object;
@@ -172,35 +175,63 @@ namespace DevelopmentTools.Editor {
 
         #region Get/Set Icon
 
-        private static readonly Dictionary<GlobalObjectId, Texture> cachedIcons = new();
+        private static readonly Dictionary<GlobalObjectId, (IHaveIconPreview icon, long timestamp)> cachedIcons = new();
 
         public static GlobalObjectId GlobalId(this Object obj)                        => GlobalObjectId.GetGlobalObjectIdSlow(obj);
         public static GlobalObjectId GlobalId(this Object obj, out GlobalObjectId id) => id = GlobalObjectId.GetGlobalObjectIdSlow(obj);
 
-        public static void SetIcon(this Object obj, Texture icon, bool overrideIfNull = false) {
+        public static void SetIcon(this Object obj, [CanBeNull] IHaveIconPreview icon /*, bool acceptNull = false*/) {
             if (!obj)
                 return;
 
-            if (icon || overrideIfNull)
-                cachedIcons[obj.GlobalId()] = icon;
+            if (icon != null && icon.Icon)
+                cachedIcons[obj.GlobalId()] = (icon, DateTime.Now.Ticks);
+            // else if (acceptNull) // handled in GetIcon
+            //     cachedIcons[obj.GlobalId()] = (null, DateTime.Now.Ticks);
         }
 
-        public static Texture GetIcon(this Object obj, bool fallback = true) {
+        [CanBeNull]
+        public static IHaveIconPreview GetIcon(this Object obj, bool fallback = false) {
             if (!obj)
                 return null;
 
-            if (cachedIcons.TryGetValue(obj.GlobalId(), out Texture icon))
-                return icon;
+            GlobalObjectId id = obj.GlobalId();
+
+            if (cachedIcons.TryGetValue(id, out (IHaveIconPreview icon, long timestamp) c)) {
+                if (c.icon != null)
+                    return c.icon;
+
+                if (DateTime.Now.Ticks - c.timestamp > TimeSpan.FromSeconds(5).Ticks)
+                    cachedIcons.Remove(id);
+            }
+            else {
+                cachedIcons[id] = (null, DateTime.Now.Ticks);
+            }
 
             if (fallback)
-                return EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image;
+                return new IconPreview(EditorGUIUtility.ObjectContent(obj, obj.GetType()).n()?.image, Color.white);
 
             return null;
         }
 
-        public static void DrawIcon(this Texture icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
+        public static void DrawIcon(this IHaveIconPreview icon, Rect rect, ScaleMode scaleMode, bool selectedBackground = false, bool activeSelection = false) {
             DrawColoredTexture(rect, BackgroundColor(selectedBackground, activeSelection));
-            GUI.DrawTexture(rect, icon, scaleMode);
+
+            Color c = GUI.color;
+            GUI.color = icon.Color;
+
+            GUI.DrawTexture(rect, icon.Icon, scaleMode);
+
+            GUI.color = c;
+        }
+
+        [InitializeOnLoadMethod]
+        private static void ClearCachedIcons() {
+            SceneHierarchyHooks.addItemsToSceneHeaderContextMenu += (menu, _) => {
+                menu.AddItem(new("Clear Cached Icons"), false, () => {
+                    cachedIcons.Clear();
+                });
+            };
         }
 
         #endregion
