@@ -83,7 +83,7 @@ namespace DevelopmentTools.Editor {
                         icon = null;
 
                     if (icon?.Icon)
-                        icon.Icon.SetFilter(FilterMode.Point);
+                        icon.Icon.SetFilter(FilterMode.Point).Trim(true);
 
                     go.SetIcon(icon, true);
                 }

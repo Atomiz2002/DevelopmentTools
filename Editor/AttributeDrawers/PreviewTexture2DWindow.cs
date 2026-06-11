@@ -45,7 +45,12 @@ namespace DevelopmentTools.Editor.AttributeDrawers {
             position = new(position.x, position.y, texture.width + OutlineThickness, texture.height + OutlineThickness);
         }
 
-        public static void Create(Texture texture) => GetWindow<PreviewTexture2DWindow>().Show(texture);
+        public static void Create(Texture texture) {
+            if (texture == null)
+                return;
+
+            GetWindow<PreviewTexture2DWindow>().Show(texture);
+        }
 
         public static void DrawZoomableGUI(Rect rect, Texture texture) {
             if (!mouseOverWindow)

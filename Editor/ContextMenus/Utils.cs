@@ -29,6 +29,8 @@ namespace DevelopmentTools.Editor.ContextMenus {
             GUIUtility.systemCopyBuffer.LinkPaths().LOG();
         }
 
+        // TODO override Ctrl C to collapse repeating logs like this -> [Repeated X times]
+
         [MenuItem(MenuGroupPath + "Copy With StackTraces Unformatted ^#&c")]
         public static void CopyWithStackTracesUnformatted() {
             if (!EditorHelper.IsConsoleFocused()) {
@@ -74,7 +76,7 @@ namespace DevelopmentTools.Editor.ContextMenus {
             Assembly   assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
             Type       type     = assembly.GetType("UnityEditor.LogEntries");
             MethodInfo method   = type.GetMethod("Clear");
-            method!.Invoke(new(), null);
+            method.SafeInvoke(new(), null);
         }
 
         [Pure]

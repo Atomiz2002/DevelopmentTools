@@ -16,7 +16,7 @@ namespace DevelopmentTools.Editor.Extensions {
 #if DEVELOPMENT_TOOLS_EDITOR_NEWTONSOFT_JSON
 
         /// <inheritdoc cref="FromJson"/>
-        public static void FromJsonOverwrite<T>(this Object objectToOverwrite, string json) {
+        public static void FromJsonOverwrite<T>(this T objectToOverwrite, string json) {
             if (typeof(Object).IsAssignableFrom(typeof(T)))
                 JsonUtility.FromJsonOverwrite(json, objectToOverwrite);
             else
@@ -24,7 +24,7 @@ namespace DevelopmentTools.Editor.Extensions {
         }
 
         /// <inheritdoc cref="FromJson"/>
-        public static void FromJsonOverwrite<T>(this string json, Object objectToOverwrite) {
+        public static void FromJsonOverwrite<T>(this string json, T objectToOverwrite) {
             if (typeof(Object).IsAssignableFrom(typeof(T)))
                 JsonUtility.FromJsonOverwrite(json, objectToOverwrite);
             else

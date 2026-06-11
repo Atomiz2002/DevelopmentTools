@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using DevelopmentTools.Editor.Debugging.RealtimeDebugger;
 using DevelopmentTools.Editor.Extensions;
 using JetBrains.Annotations;
-using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEditor.Build;
-using UnityEditor.Events;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Events;
 using Object = UnityEngine.Object;
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_ADDRESSABLES
 using UnityEngine.AddressableAssets;
@@ -180,7 +175,10 @@ namespace DevelopmentTools.Editor {
         public static GlobalObjectId GlobalId(this Object obj)                        => GlobalObjectId.GetGlobalObjectIdSlow(obj);
         public static GlobalObjectId GlobalId(this Object obj, out GlobalObjectId id) => id = GlobalObjectId.GetGlobalObjectIdSlow(obj);
 
-        public static void SetIcon(this Object obj, [CanBeNull] IHaveIconPreview icon , bool acceptNull = false) {
+        public static Object ToObject(this GlobalObjectId id)                 => GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id);
+        public static Object ToObject(this GlobalObjectId id, out Object obj) => obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id);
+
+        public static void SetIcon(this Object obj, [CanBeNull] IHaveIconPreview icon, bool acceptNull = false) {
             if (!obj)
                 return;
 
@@ -256,6 +254,64 @@ namespace DevelopmentTools.Editor {
 
         public static void NotifyGameView(string notification, float duration = 1) =>
             EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.PlayModeView")).ShowNotification(new(notification), duration);
+
+        public class SimpleInputDialogWindow : EditorWindow {
+
+            private string               input = "";
+            private string               label;
+            private Action<string>       action;
+            private string               ok;
+            private string               cancel;
+            private Func<string, bool>   validation;
+            private Func<string, string> error;
+            private bool                 errored;
+
+            public static void ShowWindow(string label, Action<string> action, string ok = "Ok", string cancel = null, Func<string, bool> validation = null, Func<string, string> error = null) {
+                SimpleInputDialogWindow window = GetWindow<SimpleInputDialogWindow>();
+                window.cancel     = label;
+                window.action     = action ?? (_ => "Aren't we forgetting something?".LOG());
+                window.ok         = ok ?? "Ok";
+                window.cancel     = cancel;
+                window.validation = validation ?? (_ => true);
+                window.error      = error ?? (_ => "Invalid input");
+                Rect rect = window.position;
+                window.position = new(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing);
+                window.name     = label;
+            }
+
+            private void OnGUI() {
+                GUI.SetNextControlName("SimpleInputDialogWindowInput");
+                input = EditorGUILayout.TextField(label == null ? GUIContent.none : new(label), input);
+                GUI.FocusControl("SimpleInputDialogWindowInput");
+
+                if (!cancel.IsNullOrWhiteSpace())
+                    GUILayout.BeginHorizontal();
+
+                if (GUILayout.Button(ok)) {
+                    if (!validation.InvokeSafe(input)) {
+                        errored = true;
+                    }
+                    else {
+                        action.SafeInvoke(input);
+                        Close();
+                    }
+                }
+
+                if (errored) {
+                    EditorGUILayout.HelpBox(error.InvokeSafe(input), MessageType.Error);
+                    Rect rect = position;
+                    position = new(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing + GUILayoutUtility.GetLastRect().height);
+                }
+
+                if (!cancel.IsNullOrWhiteSpace()) {
+                    if (GUILayout.Button(cancel))
+                        Close();
+
+                    GUILayout.EndHorizontal();
+                }
+            }
+
+        }
 
 #if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
 
