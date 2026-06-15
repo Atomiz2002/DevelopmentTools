@@ -168,15 +168,37 @@ namespace DevelopmentTools.Editor {
             return true;
         }
 
+        #region GlobalObjectId
+
+        [Pure]
+        public static GlobalObjectId GlobalId(this Object obj) => GlobalObjectId.GetGlobalObjectIdSlow(obj);
+
+        [Pure]
+        public static GlobalObjectId GlobalId(this Object obj, out GlobalObjectId id) => id = GlobalObjectId.GetGlobalObjectIdSlow(obj);
+
+        [Pure]
+        public static Object ToObject(this GlobalObjectId id) => GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id);
+
+        [Pure]
+        public static Object ToObject(this GlobalObjectId id, out Object obj) => obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id);
+
+        [Pure]
+        public static Object ToObject(this string globalObjectId) => GlobalObjectId.GlobalObjectIdentifierToObjectSlow(globalObjectId.ToGlobalObjectId());
+
+        [Pure]
+        public static Object ToObject(this string globalObjectId, out Object obj) => obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(globalObjectId.ToGlobalObjectId());
+
+        [Pure]
+        public static GlobalObjectId ToGlobalObjectId(this string globalObjectId) {
+            GlobalObjectId.TryParse(globalObjectId, out GlobalObjectId id);
+            return id;
+        }
+
+        #endregion
+
         #region Get/Set Icon
 
         private static readonly Dictionary<GlobalObjectId, (IHaveIconPreview icon, long timestamp)> cachedIcons = new();
-
-        public static GlobalObjectId GlobalId(this Object obj)                        => GlobalObjectId.GetGlobalObjectIdSlow(obj);
-        public static GlobalObjectId GlobalId(this Object obj, out GlobalObjectId id) => id = GlobalObjectId.GetGlobalObjectIdSlow(obj);
-
-        public static Object ToObject(this GlobalObjectId id)                 => GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id);
-        public static Object ToObject(this GlobalObjectId id, out Object obj) => obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id);
 
         public static void SetIcon(this Object obj, [CanBeNull] IHaveIconPreview icon, bool acceptNull = false) {
             if (!obj)

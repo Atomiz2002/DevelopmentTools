@@ -72,10 +72,10 @@ namespace DevelopmentTools.Editor.Extensions {
 
 #else
         /// <inheritdoc cref="FromJson"/>
-        public static void FromJsonOverwrite(this Object objectToOverwrite, string json) => JsonUtility.FromJsonOverwrite(json, objectToOverwrite);
+        public static void FromJsonOverwrite<T>(this T objectToOverwrite, string json) => JsonUtility.FromJsonOverwrite(json, objectToOverwrite);
 
         /// <inheritdoc cref="FromJson"/>
-        public static void FromJsonOverwrite(this string json, Object objectToOverwrite) => JsonUtility.FromJsonOverwrite(json, objectToOverwrite);
+        public static void FromJsonOverwrite<T>(this string json, T objectToOverwrite) => JsonUtility.FromJsonOverwrite(json, objectToOverwrite);
 
         /// Uses Unity's JsonUtility.<br/>Install Newtonsoft JSON to automatically use unity's JsonUtility for unity <see cref="Object"/>s and newtonsoft's JsonConvert for the rest
         [Pure]

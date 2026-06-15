@@ -18,6 +18,7 @@ using System.Linq;
 #if !SIMULATE_BUILD
 using System.Threading;
 using System.Reflection;
+using DevelopmentEssentials;
 #endif
 
 #endif
@@ -30,6 +31,7 @@ namespace DevelopmentTools {
 #if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
     [HideMonoScript]
     public partial class DebugLogger : SerializedScriptableObject {
+
 #else
     public class DebugLogger : ScriptableObject {
 #endif
@@ -104,18 +106,7 @@ namespace DevelopmentTools {
         public static readonly string GroupsDir      = Path.Combine(DebugLoggerDir, "Groups");
 
         private static DebugLogger i;
-        public static DebugLogger I {
-            get {
-                i = AssetDatabase.LoadAssetAtPath<DebugLogger>(AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets($"t:{nameof(DebugLogger)}").FirstOrDefault()));
-                if (i)
-                    return i;
-
-                Directory.CreateDirectory(DebugLoggerDir);
-                AssetDatabase.CreateAsset(i = CreateInstance<DebugLogger>(), Path.Combine(DebugLoggerDir, nameof(DebugLogger) + ".asset").RelativePath());
-
-                return i;
-            }
-        }
+        public static  DebugLogger I => EditorHelper.InstanceSO(ref i, DebugLoggerDir);
 #else
         [MenuItem(EngineSettings.MenuGroupPath + "Debug Logger (ENABLE_LOGS is off) &#e")]
         public static void ContextMenuItem() {}
@@ -355,6 +346,7 @@ namespace DevelopmentTools {
         private static string FormatClassName(string name) =>
             name.StartsWith("<") ? ExtractBetweenBrackets(name) : name;
 #endif
+
     }
 
 }

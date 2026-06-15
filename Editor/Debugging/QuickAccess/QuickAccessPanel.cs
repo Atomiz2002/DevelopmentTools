@@ -1,5 +1,4 @@
 ﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR && !SIMULATE_BUILD
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using DevelopmentEssentials.Extensions.CS;
@@ -17,10 +16,10 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
     public class QuickAccessPanel : EditorWindow {
 
-        private static          List<GlobalObjectId>                pinned           = new();
-        private static          List<GlobalObjectId>                history          = new(); // todo store groups of selected objects
-        private static readonly List<(GlobalObjectId id, Object o)> elements         = new();
-        private static readonly List<GlobalObjectId>                queuedForRemoval = new();
+        private static          List<GlobalObjectId>                             pinned           = new();
+        private static          List<GlobalObjectId>                             history          = new(); // todo store groups of selected objects
+        private static readonly List<(GlobalObjectId id, Object o, bool pinned)> elements         = new();
+        private static readonly List<GlobalObjectId>                             queuedForRemoval = new();
 
         private static Vector2 scroll;
         private static bool    stayOpen;
@@ -76,7 +75,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
             InitializeStyles();
 
-            selectedIndex = (history.Count > 1 && Selection.activeObject.GlobalId().Equals(history[0]) ? 1 : 0) + pinned.Count;
+            selectedIndex = (elements.Count > 1 && Selection.activeObject.GlobalId().Equals(elements[0].id) ? 1 : 0) + elements.Count(x => x.pinned);
             scroll        = Vector2.zero;
         }
 
@@ -197,9 +196,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             Rect container   = EditorGUILayout.GetControlRect(false, elements.Count * elementHeight); // reserves the space
             Rect elementRect = container;
 
-            elementRect.height = pinned.Count(x => elements.Contains1(x)) * elementHeight;
-
-            SirenixEditorGUI.DrawRoundRect(elementRect, UnityEngine.Color.black.A(.2f), 4, Color.Gold.ToUnityColor().A(.4f), 1);
+            SirenixEditorGUI.DrawRoundRect(elementRect.SetHeight(elements.Count(x => x.pinned) * elementHeight), UnityEngine.Color.black.A(.2f), 4, Color.Gold.ToUnityColor().A(.4f), 1);
 
             elementRect.height = elementHeight;
 
@@ -216,18 +213,17 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             labelRect.x += (elementHeight + 2) * 2;
 
             for (int i = 0; i < elements.Count; i++) {
-                (GlobalObjectId id, Object element) = elements[i];
+                (_, Object element, bool isPinned) = elements[i];
                 bool hovered = Event.current.type != EventType.Layout && elementRect.Contains(Event.current.mousePosition);
 
                 if (hovered)
                     selectedIndex = i;
 
-                bool isPinned = pinned.Contains(id);
                 GUIStyle style = isPinned
                     ? historyElementPinned
                     : historyElement;
 
-                GUIHelper.PushColor((isPinned && i >= pinned.Count ? Color.Gold.ToUnityColor() : GUI.color).A(.5f));
+                GUIHelper.PushColor((isPinned && i >= elements.Count(x => x.pinned) ? Color.Gold.ToUnityColor() : GUI.color).A(.5f));
                 GUI.DrawTexture(pinRect.AlignCenterXY(16), EditorGUIUtility.IconContent(EditorUtility.IsPersistent(element) ? "Project" : "UnityEditor.SceneHierarchyWindow").image);
                 GUIHelper.PopColor();
 
@@ -244,8 +240,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
             if (selectedIndex < 0)
                 return;
 
-            (GlobalObjectId id, Object selectedElement) = elements[selectedIndex];
-            bool             isPinned             = pinned.Contains(id);
+            (GlobalObjectId id, Object selectedElement, bool isPinned) = elements[selectedIndex];
             GUIStyle         selectedElementStyle = isPinned ? pinnedElementSelected : historyElementSelected;
             IHaveIconPreview selectedElementIcon  = selectedElement.GetIcon();
             // float    selectedElementIconAspect = selectedElementIcon ? (float) selectedElementIcon.width / selectedElementIcon.height : 1;
@@ -345,14 +340,19 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
         private static void FillElements() {
             elements.Clear();
-            foreach (GlobalObjectId id in pinned.Concat(history))
-                if (GlobalObjectId.GlobalObjectIdentifierToObjectSlow(id).Out(out Object o))
-                    elements.Add(id, o);
+
+            foreach (GlobalObjectId id in pinned)
+                if (id.ToObject(out Object o))
+                    elements.Add(id, o, true);
+
+            foreach (GlobalObjectId id in history)
+                if (id.ToObject(out Object o))
+                    elements.Add(id, o, false);
         }
 
         private const string LIST_SEPARATOR = ";";
 
-        private static string SerializeList(List<GlobalObjectId> list) => list.Take(30).Join(LIST_SEPARATOR);
+        private static string SerializeList(List<GlobalObjectId> list) => list.Join(LIST_SEPARATOR);
 
         private static List<GlobalObjectId> DeserializeList(string data) {
             if (data.IsNullOrEmpty())
