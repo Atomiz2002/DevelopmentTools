@@ -121,15 +121,18 @@ namespace DevelopmentTools.Editor {
         private static void DrawText(GameObject go, int selectionLength, bool selected, bool active, Rect selectionRect) {
             GlobalObjectId id = go.GlobalId();
             texts.TryGetValue(id, out ((string text, FontStyle style, Color color) content, long timestamp) value);
+            bool textDisabled = !go.activeInHierarchy;
 
             if (selectionLength <= 3) {
                 if (selected || value.content.text == null && DateTime.Now.Ticks - value.timestamp > TimeSpan.FromSeconds(5).Ticks ) {
                     if (go.TryGetComponent(out Text text)) {
                         value.content = (text.text, text.fontStyle, text.color);
+                        textDisabled  = !text.isActiveAndEnabled;
                     }
 #if DEVELOPMENT_TOOLS_EDITOR_TMP
                     else if (go.TryGetComponent(out TextMeshProUGUI tmpro)) {
                         value.content = Process(tmpro);
+                        textDisabled  = !tmpro.isActiveAndEnabled;
                     }
 #endif
                     else
@@ -143,7 +146,7 @@ namespace DevelopmentTools.Editor {
                 return;
 
             selectionRect.xMin += 16 + GUI.skin.label.CalcSize(new(go.name)).x;
-            EditorGUI.BeginDisabledGroup(!go.activeInHierarchy);
+            EditorGUI.BeginDisabledGroup(textDisabled);
             GUI.Label(selectionRect, value.content.text, new(GUI.skin.label) { richText = true, fontStyle = value.content.style, normal = { textColor = value.content.color }, hover = { textColor = value.content.color }, alignment = TextAnchor.MiddleRight, fontSize = 12, clipping = TextClipping.Ellipsis});
             EditorGUI.EndDisabledGroup();
         }
