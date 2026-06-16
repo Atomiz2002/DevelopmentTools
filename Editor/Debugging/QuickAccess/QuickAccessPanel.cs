@@ -227,7 +227,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
                 GUI.DrawTexture(pinRect.AlignCenterXY(16), EditorGUIUtility.IconContent(EditorUtility.IsPersistent(element) ? "Project" : "UnityEditor.SceneHierarchyWindow").image);
                 GUIHelper.PopColor();
 
-                element.GetIcon().DrawIcon(iconRect.AlignCenterXY(16), ScaleMode.ScaleToFit);
+                element.GetIcon(true).DrawIcon(iconRect.AlignCenterXY(16), ScaleMode.ScaleToFit);
                 GUI.Label(labelRect, element.name, style);
 
                 elementRect.y = pinRect.y = iconRect.y = labelRect.y += elementHeight;
@@ -242,7 +242,7 @@ namespace DevelopmentTools.Editor.Debugging.QuickAccess {
 
             (GlobalObjectId id, Object selectedElement, bool isPinned) = elements[selectedIndex];
             GUIStyle         selectedElementStyle = isPinned ? pinnedElementSelected : historyElementSelected;
-            IHaveIconPreview selectedElementIcon  = selectedElement.GetIcon();
+            IHaveIconPreview selectedElementIcon  = selectedElement.GetIcon(true);
             // float    selectedElementIconAspect = selectedElementIcon ? (float) selectedElementIcon.width / selectedElementIcon.height : 1;
 
             float selectedElementRectY = selectedIndex * elementHeight;
