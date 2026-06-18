@@ -21,13 +21,19 @@ namespace DevelopmentTools.Editor.ContextMenus {
         public static  LinkedPropertiesSO I => DevelopmentEssentials.EditorHelper.InstanceSO(ref i);
 
         private static void OnContextMenu(GenericMenu menu, SerializedProperty prop) {
+            Object target = prop.serializedObject.targetObject;
+            PrefabStage prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+
+            if (target == null || PrefabUtility.IsPartOfPrefabAsset(target) || prefabStage != null)
+                return;
+
             I.LinkedGroups.RemoveAll(g => g.Name.IsNullOrWhiteSpace());
             HashSet<string> groups = new();
             foreach (LinkedPropertyGroup group in I.LinkedGroups)
                 if (!groups.Add(group.Name))
                     group.Name += "2";
 
-            GlobalObjectId globalId        = prop.serializedObject.targetObject.GlobalId();
+            GlobalObjectId globalId        = target.GlobalId();
             LinkedProperty linkedProp      = new(prop);
             object         linkedPropValue = linkedProp.GetPropertyValue(prop, out bool isArray);
 
