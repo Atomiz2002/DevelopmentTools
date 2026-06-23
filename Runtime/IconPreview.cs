@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
+using System;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
@@ -36,3 +37,4 @@ namespace DevelopmentTools {
     }
 
 }
+#endif
