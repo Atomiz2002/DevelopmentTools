@@ -1,19 +1,30 @@
-﻿#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
-using System;
+﻿using System;
+using UnityEngine;
+#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
-using UnityEngine;
+#endif
 
 namespace DevelopmentTools {
 
     [Serializable]
+#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
     [InlineProperty]
     [HideReferenceObjectPicker]
+#endif
     public struct IconPreview : IHaveIconPreview {
 
+#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
         [field: OdinSerialize, HideLabel, PreviewField]
+#else
+        [field: SerializeField]
+#endif
         public Texture Icon { get; set; }
+#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
         [field: OdinSerialize, HideLabel]
+#else
+        [field: SerializeField]
+#endif
         public Color Color { get; set; }
 
         public static readonly IconPreview White = new(icon: null);
@@ -37,4 +48,3 @@ namespace DevelopmentTools {
     }
 
 }
-#endif

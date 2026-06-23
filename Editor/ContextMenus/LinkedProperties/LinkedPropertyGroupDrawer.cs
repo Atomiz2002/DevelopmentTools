@@ -1,6 +1,8 @@
-﻿using Sirenix.OdinInspector.Editor;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
+#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+using Sirenix.OdinInspector.Editor;
+#endif
 
 namespace DevelopmentTools.Editor.ContextMenus {
 

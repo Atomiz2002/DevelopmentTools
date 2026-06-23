@@ -1,4 +1,5 @@
-﻿using DevelopmentEssentials.Extensions.Unity;
+﻿#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
+using DevelopmentEssentials.Extensions.Unity;
 using DevelopmentTools.Editor.AttributeDrawers;
 using UnityEditor;
 using UnityEngine;
@@ -23,3 +24,4 @@ namespace DevelopmentTools.Editor.ContextMenus {
     }
 
 }
+#endif

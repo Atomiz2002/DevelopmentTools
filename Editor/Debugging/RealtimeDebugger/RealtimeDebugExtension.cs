@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEVELOPMENT_TOOLS_EDITOR_ODIN_INSPECTOR
+using System;
 using DevelopmentEssentials.Extensions.CS;
 
 namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
@@ -25,3 +26,4 @@ namespace DevelopmentTools.Editor.Debugging.RealtimeDebugger {
     }
 
 }
+#endif

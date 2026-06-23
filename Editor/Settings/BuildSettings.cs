@@ -25,9 +25,15 @@ namespace DevelopmentTools.Editor.Settings {
         public static void Initialize() {
             ToolbarGUIInjector.AddToolbarPopupButton(ToolbarGUIInjector.ToolbarSide.LeftOfPlay, "Build Settings", 100, DrawGUI, 500, 0, 100, 5);
 
-            foreach (string symbol in symbols.Concat(DebugLogger.GetSymbols()))
+            foreach (string symbol in symbols)
                 if (EditorHelper.IsSymbolDefined(symbol))
                     currentSymbols.Add(symbol);
+
+#if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
+            foreach (string symbol in DebugLogger.GetSymbols())
+                if (EditorHelper.IsSymbolDefined(symbol))
+                    currentSymbols.Add(symbol);
+#endif
         }
 
         [MenuItem(MenuGroupPath + "Build Settings", false, -10000)]

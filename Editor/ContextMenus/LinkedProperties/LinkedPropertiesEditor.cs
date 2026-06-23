@@ -9,7 +9,7 @@ namespace DevelopmentTools.Editor.ContextMenus {
     public class LinkedPropertiesEditor : OdinEditor {
 
 #else
-    [CustomEditor(typeof(LinkedProperties))]
+    [CustomEditor(typeof(LinkedPropertiesSO))]
     public class LinkedPropertiesEditor : UnityEditor.Editor {
 #endif
 
