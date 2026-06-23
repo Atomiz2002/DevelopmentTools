@@ -53,6 +53,12 @@
       ]
     },
     {
+      "define": "DEVELOPMENT_TOOLS_EDITOR_TMP",
+      "dependencies": [
+        "Unity.TextMeshPro"
+      ]
+    },
+    {
       "define": "DEVELOPMENT_TOOLS_EDITOR_NEWTONSOFT_JSON",
       "dependencies": [
         "Newtonsoft.Json.dll"

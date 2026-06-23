@@ -113,7 +113,7 @@ namespace DevelopmentTools.Editor {
                     : new Color(0.76f, 0.76f, 0.76f)) // Default
             * GUI.color; // Handle PlayMode tint, GUI.enabled, etc.
 
-        public static void DrawColoredTexture(Rect rect, Color color) {
+        public static void DrawColoredTexture(this Rect rect, Color color) {
             Color prevColor = GUI.color;
             GUI.color = color;
             GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture, ScaleMode.StretchToFill);
