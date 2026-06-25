@@ -249,10 +249,10 @@ namespace DevelopmentTools.Editor {
             if (icon == null)
                 return;
 
-            DrawColoredTexture(rect, BackgroundColor(selectedBackground, activeSelection));
+            rect.DrawColoredTexture(BackgroundColor(selectedBackground, activeSelection));
 
             Color c = GUI.color;
-            GUI.color = icon.Color;
+            GUI.color = icon.IconColor ?? Color.white;
 
             GUI.DrawTexture(rect, icon.Icon, scaleMode);
 

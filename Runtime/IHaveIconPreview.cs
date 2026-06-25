@@ -4,8 +4,8 @@ namespace DevelopmentTools {
 
     public interface IHaveIconPreview {
 
-        public Texture Icon  { get; set; }
-        public Color   Color { get; set; }
+        public Texture Icon      { get; }
+        public Color?  IconColor => Color.white;
 
     }
 

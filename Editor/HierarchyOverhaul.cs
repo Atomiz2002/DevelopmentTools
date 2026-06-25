@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
-using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+#if DEVELOPMENT_TOOLS_EDITOR_TMP
+using TMPro;
+#endif
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
 using UnityEngine.UI;
 #endif
@@ -31,7 +33,7 @@ namespace DevelopmentTools.Editor {
                     EditorPrefs.SetBool(IconPrefKey, !EditorPrefs.GetBool(IconPrefKey));
                 });
 
-                menu.AddItem(new("Preview Texts") , EditorPrefs.GetBool(TextPrefKey), () => {
+                menu.AddItem(new("Preview Texts"), EditorPrefs.GetBool(TextPrefKey), () => {
                     EditorPrefs.SetBool(TextPrefKey, !EditorPrefs.GetBool(TextPrefKey));
                 });
 
@@ -72,35 +74,34 @@ namespace DevelopmentTools.Editor {
         }
 
         private static void DrawIcon(GameObject go, int selectionLength, bool selected, bool active, Rect selectionRect) {
-            IHaveIconPreview icon = go.GetIcon();
+            IHaveIconPreview icon    = go.GetIcon();
+            IconPreview      preview = IconPreview.Empty;
 
             if (selectionLength <= 3) {
                 if (selected || icon == null) {
                     if (go.TryGetComponent(out SpriteRenderer renderer)) {
-                        icon = new IconPreview(renderer.sprite.n()?.ToTexture2D(), renderer.color);
+                        preview = new(renderer.sprite.n()?.ToTexture2D(), renderer.color);
                     }
 #if DEVELOPMENT_TOOLS_EDITOR_UNITY_UI
                     else if (go.TryGetComponent(out Image image)) {
-                        icon = new IconPreview(image.sprite.n()?.ToTexture2D() ?? Texture2D.whiteTexture, image.color);
-                        if (!icon.Icon)
-                            icon.Icon = Texture2D.whiteTexture;
+                        preview = new(image.sprite.n()?.ToTexture2D().n() ?? Texture2D.whiteTexture, image.color);
+                        if (!preview.Icon)
+                            preview.Icon = Texture2D.whiteTexture;
                     }
                     else if (go.TryGetComponent(out RawImage rawImage)) {
-                        icon = new IconPreview(rawImage.texture.n()?.Read() ?? Texture2D.whiteTexture, rawImage.color);
+                        preview = new(rawImage.texture.n()?.Read().n() ?? Texture2D.whiteTexture, rawImage.color);
                     }
 #endif
                     // else if (has ExtractableInfo)
-                    else
-                        icon = null;
 
                     // if (icon?.Icon)
                     //     icon.Icon.SetFilter(FilterMode.Point).Trim(true);
 
-                    go.SetIcon(icon, true);
+                    go.SetIcon(preview, true);
                 }
             }
 
-            if (!icon?.Icon)
+            if (!preview.Icon)
                 return;
 
             Rect iconRect = new(selectionRect.x, selectionRect.y, 16, 16);
@@ -112,11 +113,11 @@ namespace DevelopmentTools.Editor {
             //     colorCode = color.ToTexture();
             // GUI.DrawTexture(colorCodeRect, colorCode, ScaleMode.StretchToFill);
 
-            icon.DrawIcon(iconRect, ScaleMode.ScaleToFit, selected, active);
+            preview.DrawIcon(iconRect, ScaleMode.ScaleToFit, selected, active);
         }
 
         // TODO use InfoContainer and merge with GetIcon from EditorHelper
-        private static Dictionary<GlobalObjectId, ((string text, FontStyle style, Color color) content, long timestamp)> texts = new();
+        private static readonly Dictionary<GlobalObjectId, ((string text, FontStyle style, Color color) content, long timestamp)> texts = new();
 
         private static void DrawText(GameObject go, int selectionLength, bool selected, bool active, Rect selectionRect) {
             GlobalObjectId id = go.GlobalId();
@@ -124,7 +125,7 @@ namespace DevelopmentTools.Editor {
             bool textDisabled = !go.activeInHierarchy;
 
             if (selectionLength <= 3) {
-                if (selected || value.content.text == null && DateTime.Now.Ticks - value.timestamp > TimeSpan.FromSeconds(5).Ticks ) {
+                if (selected || value.content.text == null && DateTime.Now.Ticks - value.timestamp > TimeSpan.FromSeconds(5).Ticks) {
                     if (go.TryGetComponent(out Text text)) {
                         value.content = (text.text, text.fontStyle, text.color);
                         textDisabled  = !text.isActiveAndEnabled;
@@ -132,7 +133,7 @@ namespace DevelopmentTools.Editor {
 #if DEVELOPMENT_TOOLS_EDITOR_TMP
                     else if (go.TryGetComponent(out TextMeshProUGUI tmpro)) {
                         value.content = Process(tmpro);
-                        textDisabled  = !tmpro.isActiveAndEnabled;
+                        textDisabled = !tmpro.isActiveAndEnabled;
                     }
 #endif
                     else
@@ -147,23 +148,24 @@ namespace DevelopmentTools.Editor {
 
             selectionRect.xMin += 16 + GUI.skin.label.CalcSize(new(go.name)).x;
             EditorGUI.BeginDisabledGroup(textDisabled);
-            GUI.Label(selectionRect, value.content.text, new(GUI.skin.label) { richText = true, fontStyle = value.content.style, normal = { textColor = value.content.color }, hover = { textColor = value.content.color }, alignment = TextAnchor.MiddleRight, fontSize = 12, clipping = TextClipping.Ellipsis});
+            GUI.Label(selectionRect, value.content.text, new(GUI.skin.label) { richText = true, fontStyle = value.content.style, normal = { textColor = value.content.color }, hover = { textColor = value.content.color }, alignment = TextAnchor.MiddleRight, fontSize = 12, clipping = TextClipping.Ellipsis });
             EditorGUI.EndDisabledGroup();
         }
 
+#if DEVELOPMENT_TOOLS_EDITOR_TMP
         private static (string text, FontStyle style, Color color) Process(TextMeshProUGUI tmpro) {
-            string     text   = tmpro.text;
+            string     text = tmpro.text;
             FontStyles styles = tmpro.fontStyle;
 
-            if ((styles & FontStyles.UpperCase) != 0) text     = text.ToUpper();
-            if ((styles & FontStyles.LowerCase) != 0) text     = text.ToLower();
-            if ((styles & FontStyles.SmallCaps) != 0) text     = $"<smallcaps>{text}</smallcaps>";
-            if ((styles & FontStyles.Bold) != 0) text          = $"<b>{text}</b>";
-            if ((styles & FontStyles.Italic) != 0) text        = $"<i>{text}</i>";
-            if ((styles & FontStyles.Underline) != 0) text     = $"<u>{text}</u>";
+            if ((styles & FontStyles.UpperCase) != 0) text = text.ToUpper();
+            if ((styles & FontStyles.LowerCase) != 0) text = text.ToLower();
+            if ((styles & FontStyles.SmallCaps) != 0) text = $"<smallcaps>{text}</smallcaps>";
+            if ((styles & FontStyles.Bold) != 0) text = $"<b>{text}</b>";
+            if ((styles & FontStyles.Italic) != 0) text = $"<i>{text}</i>";
+            if ((styles & FontStyles.Underline) != 0) text = $"<u>{text}</u>";
             if ((styles & FontStyles.Strikethrough) != 0) text = $"<s>{text}</s>";
-            if ((styles & FontStyles.Superscript) != 0) text   = $"<sup>{text}</sup>";
-            if ((styles & FontStyles.Subscript) != 0) text     = $"<sub>{text}</sub>";
+            if ((styles & FontStyles.Superscript) != 0) text = $"<sup>{text}</sup>";
+            if ((styles & FontStyles.Subscript) != 0) text = $"<sub>{text}</sub>";
 
             bool b = (styles & FontStyles.Bold) != 0;
             bool i = (styles & FontStyles.Italic) != 0;
@@ -177,6 +179,8 @@ namespace DevelopmentTools.Editor {
 
             return (text, style, tmpro.color);
         }
+#endif
+
     }
 
 }

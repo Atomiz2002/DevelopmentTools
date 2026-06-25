@@ -25,24 +25,24 @@ namespace DevelopmentTools {
 #else
         [field: SerializeField]
 #endif
-        public Color Color { get; set; }
+        public Color? IconColor { get; set; }
 
         public static readonly IconPreview White = new(icon: null);
         public static readonly IconPreview Empty = new(null, Color.clear);
 
         public IconPreview(Texture icon) {
-            Icon  = icon;
-            Color = Color.white;
+            Icon      = icon;
+            IconColor = Color.white;
         }
 
         public IconPreview(Texture icon, Color color) {
-            Icon  = icon;
-            Color = color;
+            Icon      = icon;
+            IconColor = color;
         }
 
         public IconPreview(IHaveIconPreview iconPreview) {
-            Icon  = iconPreview?.Icon;
-            Color = iconPreview?.Color ?? Color.clear;
+            Icon      = iconPreview?.Icon;
+            IconColor = iconPreview?.IconColor ?? Color.clear;
         }
 
     }
