@@ -27,7 +27,7 @@ using DevelopmentEssentials;
 namespace DevelopmentTools {
 
     [SuppressMessage("ReSharper", "PartialTypeWithSinglePart")]
-    [CreateAssetMenu(fileName = nameof(DebugLogger), menuName = "Create/Development Tools/" + nameof(DebugLogger))]
+    [CreateAssetMenu(fileName = nameof(DebugLogger), menuName = "Development Tools/" + nameof(DebugLogger))]
 #if DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR
     [HideMonoScript]
     public partial class DebugLogger : SerializedScriptableObject {

@@ -10,6 +10,7 @@ using Object = UnityEngine.Object;
 
 namespace DevelopmentTools.Editor.ContextMenus {
 
+    [CreateAssetMenu(fileName = "Engine Settings Preset", menuName = "Development Tools/Linked Properties")]
     public class LinkedPropertiesSO : ScriptableObject {
 
         public List<LinkedPropertyGroup> LinkedGroups = new();
@@ -21,7 +22,7 @@ namespace DevelopmentTools.Editor.ContextMenus {
         public static  LinkedPropertiesSO I => DevelopmentEssentials.EditorHelper.InstanceSO(ref i);
 
         private static void OnContextMenu(GenericMenu menu, SerializedProperty prop) {
-            Object target = prop.serializedObject.targetObject;
+            Object      target      = prop.serializedObject.targetObject;
             PrefabStage prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
 
             if (target == null || PrefabUtility.IsPartOfPrefabAsset(target) || prefabStage != null)
