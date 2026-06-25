@@ -29,6 +29,8 @@ namespace DevelopmentTools.Editor {
         static HierarchyOverhaul() {
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
 
+            EditorApplication.playModeStateChanged += _ => EditorHelper.ClearCachedIcons();
+
             SceneHierarchyHooks.addItemsToSceneHeaderContextMenu += (menu, _) => {
                 menu.AddItem(new("Preview Icons"), EditorPrefs.GetBool(IconPrefKey), () => {
                     EditorPrefs.SetBool(IconPrefKey, !EditorPrefs.GetBool(IconPrefKey));
@@ -41,6 +43,8 @@ namespace DevelopmentTools.Editor {
                 menu.AddItem(new("Disable in Play Mode"), !EditorPrefs.GetBool(PlayPrefKey), () => {
                     EditorPrefs.SetBool(PlayPrefKey, !EditorPrefs.GetBool(PlayPrefKey));
                 });
+
+                menu.AddItem(new("Clear Cached Icons"), false, EditorHelper.ClearCachedIcons);
             };
         }
 

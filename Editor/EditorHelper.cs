@@ -260,12 +260,8 @@ namespace DevelopmentTools.Editor {
         }
 
         [InitializeOnLoadMethod]
-        private static void ClearCachedIcons() {
-            SceneHierarchyHooks.addItemsToSceneHeaderContextMenu += (menu, _) => {
-                menu.AddItem(new("Clear Cached Icons"), false, () => {
-                    cachedIcons.Clear();
-                });
-            };
+        public static void ClearCachedIcons() {
+            cachedIcons.Clear();
         }
 
         #endregion
