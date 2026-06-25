@@ -75,7 +75,7 @@ namespace DevelopmentTools.Editor {
 
         private static void DrawIcon(GameObject go, int selectionLength, bool selected, bool active, Rect selectionRect) {
             IHaveIconPreview icon    = go.GetIcon();
-            IconPreview      preview = IconPreview.Empty;
+            IconPreview      preview = new(icon);
 
             if (selectionLength <= 3) {
                 if (selected || icon == null) {
@@ -93,6 +93,8 @@ namespace DevelopmentTools.Editor {
                     }
 #endif
                     // else if (has ExtractableInfo)
+                    else
+                        preview.Icon = null;
 
                     // if (icon?.Icon)
                     //     icon.Icon.SetFilter(FilterMode.Point).Trim(true);
@@ -133,7 +135,7 @@ namespace DevelopmentTools.Editor {
 #if DEVELOPMENT_TOOLS_EDITOR_TMP
                     else if (go.TryGetComponent(out TextMeshProUGUI tmpro)) {
                         value.content = Process(tmpro);
-                        textDisabled = !tmpro.isActiveAndEnabled;
+                        textDisabled  = !tmpro.isActiveAndEnabled;
                     }
 #endif
                     else
@@ -154,18 +156,18 @@ namespace DevelopmentTools.Editor {
 
 #if DEVELOPMENT_TOOLS_EDITOR_TMP
         private static (string text, FontStyle style, Color color) Process(TextMeshProUGUI tmpro) {
-            string     text = tmpro.text;
+            string     text   = tmpro.text;
             FontStyles styles = tmpro.fontStyle;
 
-            if ((styles & FontStyles.UpperCase) != 0) text = text.ToUpper();
-            if ((styles & FontStyles.LowerCase) != 0) text = text.ToLower();
-            if ((styles & FontStyles.SmallCaps) != 0) text = $"<smallcaps>{text}</smallcaps>";
-            if ((styles & FontStyles.Bold) != 0) text = $"<b>{text}</b>";
-            if ((styles & FontStyles.Italic) != 0) text = $"<i>{text}</i>";
-            if ((styles & FontStyles.Underline) != 0) text = $"<u>{text}</u>";
+            if ((styles & FontStyles.UpperCase) != 0) text     = text.ToUpper();
+            if ((styles & FontStyles.LowerCase) != 0) text     = text.ToLower();
+            if ((styles & FontStyles.SmallCaps) != 0) text     = $"<smallcaps>{text}</smallcaps>";
+            if ((styles & FontStyles.Bold) != 0) text          = $"<b>{text}</b>";
+            if ((styles & FontStyles.Italic) != 0) text        = $"<i>{text}</i>";
+            if ((styles & FontStyles.Underline) != 0) text     = $"<u>{text}</u>";
             if ((styles & FontStyles.Strikethrough) != 0) text = $"<s>{text}</s>";
-            if ((styles & FontStyles.Superscript) != 0) text = $"<sup>{text}</sup>";
-            if ((styles & FontStyles.Subscript) != 0) text = $"<sub>{text}</sub>";
+            if ((styles & FontStyles.Superscript) != 0) text   = $"<sup>{text}</sup>";
+            if ((styles & FontStyles.Subscript) != 0) text     = $"<sub>{text}</sub>";
 
             bool b = (styles & FontStyles.Bold) != 0;
             bool i = (styles & FontStyles.Italic) != 0;
