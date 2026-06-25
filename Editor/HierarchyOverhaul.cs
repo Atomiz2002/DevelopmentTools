@@ -7,6 +7,7 @@ using DevelopmentEssentials.Extensions.Unity;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 #if DEVELOPMENT_TOOLS_EDITOR_TMP
 using TMPro;
 #endif
