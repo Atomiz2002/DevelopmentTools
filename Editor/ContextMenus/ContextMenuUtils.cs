@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using DevelopmentEssentials.Editor.Extensions.Unity;
+using DevelopmentEssentials.Editor.Helpers.Unity;
 using DevelopmentEssentials.Extensions.CS;
 using DevelopmentEssentials.Extensions.Unity;
+using DevelopmentTools.Editor.Helpers;
 using DevelopmentTools.Settings;
 using UnityEditor;
 using UnityEngine;
@@ -79,44 +80,25 @@ namespace DevelopmentTools.Editor.ContextMenus {
             method.SafeInvoke(new(), null);
         }
 
-        [Pure]
-        public static List<string> GetSelectedGUIDsRecursively(string filter = "") {
-            List<string> selectedGUIDs = new(Selection.assetGUIDs);
-            if (selectedGUIDs.Count == 0)
-                return new();
+        [MenuItem("Assets/Development Tools/Set Texture PPU")]
+        public static void ShowWindow() {
+            List<string> selectedTexturesGUIDs = AssetDatabaseHelper.GetSelectedGUIDsRecursively<Texture2D>();
 
-            foreach (string guid in selectedGUIDs.ToArray()) {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-
-                if (AssetDatabase.IsValidFolder(path)) // If it's a folder, get all texture GUIDs inside it
-                    selectedGUIDs.AddRange(AssetDatabase.FindAssets(filter, new[] { path }));
+            if (selectedTexturesGUIDs.IsEmpty()) {
+                "No Texture2Ds selected".LogErr();
+                return;
             }
 
-            return selectedGUIDs;
-        }
+            GenericDialogEditorWindow.Show("Set Texture PPU", new("Pixels Per Unit", selectedTexturesGUIDs[0].GUIDToPath().LoadAssetImporter<TextureImporter>()!.spritePixelsPerUnit), ppu => {
+                AssetDatabaseHelper.BulkEdit(selectedTexturesGUIDs,
+                    guid => {
+                        if (!guid.GUIDToPath().TryLoadAssetImporter(out TextureImporter importer))
+                            return;
 
-        public static void BulkEdit(List<string> guids, Action guidsAction) {
-            AssetDatabase.StartAssetEditing();
-
-            guidsAction();
-
-            AssetDatabase.StopAssetEditing();
-            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
-
-            if (guids[0].LoadAssetByGUID().IsNot<DefaultAsset>())
-                AssetDatabase.ImportAsset(guids[0].GUIDToPath(), ImportAssetOptions.ForceUpdate);
-        }
-
-        public static void BulkEdit(List<string> guids, Action<string> guidsAction) {
-            AssetDatabase.StartAssetEditing();
-
-            foreach (string guid in guids) guidsAction(guid);
-
-            AssetDatabase.StopAssetEditing();
-            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
-
-            if (guids[0].LoadAssetByGUID().IsNot<DefaultAsset>())
-                AssetDatabase.ImportAsset(guids[0].GUIDToPath(), ImportAssetOptions.ForceUpdate);
+                        importer.spritePixelsPerUnit = (float) ppu;
+                        importer.SaveAndReimport();
+                    });
+            });
         }
 
     }

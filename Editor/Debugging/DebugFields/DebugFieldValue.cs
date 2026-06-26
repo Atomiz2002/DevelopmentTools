@@ -84,7 +84,7 @@ namespace DevelopmentTools.Editor.Debugging.DebugFields {
 
             Time = $"{DateTime.Now:mm:ss.fff}";
 
-            StackFrame stackFrame = (stackTrace ?? new StackTrace(4, true)).GetFrames()?.SkipWhile(f => f.SafeString().Contains(nameof(ActionExtensions.SafeInvoke))).ElementAt(0);
+            StackFrame stackFrame = (stackTrace ?? new StackTrace(4, true)).GetFrames()?.SkipWhile(f => f.SafeString().Contains(nameof(ActionExtensions.InvokeSafe))).ElementAt(0);
             filePath     = stackFrame?.GetFileName().StartAt(startAtInFilePath);
             lineNumber   = stackFrame?.GetFileLineNumber() ?? 0;
             columnNumber = stackFrame?.GetFileColumnNumber() ?? 0;

@@ -8,9 +8,34 @@
     "references": [
         "DevelopmentEssentials"
     ],
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        "Newtonsoft.Json.dll",
+        "Sirenix.OdinInspector.Attributes.dll",
+        "Sirenix.OdinInspector.Editor.dll",
+        "Sirenix.Serialization.dll",
+        "Sirenix.Utilities.dll",
+        "Sirenix.Utilities.Editor.dll"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "defineConstraints": [],
-    "versionDefines": []
+    "defineConstraints": [
+        "DEVELOPMENT_TOOLS_RUNTIME_DEVELOPMENT_ESSENTIALS"
+    ],
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_RUNTIME_DEVELOPMENT_ESSENTIALS"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_RUNTIME_NEWTONSOFT_JSON"
+        },
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "DEVELOPMENT_TOOLS_RUNTIME_ODIN_INSPECTOR"
+        }
+    ]
 }

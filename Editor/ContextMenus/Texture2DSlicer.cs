@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DevelopmentEssentials.Editor.Extensions.Unity;
+using DevelopmentEssentials.Editor.Helpers.Unity;
 using DevelopmentEssentials.Extensions.CS;
+using DevelopmentTools.Editor.Helpers;
 using UnityEditor;
 using UnityEditor.U2D.Sprites;
 using UnityEngine;
@@ -16,14 +18,48 @@ namespace DevelopmentTools.Editor.ContextMenus {
         private const int tilesetTileSize  = 16;
         private const int maxSpritesPerRow = 10;
 
-        [MenuItem("Assets/Slice Tilesets x16")]
-        private static void SliceSelectedTilesets() {
-            ProcessTextures(ContextMenuUtils.GetSelectedGUIDsRecursively("t:Texture2D"), tex => tex.name.EndsWith("Tileset") ? CreateTilesetSlices(tex) : null);
+        [MenuItem("Assets/Development Tools/Slice/Set Pivots")]
+        private static void SetPivotsOnSelectedTextures() {
+            float x, y;
+
+            GenericDialogEditorWindow.Show("Set Pivots", new() { new(nameof(x), 0f), new(nameof(y), 0f) }, dict => {
+                x = (float) dict[nameof(x)];
+                y = (float) dict[nameof(y)];
+
+                AssetDatabaseHelper.BulkEditSelection<Texture2D>(t => {
+                    foreach (Texture2D texture in t) {
+                        SpriteDataProviderFactories factory = new();
+                        factory.Init();
+                        ISpriteEditorDataProvider dataProvider = factory.GetSpriteEditorDataProviderFromObject(texture);
+                        dataProvider.InitSpriteEditorDataProvider();
+
+                        SpriteRect[] sprites = dataProvider.GetSpriteRects();
+
+                        foreach (SpriteRect sprite in sprites) {
+                            sprite.alignment = SpriteAlignment.Custom;
+                            sprite.pivot = new(
+                                x < 1f ? x : x / sprite.rect.width,
+                                y < 1f ? y : y / sprite.rect.height);
+                        }
+
+                        dataProvider.SetSpriteRects(sprites);
+                        dataProvider.Apply();
+
+                        AssetImporter importer = (AssetImporter) dataProvider.targetObject;
+                        importer.SaveAndReimport();
+                    }
+                }, SelectionMode.DeepAssets);
+            });
         }
 
-        [MenuItem("Assets/Slice Textures 10 columns max")] // for sunnyside asset pack
+        [MenuItem("Assets/Slice/Tilesets x16")]
+        private static void SliceSelectedTilesets16() {
+            SliceTextures(AssetDatabaseHelper.GetSelectedGUIDsRecursively<Texture2D>(), tex => tex.name.EndsWith("Tileset") ? CreateTilesetSlices(tex) : null);
+        }
+
+        [MenuItem("Assets/Slice/Textures 10 columns max")] // for sunnyside asset pack
         private static void SliceSelectedTextures() {
-            ProcessTextures(ContextMenuUtils.GetSelectedGUIDsRecursively("t:Texture2D"),
+            SliceTextures(AssetDatabaseHelper.GetSelectedGUIDsRecursively<Texture2D>(),
                 tex => {
                     Match match = Regex.Match(tex.name, @"(\d+)(?!.*\d)");
 
@@ -34,12 +70,11 @@ namespace DevelopmentTools.Editor.ContextMenus {
                 });
         }
 
-        private static void ProcessTextures(List<string> guids, Func<Texture2D, SpriteRect[]> slices) {
-            ContextMenuUtils.BulkEdit(guids,
-                () => {
-                    foreach (Texture2D tex in guids.Select(guid => guid.GUIDToPath().LoadAsset<Texture2D>()).Existing())
-                        ApplySpriteEngineSettings(tex, slices(tex));
-                });
+        private static void SliceTextures(List<string> guids, Func<Texture2D, SpriteRect[]> slices) {
+            AssetDatabaseHelper.BulkEdit(guids, () => {
+                foreach (Texture2D tex in guids.Select(guid => guid.LoadAssetByGUID<Texture2D>()).Existing())
+                    ApplySpriteEngineSettings(tex, slices(tex));
+            });
         }
 
         private static void ApplySpriteEngineSettings(Texture2D texture, SpriteRect[] referenceSlices) {

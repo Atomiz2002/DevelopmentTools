@@ -21,7 +21,7 @@ namespace DevelopmentTools.Editor {
 
         public override void OnGUI(Rect rect) {
             GUILayout.BeginVertical();
-            drawGUI.SafeInvoke(rect);
+            drawGUI.InvokeSafe(rect);
             GUILayout.EndVertical();
 
             Rect lastRect = GUILayoutUtility.GetLastRect();

@@ -70,7 +70,7 @@ namespace DevelopmentTools.Editor {
 
             if (evt.type == EventType.DragPerform && DragAndDrop.objectReferences.All(x => x.Is<T>())) {
                 DragAndDrop.AcceptDrag();
-                onAcceptDrag.SafeInvoke(DragAndDrop.objectReferences.Cast<T>().ToArray());
+                onAcceptDrag.InvokeSafe(DragAndDrop.objectReferences.Cast<T>().ToArray());
             }
 
             evt.Use();
@@ -138,7 +138,7 @@ namespace DevelopmentTools.Editor {
             if (GUILayout.Button("Ping")) o.Ping();
 
             if (obj.OpenScript(out Action open) && GUILayout.Button("Open Script"))
-                open.SafeInvoke();
+                open.InvokeSafe();
 
             GUILayout.FlexibleSpace();
 
@@ -310,7 +310,7 @@ namespace DevelopmentTools.Editor {
                         errored = true;
                     }
                     else {
-                        action.SafeInvoke(input);
+                        action.InvokeSafe(input);
                         Close();
                     }
                 }

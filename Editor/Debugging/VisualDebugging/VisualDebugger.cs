@@ -13,7 +13,7 @@ namespace DevelopmentTools.Editor.Debugging.VisualDebugging {
         private void OnDrawGizmos() {
             foreach ((string _, Action draw) in drawRequests) {
                 Handles.color = Color.white;
-                draw.SafeInvoke();
+                draw.InvokeSafe();
             }
 
             drawRequests.Clear();
