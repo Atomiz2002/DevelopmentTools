@@ -63,7 +63,7 @@ namespace DevelopmentTools.Editor.Toolbar_Injections {
         }
 
         public static void AddToolbarPopupButton(ToolbarSide side, string buttonName, float buttonWidth, Action drawGUI, float popupWidth, float popupHeight = 0, float order = 0, float space = 15) =>
-            AddToolbarPopupButton(side, buttonName, buttonWidth, _ => drawGUI.SafeInvoke(), popupWidth, popupHeight, order, space);
+            AddToolbarPopupButton(side, buttonName, buttonWidth, _ => drawGUI.InvokeSafe(), popupWidth, popupHeight, order, space);
 
         public static void AddToolbarPopupButton(ToolbarSide side, string buttonName, float buttonWidth, Action<Rect> drawGUI, float popupWidth, float popupHeight = 0, float order = 0, float space = 15) {
             switch (side) {
